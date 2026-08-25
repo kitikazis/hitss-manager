@@ -1,0 +1,21 @@
+{
+  "app": "HITSS Manager",
+  "nota": "Órdenes pendientes del script del 23-24/8. Cliente y teléfono quedaron vacíos: complétalos si vas a generar plantillas. Se cargan con el botón Importar JSON de la pestaña Órdenes.",
+  "total": 14,
+  "ordenes": [
+    { "sot": "90123414", "cliente": "", "telefono": "", "contrata": "", "fecha": "23/8/2026", "franja": "AM1", "gestion": "NO CONTESTA", "departamento": "UCAYALI", "yaGestion": "NO", "sotManual": "PROGRAMACIONES D+1" },
+    { "sot": "90151385", "cliente": "", "telefono": "", "contrata": "", "fecha": "23/8/2026", "franja": "AM1", "gestion": "NO CONTESTA", "departamento": "UCAYALI", "yaGestion": "NO", "sotManual": "PROGRAMACIONES D+1" },
+    { "sot": "90193081", "cliente": "", "telefono": "", "contrata": "", "fecha": "23/8/2026", "franja": "AM1", "gestion": "NO CONTESTA", "departamento": "UCAYALI", "yaGestion": "NO", "sotManual": "PROGRAMACIONES D+1" },
+    { "sot": "90123248", "cliente": "", "telefono": "", "contrata": "", "fecha": "23/8/2026", "franja": "PM1", "gestion": "CONFIRMO", "departamento": "UCAYALI", "yaGestion": "NO", "sotManual": "PROGRAMACIONES D+1" },
+    { "sot": "90123710", "cliente": "", "telefono": "", "contrata": "", "fecha": "23/8/2026", "franja": "AM1", "gestion": "CONFIRMO", "departamento": "UCAYALI", "yaGestion": "NO", "sotManual": "PROGRAMACIONES D+1" },
+    { "sot": "90149922", "cliente": "", "telefono": "", "contrata": "", "fecha": "24/8/2026", "franja": "AM1", "gestion": "NO CONTESTA", "departamento": "UCAYALI", "yaGestion": "NO", "sotManual": "PROGRAMACIONES D+1" },
+    { "sot": "90162281", "cliente": "", "telefono": "", "contrata": "", "fecha": "23/8/2026", "franja": "AM1", "gestion": "CONFIRMO", "departamento": "UCAYALI", "yaGestion": "NO", "sotManual": "PROGRAMACIONES D+1" },
+    { "sot": "90207564", "cliente": "", "telefono": "", "contrata": "", "fecha": "23/8/2026", "franja": "AM1", "gestion": "NO CONTESTA", "departamento": "SAN MARTIN", "yaGestion": "NO", "sotManual": "PROGRAMACIONES D+1" },
+    { "sot": "90211464", "cliente": "", "telefono": "", "contrata": "", "fecha": "23/8/2026", "franja": "AM1", "gestion": "CONFIRMO", "departamento": "SAN MARTIN", "yaGestion": "NO", "sotManual": "PROGRAMACIONES D+1" },
+    { "sot": "90215502", "cliente": "", "telefono": "", "contrata": "", "fecha": "24/8/2026", "franja": "AM1", "gestion": "CONFIRMO", "departamento": "SAN MARTIN", "yaGestion": "NO", "sotManual": "PROGRAMACIONES D+1" },
+    { "sot": "90220584", "cliente": "", "telefono": "", "contrata": "", "fecha": "24/8/2026", "franja": "AM1", "gestion": "CONFIRMO", "departamento": "SAN MARTIN", "yaGestion": "NO", "sotManual": "PROGRAMACIONES D+1" },
+    { "sot": "90220719", "cliente": "", "telefono": "", "contrata": "", "fecha": "24/8/2026", "franja": "AM1", "gestion": "CONFIRMO", "departamento": "SAN MARTIN", "yaGestion": "NO", "sotManual": "PROGRAMACIONES D+1" },
+    { "sot": "90218466", "cliente": "", "telefono": "", "contrata": "", "fecha": "24/8/2026", "franja": "AM1", "gestion": "NO CONTESTA", "departamento": "SAN MARTIN", "yaGestion": "NO", "sotManual": "PROGRAMACIONES D+1" },
+    { "sot": "90201991", "cliente": "", "telefono": "", "contrata": "", "fecha": "24/8/2026", "franja": "AM1", "gestion": "NO CONTESTA", "departamento": "SAN MARTIN", "yaGestion": "NO", "sotManual": "PROGRAMACIONES D+1" }
+  ]
+}

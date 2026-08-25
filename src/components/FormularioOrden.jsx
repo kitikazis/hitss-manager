@@ -1,0 +1,209 @@
+import { useRef, useState } from 'react';
+import { Campo, Select } from './Campos';
+import {
+  DEPARTAMENTOS,
+  DEPTOS_PROGRAMACION,
+  FECHA_DEFAULT,
+  FRANJAS,
+  FRANJA_DEFAULT,
+  GESTIONES,
+  SI_NO,
+  SOT_MANUALES,
+  SOT_MANUAL_DEFAULT,
+  SOT_MANUAL_PROGRAMACION,
+} from '../lib/constantes';
+import { formatearId } from '../lib/utils';
+
+const FORM_VACIO = {
+  sot: '',
+  cliente: '',
+  telefono: '',
+  contrata: '',
+  fecha: FECHA_DEFAULT,
+  franja: FRANJA_DEFAULT,
+  gestion: GESTIONES[0],
+  departamento: DEPARTAMENTOS[0],
+  yaGestion: 'NO',
+  sotManual: SOT_MANUAL_DEFAULT,
+};
+
+export function FormularioOrden({ proximoId, onAgregar }) {
+  const [form, setForm] = useState(FORM_VACIO);
+  const [errores, setErrores] = useState({});
+  const refSot = useRef(null);
+
+  const set = (campo) => (valor) => {
+    setForm((f) => ({ ...f, [campo]: valor }));
+    setErrores((e) => (e[campo] ? { ...e, [campo]: false } : e));
+  };
+
+  // Regla de mesa: UCAYALI y SAN MARTIN van siempre como PROGRAMACIONES D+1.
+  const setDepartamento = (valor) =>
+    setForm((f) => ({
+      ...f,
+      departamento: valor,
+      sotManual: DEPTOS_PROGRAMACION.includes(valor) ? SOT_MANUAL_PROGRAMACION : f.sotManual,
+    }));
+
+  const rigeRegla = DEPTOS_PROGRAMACION.includes(form.departamento);
+
+  function enviar(ev) {
+    ev.preventDefault();
+    if (!form.sot.trim()) {
+      setErrores({ sot: true });
+      return;
+    }
+    setErrores({});
+
+    onAgregar({
+      sot: form.sot.trim(),
+      cliente: form.cliente.trim(),
+      telefono: form.telefono.trim(),
+      contrata: form.contrata.trim(),
+      fecha: form.fecha.trim(),
+      franja: form.franja,
+      gestion: form.gestion,
+      departamento: form.departamento,
+      yaGestion: form.yaGestion,
+      sotManual: form.sotManual,
+    });
+
+    // Mantiene fecha/franja/gestion/departamento para cargar en lote.
+    setForm((f) => ({ ...f, sot: '', cliente: '', telefono: '' }));
+    refSot.current?.focus();
+  }
+
+  const faltan = [
+    !form.cliente.trim() && 'cliente',
+    !form.telefono.trim() && 'teléfono',
+    !form.fecha.trim() && 'fecha',
+  ].filter(Boolean);
+
+  return (
+    <form className="tarjeta" onSubmit={enviar}>
+      <div className="tarjeta-cab">
+        <div>
+          <h2>Nueva orden</h2>
+          <p className="sub">Solo el SOT es obligatorio; el resto se puede completar después</p>
+        </div>
+        <div className="empuje" />
+        <span className="contador">Próximo ID {formatearId(proximoId)}</span>
+      </div>
+
+      <div className="tarjeta-cuerpo">
+        <div className="grupo">
+          <p className="seccion">Cliente</p>
+          <div className="rejilla">
+            <Campo label="SOT" req>
+              <input
+                ref={refSot}
+                className={'mono' + (errores.sot ? ' error' : '')}
+                value={form.sot}
+                onChange={(e) => set('sot')(e.target.value)}
+                placeholder="90256466"
+                inputMode="numeric"
+                autoComplete="off"
+              />
+            </Campo>
+
+            <Campo label="Cliente">
+              <input
+                value={form.cliente}
+                onChange={(e) => set('cliente')(e.target.value)}
+                placeholder="Nombre del cliente"
+                autoComplete="off"
+              />
+            </Campo>
+
+            <Campo label="Teléfono">
+              <input
+                className="mono"
+                value={form.telefono}
+                onChange={(e) => set('telefono')(e.target.value)}
+                placeholder="987654321"
+                inputMode="tel"
+                autoComplete="off"
+              />
+            </Campo>
+
+            <Campo label="Contrata">
+              <input
+                value={form.contrata}
+                onChange={(e) => set('contrata')(e.target.value)}
+                autoComplete="off"
+              />
+            </Campo>
+          </div>
+        </div>
+
+        <div className="grupo">
+          <p className="seccion">Programación</p>
+          <div className="rejilla">
+            <Campo label="Fecha" pista="Formato d/m/aaaa">
+              <input
+                className="mono"
+                value={form.fecha}
+                onChange={(e) => set('fecha')(e.target.value)}
+                placeholder={FECHA_DEFAULT}
+                autoComplete="off"
+              />
+            </Campo>
+
+            <Campo label="Franja">
+              <Select value={form.franja} onChange={set('franja')} opciones={FRANJAS} />
+            </Campo>
+
+            <Campo label="Departamento">
+              <Select value={form.departamento} onChange={setDepartamento} opciones={DEPARTAMENTOS} />
+            </Campo>
+
+            <Campo label="Gestión">
+              <Select value={form.gestion} onChange={set('gestion')} opciones={GESTIONES} />
+            </Campo>
+          </div>
+        </div>
+
+        <div className="grupo">
+          <p className="seccion">Formulario</p>
+          <div className="rejilla">
+            <Campo label="¿Ya tiene gestión?">
+              <Select value={form.yaGestion} onChange={set('yaGestion')} opciones={SI_NO} />
+            </Campo>
+
+            <Campo
+              label="SOT gestionada manual"
+              pista={rigeRegla ? `${form.departamento} va como ${SOT_MANUAL_PROGRAMACION}` : undefined}
+            >
+              <Select value={form.sotManual} onChange={set('sotManual')} opciones={SOT_MANUALES} />
+            </Campo>
+          </div>
+        </div>
+
+        {errores.sot ? (
+          <div className="alerta error" style={{ marginTop: 16 }}>
+            Falta el <b>SOT</b>: es lo único que no se puede completar después.
+          </div>
+        ) : null}
+
+        <div className="acciones">
+          <button className="btn btn-primario" type="submit">
+            Agregar orden
+          </button>
+          <button
+            className="btn btn-plano"
+            type="button"
+            onClick={() => {
+              setForm(FORM_VACIO);
+              setErrores({});
+            }}
+          >
+            Limpiar
+          </button>
+          {faltan.length && form.sot.trim() ? (
+            <span className="pista">Sin {faltan.join(', ')}: se puede completar en Plantillas</span>
+          ) : null}
+        </div>
+      </div>
+    </form>
+  );
+}
