@@ -5,6 +5,13 @@ mesa (confirma visita / ciclo de llamadas / rechazo) y generar el script de
 autollenado del formulario. Sin backend: cada operador guarda sus datos en su
 propio navegador.
 
+## Usarla ya
+
+**https://kitikazis.github.io/hitss-manager/**
+
+Se publica sola en GitHub Pages con cada push a `main`. Los datos viven en el
+navegador de cada operador: nada se sube a ningún servidor.
+
 ## Arrancar
 
 ```bash
@@ -18,7 +25,7 @@ npm run dev
 
 ## Las tres pestañas
 
-### 📋 Órdenes
+### Órdenes
 
 Formulario manual (SOT, cliente y teléfono obligatorios) y tabla con todo lo
 cargado. El alta rápida por pegado está en la pestaña **Plantillas**.
@@ -33,7 +40,7 @@ varias seguidas.
   PCs. Al importar con órdenes ya cargadas: *Aceptar* reemplaza, *Cancelar* agrega
   al final.
 
-### 📄 Plantillas
+### Plantillas
 
 **Pegar desde Oracle Field Service** (el camino rápido): copias el *Detalles de
 actividad* de OFS, le pones arriba una cabecera y lo pegas. La app arma la orden
@@ -82,10 +89,15 @@ cabecera que usaste.
 | ☎ Ciclo Llamadas | ID de llamada, ciclo nro (1), cantidad (3), motivo, sub-motivo ("No contesta") |
 | ✕ Rechazo | ID de llamada, mesa/campo, persona que contesta, motivo, sub-motivo |
 
-Cliente, número, fecha, franja, contrata y departamento salen de la orden
-seleccionada. `REALIZADO POR` sale del campo **Realizado por** del perfil.
+Los datos de la orden (cliente, número, fecha, franja, contrata, departamento) son
+**editables ahí mismo**: si algo salió mal del pegado o quedó vacío, se corrige en la
+plantilla y se guarda en la orden. `REALIZADO POR` sale del campo **Realizado por**
+del perfil.
 
-### ⚙️ Script
+Solo el SOT es obligatorio al cargar una orden: todo lo demás se puede completar
+después, sin que eso impida armar la plantilla.
+
+### Script
 
 Genera el JS que se pega en la consola del formulario.
 
@@ -102,7 +114,10 @@ Dos selectores:
     termina imprimiendo el `RESUMEN`.
   - En los dos modos quedan disponibles en la consola `siguienteOrden()`,
     `autollenarTodo()`, `ORDENES` y `RESULTADOS`.
-- **Incluir** — todas las órdenes, solo confirmados o solo ciclos.
+- **Órdenes incluidas** — todas, solo confirmados o solo ciclos.
+- **Formato de fecha** — `d/m/yyyy` o `M/d/yyyy`, según lo que espere el
+  formulario. Las órdenes siempre se guardan como `d/m/aaaa`; la conversión se
+  hace solo al generar el script, y la cabecera del `.js` dice con cuál salió.
 
 ## Varios operadores
 
@@ -122,6 +137,7 @@ Escribir un código nuevo estrena perfil con el nombre que pongas en ese momento
 
 | Cómo | Comando | Para qué sirve |
 |---|---|---|
+| GitHub Pages | push a `main` | La versión pública, siempre al día |
 | Servidor de desarrollo | `npm run dev` | Probar y editar con recarga en caliente |
 | Servidor de producción | `npm run build` + `npm run preview` | Dejar la app corriendo en una PC de la oficina |
 | Archivo único | `npm run build` → `dist/hitss-standalone.html` | Mandarlo por correo o USB: se abre con doble clic, sin servidor y sin internet |
@@ -166,4 +182,5 @@ src/
   lib/                  constantes, utilidades, parser de OFS, plantillas y
                         generador del script
 scripts/empaquetar.mjs  arma dist/hitss-standalone.html tras el build
+.github/workflows/      publica en GitHub Pages con cada push a main
 ```
