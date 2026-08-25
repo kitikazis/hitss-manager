@@ -1,4 +1,5 @@
 import { useMemo, useRef } from 'react';
+import { esConfirmado } from '../lib/plantillas';
 
 export function TablaOrdenes({ ordenes, onEliminar, onVaciar, onExportar, onImportar }) {
   const inputArchivo = useRef(null);
@@ -70,7 +71,7 @@ export function TablaOrdenes({ ordenes, onEliminar, onVaciar, onExportar, onImpo
             </thead>
             <tbody>
               {ordenes.map((o) => (
-                <tr key={o.id}>
+                <tr key={o.id} className={esConfirmado(o) ? 'es-confirmada' : 'es-ciclo'}>
                   <td className="mono tenue">{o.id}</td>
                   <td className="mono">
                     <b>{o.sot}</b>

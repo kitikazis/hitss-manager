@@ -885,3 +885,59 @@ footer {
     justify-content: center;
   }
 }
+
+/* ============ Color por gestión ============
+   Confirmada (CONFIRMO) en verde, ciclo (NO CONTESTA) en ámbar,
+   para distinguirlas de un vistazo en la lista y en la tabla. */
+.lista-item.es-confirmada {
+  border-left-color: var(--ok);
+}
+
+.lista-item.es-ciclo {
+  border-left-color: var(--aviso);
+}
+
+.lista-item {
+  border-left-width: 3px;
+}
+
+.lista-item.activo {
+  box-shadow: inset -3px 0 0 var(--acento);
+}
+
+.lista-fila {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.etiqueta.chica {
+  font-size: 10px;
+  padding: 1px 6px;
+  flex: none;
+}
+
+tbody tr.es-confirmada td:first-child {
+  box-shadow: inset 3px 0 0 var(--ok);
+}
+
+tbody tr.es-ciclo td:first-child {
+  box-shadow: inset 3px 0 0 var(--aviso);
+}
+
+.ficha.tipo-confi {
+  border-left-color: var(--ok);
+}
+
+.ficha.tipo-ciclo {
+  border-left-color: var(--aviso);
+}
+
+.ficha.tipo-rechazo {
+  border-left-color: var(--peligro);
+}
+
+.ficha.invalida {
+  border-left-color: var(--peligro);
+}

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Campo, Segmentado, Select } from './Campos';
 import { PanelPegar } from './PanelPegar';
-import { TIPOS, camposPorDefecto, construirPlantilla } from '../lib/plantillas';
+import { TIPOS, camposPorDefecto, construirPlantilla, esConfirmado } from '../lib/plantillas';
 import {
   DEPARTAMENTOS,
   FRANJAS,
@@ -21,20 +21,32 @@ function ListaOrdenes({ ordenes, seleccionada, onSeleccionar }) {
         </div>
       </div>
       <div className="lista">
-        {ordenes.map((o) => (
-          <button
-            key={o.id}
-            type="button"
-            className={'lista-item' + (seleccionada?.id === o.id ? ' activo' : '')}
-            onClick={() => onSeleccionar(o.id)}
-          >
-            <span className="lista-sot">{o.sot}</span>
-            <span className="lista-cliente">{o.cliente || 'Sin cliente'}</span>
-            <span className="lista-meta">
-              {o.fecha || 'Sin fecha'} · {o.franja} · {o.departamento}
-            </span>
-          </button>
-        ))}
+        {ordenes.map((o) => {
+          const confirmada = esConfirmado(o);
+          return (
+            <button
+              key={o.id}
+              type="button"
+              className={
+                'lista-item ' +
+                (confirmada ? 'es-confirmada' : 'es-ciclo') +
+                (seleccionada?.id === o.id ? ' activo' : '')
+              }
+              onClick={() => onSeleccionar(o.id)}
+            >
+              <span className="lista-fila">
+                <span className="lista-sot">{o.sot}</span>
+                <span className={'etiqueta chica ' + (confirmada ? 'ok' : 'aviso')}>
+                  {confirmada ? 'Confirmada' : 'Ciclo'}
+                </span>
+              </span>
+              <span className="lista-cliente">{o.cliente || 'Sin cliente'}</span>
+              <span className="lista-meta">
+                {o.fecha || 'Sin fecha'} · {o.franja} · {o.departamento}
+              </span>
+            </button>
+          );
+        })}
       </div>
     </section>
   );
