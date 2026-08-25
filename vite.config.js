@@ -21,8 +21,9 @@ export default defineConfig({
       output: {
         // Un solo bundle clasico: permite empaquetar todo en un unico .html.
         format: 'iife',
-        entryFileNames: 'app.js',
-        assetFileNames: 'app.[ext]',
+        // Con hash en el nombre, un despliegue nuevo nunca queda tapado por la cache.
+        entryFileNames: 'app-[hash].js',
+        assetFileNames: 'app-[hash].[ext]',
       },
     },
   },

@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { parsearPegado } from '../lib/parsearOFS.js';
-import { TIPOS } from '../lib/plantillas.js';
+import { CLASE_TIPO, COLOR_TIPO, etiquetaTipo } from '../lib/plantillas.js';
 
 const EJEMPLO = `confi am1 lunes
 Oracle Field Service
@@ -11,17 +11,14 @@ SOT
 90220719
 ...`;
 
-const COLOR_TIPO = { CONFI: 'ok', CICLO: 'aviso', RECHAZO: 'error' };
-
 function Ficha({ bloque, contrata, onContrata }) {
   const { orden, avisos, valido, tipoPlantilla, idActividad, franjaOrigen } = bloque;
-  const tipo = TIPOS.find((t) => t.id === tipoPlantilla);
 
   return (
-    <div className={'ficha ' + 'tipo-' + tipoPlantilla.toLowerCase() + (valido ? '' : ' invalida')}>
+    <div className={'ficha ' + CLASE_TIPO[tipoPlantilla] + (valido ? '' : ' invalida')}>
       <div className="ficha-cab">
-        <span className={'etiqueta ' + (!valido ? 'error' : COLOR_TIPO[tipoPlantilla] || '')}>
-          {tipo ? tipo.etiqueta : tipoPlantilla}
+        <span className={'etiqueta ' + (valido ? COLOR_TIPO[tipoPlantilla] : 'error')}>
+          {etiquetaTipo(tipoPlantilla)}
         </span>
         <b className="mono">{orden.sot || 'Sin SOT'}</b>
         <span className="ficha-cliente">{orden.cliente || 'Sin cliente'}</span>

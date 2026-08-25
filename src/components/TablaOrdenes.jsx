@@ -1,5 +1,5 @@
 import { useMemo, useRef } from 'react';
-import { esConfirmado } from '../lib/plantillas';
+import { CLASE_TIPO, COLOR_TIPO, etiquetaTipo, tipoDeOrden } from '../lib/plantillas';
 
 export function TablaOrdenes({ ordenes, onEliminar, onVaciar, onExportar, onImportar }) {
   const inputArchivo = useRef(null);
@@ -62,6 +62,7 @@ export function TablaOrdenes({ ordenes, onEliminar, onVaciar, onExportar, onImpo
                 <th>Contrata</th>
                 <th>Fecha</th>
                 <th>Franja</th>
+                <th>Plantilla</th>
                 <th>Gestión</th>
                 <th>Departamento</th>
                 <th>Ya gest.</th>
@@ -71,7 +72,7 @@ export function TablaOrdenes({ ordenes, onEliminar, onVaciar, onExportar, onImpo
             </thead>
             <tbody>
               {ordenes.map((o) => (
-                <tr key={o.id} className={esConfirmado(o) ? 'es-confirmada' : 'es-ciclo'}>
+                <tr key={o.id} className={CLASE_TIPO[tipoDeOrden(o)]}>
                   <td className="mono tenue">{o.id}</td>
                   <td className="mono">
                     <b>{o.sot}</b>
@@ -85,10 +86,11 @@ export function TablaOrdenes({ ordenes, onEliminar, onVaciar, onExportar, onImpo
                     <span className="etiqueta">{o.franja}</span>
                   </td>
                   <td>
-                    <span className={'etiqueta ' + (o.gestion === 'CONFIRMO' ? 'ok' : 'aviso')}>
-                      {o.gestion}
+                    <span className={'etiqueta ' + COLOR_TIPO[tipoDeOrden(o)]}>
+                      {etiquetaTipo(tipoDeOrden(o))}
                     </span>
                   </td>
+                  <td className="tenue">{o.gestion}</td>
                   <td>{o.departamento}</td>
                   <td>{o.yaGestion}</td>
                   <td className="tenue">{o.sotManual}</td>

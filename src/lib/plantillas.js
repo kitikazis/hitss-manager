@@ -13,11 +13,29 @@ export function separarPorTipo(ordenes) {
   };
 }
 
+/* Clase CSS y color de etiqueta de cada tipo, para pintarlos igual en toda la app. */
+export const CLASE_TIPO = { CONFI: 'es-confi', CICLO: 'es-ciclo', RECHAZO: 'es-rechazo' };
+export const COLOR_TIPO = { CONFI: 'ok', CICLO: 'aviso', RECHAZO: 'error' };
+
 export const TIPOS = [
   { id: 'CONFI', etiqueta: 'Confirmada', descripcion: 'Confirmación de visita' },
   { id: 'CICLO', etiqueta: 'Ciclo de llamadas', descripcion: 'Ciclo de llamadas' },
   { id: 'RECHAZO', etiqueta: 'Rechazo', descripcion: 'Rechazo en mesa' },
 ];
+
+/*
+ * Tipo de una orden: el que se eligio en Plantillas y, si no hay, el que se
+ * deduce de la gestion (CONFIRMO -> confirmada, cualquier otra -> ciclo).
+ */
+export function tipoDeOrden(orden) {
+  if (!orden) return 'CONFI';
+  if (orden.tipoPlantilla && TIPOS.some((t) => t.id === orden.tipoPlantilla)) {
+    return orden.tipoPlantilla;
+  }
+  return esConfirmado(orden) ? 'CONFI' : 'CICLO';
+}
+
+export const etiquetaTipo = (id) => (TIPOS.find((t) => t.id === id) || {}).etiqueta || id;
 
 /* Valores con los que arranca el formulario dinamico de cada tipo. */
 export function camposPorDefecto(tipo, orden) {

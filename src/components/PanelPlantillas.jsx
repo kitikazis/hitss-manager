@@ -1,7 +1,15 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Campo, Segmentado, Select } from './Campos';
 import { PanelPegar } from './PanelPegar';
-import { TIPOS, camposPorDefecto, construirPlantilla, esConfirmado } from '../lib/plantillas';
+import {
+  CLASE_TIPO,
+  COLOR_TIPO,
+  TIPOS,
+  camposPorDefecto,
+  construirPlantilla,
+  etiquetaTipo,
+  tipoDeOrden,
+} from '../lib/plantillas';
 import {
   DEPARTAMENTOS,
   FRANJAS,
@@ -19,26 +27,32 @@ function ListaOrdenes({ ordenes, seleccionada, onSeleccionar }) {
           <h2>Órdenes</h2>
           <p className="sub">{ordenes.length} en la lista</p>
         </div>
+        <div className="empuje" />
+        <div className="leyenda">
+          {TIPOS.map((t) => (
+            <span key={t.id} className={CLASE_TIPO[t.id]}>
+              {t.etiqueta}
+            </span>
+          ))}
+        </div>
       </div>
       <div className="lista">
         {ordenes.map((o) => {
-          const confirmada = esConfirmado(o);
+          const tipo = tipoDeOrden(o);
           return (
             <button
               key={o.id}
               type="button"
               className={
                 'lista-item ' +
-                (confirmada ? 'es-confirmada' : 'es-ciclo') +
+                CLASE_TIPO[tipo] +
                 (seleccionada?.id === o.id ? ' activo' : '')
               }
               onClick={() => onSeleccionar(o.id)}
             >
               <span className="lista-fila">
                 <span className="lista-sot">{o.sot}</span>
-                <span className={'etiqueta chica ' + (confirmada ? 'ok' : 'aviso')}>
-                  {confirmada ? 'Confirmada' : 'Ciclo'}
-                </span>
+                <span className={'etiqueta chica ' + COLOR_TIPO[tipo]}>{etiquetaTipo(tipo)}</span>
               </span>
               <span className="lista-cliente">{o.cliente || 'Sin cliente'}</span>
               <span className="lista-meta">
@@ -102,10 +116,9 @@ export function PanelPlantillas({ ordenes, perfil, onAgregarOrdenes, onActualiza
   // Si la orden elegida se borro (o no hay ninguna elegida) cae en la primera.
   const seleccionada = ordenes.find((o) => o.id === idSeleccion) || ordenes[0] || null;
 
-  // Las ordenes pegadas traen sugerido su tipo de plantilla.
+  // Cada orden abre con su propio tipo: el guardado, o el que sugiere su gestion.
   useEffect(() => {
-    const sugerido = seleccionada?.tipoPlantilla;
-    if (sugerido && TIPOS.some((t) => t.id === sugerido)) setTipo(sugerido);
+    if (seleccionada) setTipo(tipoDeOrden(seleccionada));
   }, [seleccionada?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Al cambiar de orden o de tipo, el formulario propio del tipo vuelve a su base.
@@ -114,6 +127,12 @@ export function PanelPlantillas({ ordenes, perfil, onAgregarOrdenes, onActualiza
   }, [tipo, seleccionada?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const set = (campo, valor) => setExtra((prev) => ({ ...prev, [campo]: valor }));
+
+  /* Cambiar el tipo lo guarda en la orden, para que la lista lo muestre en su color. */
+  function cambiarTipo(nuevo) {
+    setTipo(nuevo);
+    if (seleccionada) onActualizarOrden(seleccionada.id, { tipoPlantilla: nuevo });
+  }
   const editar = (campo) => (valor) => onActualizarOrden(seleccionada.id, { [campo]: valor });
 
   const plantilla = useMemo(
@@ -176,7 +195,7 @@ export function PanelPlantillas({ ordenes, perfil, onAgregarOrdenes, onActualiza
         <div>
           <section className="tarjeta">
             <div className="tarjeta-cab">
-              <Segmentado valor={tipo} onCambio={setTipo} opciones={TIPOS} />
+              <Segmentado valor={tipo} onCambio={cambiarTipo} opciones={TIPOS} />
               <div className="empuje" />
               <span className="contador">
                 SOT {seleccionada.sot} · {seleccionada.id}

@@ -574,8 +574,7 @@ td.acciones-fila {
 }
 
 .columna-lateral {
-  position: sticky;
-  top: 116px;
+  min-width: 0;
 }
 
 .lista {
@@ -854,10 +853,6 @@ footer {
     grid-template-columns: 1fr;
   }
 
-  .columna-lateral {
-    position: static;
-  }
-
   .lista {
     max-height: 220px;
   }
@@ -886,10 +881,14 @@ footer {
   }
 }
 
-/* ============ Color por gestión ============
-   Confirmada (CONFIRMO) en verde, ciclo (NO CONTESTA) en ámbar,
-   para distinguirlas de un vistazo en la lista y en la tabla. */
-.lista-item.es-confirmada {
+/* ============ Color por tipo ============
+   Confirmada verde, ciclo ambar, rechazo rojo: el mismo codigo en la lista,
+   la tabla y las fichas del pegado. */
+.lista-item {
+  border-left-width: 3px;
+}
+
+.lista-item.es-confi {
   border-left-color: var(--ok);
 }
 
@@ -897,8 +896,8 @@ footer {
   border-left-color: var(--aviso);
 }
 
-.lista-item {
-  border-left-width: 3px;
+.lista-item.es-rechazo {
+  border-left-color: var(--peligro);
 }
 
 .lista-item.activo {
@@ -918,7 +917,41 @@ footer {
   flex: none;
 }
 
-tbody tr.es-confirmada td:first-child {
+.leyenda {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  font-size: 10.5px;
+  color: var(--texto-3);
+}
+
+.leyenda span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.leyenda span::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  background: var(--texto-3);
+}
+
+.leyenda .es-confi::before {
+  background: var(--ok);
+}
+
+.leyenda .es-ciclo::before {
+  background: var(--aviso);
+}
+
+.leyenda .es-rechazo::before {
+  background: var(--peligro);
+}
+
+tbody tr.es-confi td:first-child {
   box-shadow: inset 3px 0 0 var(--ok);
 }
 
@@ -926,18 +959,19 @@ tbody tr.es-ciclo td:first-child {
   box-shadow: inset 3px 0 0 var(--aviso);
 }
 
-.ficha.tipo-confi {
+tbody tr.es-rechazo td:first-child {
+  box-shadow: inset 3px 0 0 var(--peligro);
+}
+
+.ficha.es-confi {
   border-left-color: var(--ok);
 }
 
-.ficha.tipo-ciclo {
+.ficha.es-ciclo {
   border-left-color: var(--aviso);
 }
 
-.ficha.tipo-rechazo {
-  border-left-color: var(--peligro);
-}
-
+.ficha.es-rechazo,
 .ficha.invalida {
   border-left-color: var(--peligro);
 }

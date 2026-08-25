@@ -36,8 +36,10 @@ varias seguidas.
 - **IDs**: correlativos `SOT-XXXXXX` desde `SOT-208548`. Es el ID interno de la app
   y se propone como *ID de llamada* en las plantillas.
 - **Duplicados**: si dos filas comparten SOT aparece la etiqueta `Repetido`.
-- **Color por gestión**: confirmada (CONFIRMO) en verde y ciclo (NO CONTESTA) en
-  ámbar, tanto en la tabla como en la lista de la pestaña Plantillas.
+- **Color por tipo**: confirmada en verde, ciclo en ámbar y rechazo en rojo, en la
+  tabla, en la lista de Plantillas y en las fichas del pegado. El tipo sale del que
+  elijas en Plantillas y, si nunca lo tocaste, de la gestión de la orden
+  (CONFIRMO = confirmada, el resto = ciclo).
 - **Exportar / Importar JSON**: respaldo de la lista y forma de pasar órdenes entre
   PCs. Al importar con órdenes ya cargadas: *Aceptar* reemplaza, *Cancelar* agrega
   al final.
