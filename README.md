@@ -23,6 +23,24 @@ npm run dev
 - Red local (otros operadores): `http://<IP-de-esta-PC>:5173/` — Vite imprime la IP al arrancar.
   Si desde otra PC no abre, hay que permitir `node.exe` en el Firewall de Windows.
 
+## Cómo está pensada
+
+Las pestañas están numeradas porque son el orden del trabajo: **1 Órdenes** (cargar)
+→ **2 Plantillas** (armar y copiar) → **3 Script** (enviar al formulario). La pestaña
+activa se marca visualmente y con `aria-current`.
+
+Decisiones de uso que conviene conocer:
+
+- **Nada destructivo pide confirmación: todo se puede deshacer.** Eliminar una orden
+  o vaciar la lista muestra un aviso con **Deshacer** durante 7 segundos, y la orden
+  vuelve a su posición original.
+- **Ctrl+Enter** copia: la plantilla en la pestaña Plantillas, el script en Script.
+  Los botones muestran *Copiado* durante un segundo y medio.
+- **Solo el SOT es obligatorio.** Todo lo demás se completa después, sin que eso
+  bloquee armar la plantilla.
+- **Contraste AA (4.5:1)** verificado en los dos temas, foco visible en todo lo
+  interactivo y áreas táctiles de 44 px en móvil.
+
 ## Las tres pestañas
 
 ### Órdenes
@@ -87,8 +105,10 @@ INST CARLEI TARAPOTO FTTH - 4F TARAP, 24/08/26
 - Se pueden pegar **varias actividades de una**, cada una con su cabecera.
 - Lo que no encuentre lo dice con un aviso; sin SOT no deja agregar.
 
-A la izquierda se elige la orden y el tipo de plantilla; a la derecha se llenan los
-campos propios de cada tipo y se ve la vista previa en vivo. Botones *Copiar
+Tres columnas: la **lista de órdenes** con buscador (filtra por SOT, cliente o
+teléfono mientras escribes e indica cuántas coinciden), los **campos** en el centro
+y la **vista previa** a la derecha, para editar y ver el resultado a la vez. En
+pantallas angostas las columnas se apilan. Botones *Copiar
 plantilla* y *Descargar .md*.
 
 Las órdenes que entraron por pegado ya vienen con su tipo preseleccionado según la

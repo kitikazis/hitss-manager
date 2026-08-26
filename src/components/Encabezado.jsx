@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 
+/* El orden de las pestañas es el orden del trabajo: cargar, armar, enviar. */
 const PESTANAS = [
-  { id: 'ordenes', etiqueta: 'Órdenes', conCuenta: true },
-  { id: 'plantillas', etiqueta: 'Plantillas' },
-  { id: 'script', etiqueta: 'Script' },
+  { id: 'ordenes', etiqueta: 'Órdenes', paso: 1, conCuenta: true },
+  { id: 'plantillas', etiqueta: 'Plantillas', paso: 2 },
+  { id: 'script', etiqueta: 'Script', paso: 3 },
 ];
 
 function Perfil({ perfil, onGuardar, onCerrar }) {
@@ -144,15 +145,23 @@ export function Encabezado({ perfil, onGuardarPerfil, total, tema, onTema, tab, 
           </div>
         </div>
 
-        <nav className="tabs">
+        <nav className="tabs" aria-label="Secciones">
           {PESTANAS.map((p) => (
             <button
               key={p.id}
               className={'tab' + (tab === p.id ? ' activa' : '')}
+              aria-current={tab === p.id ? 'page' : undefined}
               onClick={() => onTab(p.id)}
             >
+              <span className="tab-paso" aria-hidden="true">
+                {p.paso}
+              </span>
               {p.etiqueta}
-              {p.conCuenta ? <span className="cuenta">{total}</span> : null}
+              {p.conCuenta ? (
+                <span className="cuenta" title={total + ' órdenes cargadas'}>
+                  {total}
+                </span>
+              ) : null}
             </button>
           ))}
         </nav>

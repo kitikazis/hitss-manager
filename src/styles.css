@@ -6,7 +6,7 @@
   --border-fuerte: #cdd5e0;
   --texto: #131a26;
   --texto-2: #5b6673;
-  --texto-3: #8b95a3;
+  --texto-3: #69737f;
   --acento: #1d4ed8;
   --acento-suave: #eef3ff;
   --acento-borde: #c3d4fb;
@@ -14,11 +14,17 @@
   --peligro-suave: #fdf2f2;
   --ok: #12704a;
   --ok-suave: #eefaf4;
-  --aviso: #9a5b00;
+  --aviso: #8a5100;
   --aviso-suave: #fff8ec;
   --fila-alt: #fafbfc;
   --sombra: 0 1px 1px rgba(19, 26, 38, 0.04), 0 4px 12px rgba(19, 26, 38, 0.04);
   --sombra-alta: 0 8px 32px rgba(19, 26, 38, 0.14);
+  --e1: 4px;
+  --e2: 8px;
+  --e3: 12px;
+  --e4: 16px;
+  --e5: 24px;
+  --e6: 32px;
   --radio: 8px;
   --radio-chico: 6px;
   --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
@@ -32,7 +38,7 @@ html[data-theme='dark'] {
   --border-fuerte: #3a444d;
   --texto: #e6edf3;
   --texto-2: #9aa5b1;
-  --texto-3: #737d8a;
+  --texto-3: #939eab;
   --acento: #4d8ef7;
   --acento-suave: #172338;
   --acento-borde: #274566;
@@ -74,7 +80,7 @@ body {
 
 .wrap {
   width: 100%;
-  max-width: 1180px;
+  max-width: 1320px;
   margin: 0 auto;
   padding: 0 24px;
 }
@@ -317,6 +323,7 @@ select.error {
 .btn {
   appearance: none;
   cursor: pointer;
+  min-height: 34px;
   font: inherit;
   font-weight: 500;
   border: 1px solid var(--border-fuerte);
@@ -388,6 +395,7 @@ select.error {
 .btn-chico {
   padding: 5px 10px;
   font-size: 13px;
+  min-height: 30px;
 }
 
 /* ============ Control segmentado ============ */
@@ -427,7 +435,14 @@ select.error {
 
 /* ============ Tabla ============ */
 .tabla-scroll {
-  overflow-x: auto;
+  overflow: auto;
+  max-height: 62vh;
+}
+
+thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
 }
 
 table {
@@ -568,13 +583,28 @@ td.acciones-fila {
 /* ============ Pestaña Plantillas ============ */
 .plantillas {
   display: grid;
-  grid-template-columns: 260px minmax(0, 1fr);
+  grid-template-columns: 250px minmax(340px, 1fr) minmax(340px, 1fr);
   gap: 16px;
   align-items: start;
 }
 
+/* La vista previa vive al lado de los campos: se edita y se ve al mismo tiempo. */
+.plantillas .vista {
+  margin-bottom: 16px;
+}
+
 .columna-lateral {
   min-width: 0;
+}
+
+.buscador {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.buscador input {
+  padding: 6px 10px;
+  font-size: 13px;
 }
 
 .lista {
@@ -826,6 +856,9 @@ footer {
 
 /* ============ Aviso flotante ============ */
 .mensaje {
+  display: flex;
+  align-items: center;
+  gap: var(--e3);
   position: fixed;
   left: 50%;
   bottom: 24px;
@@ -841,6 +874,52 @@ footer {
   animation: subir 0.16s ease-out;
 }
 
+.mensaje-accion {
+  appearance: none;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 600;
+  color: var(--panel);
+  text-decoration: underline;
+  padding: 4px 2px;
+  min-height: 28px;
+}
+
+.mensaje-accion:hover {
+  opacity: 0.8;
+}
+
+/* Numero de paso en cada pestaña: orienta sobre el orden del trabajo. */
+.tab-paso {
+  display: inline-grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  margin-right: 7px;
+  border-radius: 50%;
+  border: 1px solid var(--border-fuerte);
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--texto-3);
+  vertical-align: 1px;
+}
+
+.tab.activa .tab-paso {
+  border-color: var(--acento);
+  background: var(--acento);
+  color: #fff;
+}
+
+/* Acciones dentro de un estado vacio */
+.vacio .acciones-vacio {
+  display: flex;
+  justify-content: center;
+  gap: var(--e2);
+  margin-top: var(--e4);
+}
+
 @keyframes subir {
   from {
     opacity: 0;
@@ -848,9 +927,23 @@ footer {
   }
 }
 
+@media (max-width: 1180px) {
+  .plantillas {
+    grid-template-columns: 250px minmax(0, 1fr);
+  }
+
+  .plantillas .vista {
+    grid-column: 2;
+  }
+}
+
 @media (max-width: 900px) {
   .plantillas {
     grid-template-columns: 1fr;
+  }
+
+  .plantillas .vista {
+    grid-column: 1;
   }
 
   .lista {
@@ -861,6 +954,20 @@ footer {
 @media (max-width: 640px) {
   .wrap {
     padding: 0 14px;
+  }
+
+  .btn,
+  .btn-chico,
+  .tab,
+  .segmentado button {
+    min-height: 44px;
+  }
+
+  input,
+  select,
+  textarea {
+    min-height: 44px;
+    font-size: 16px; /* evita el zoom automatico de iOS al enfocar */
   }
 
   .tarjeta-cuerpo {

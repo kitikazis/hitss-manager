@@ -58,7 +58,7 @@ export default function App() {
   const [filtroScript, setFiltroScript] = useState('todas');
   const [modoScript, setModoScript] = useState('manual');
   const [formatoFecha, setFormatoFecha] = useAlmacenado(CLAVE_FORMATO_FECHA, FORMATO_FECHA_DEFAULT);
-  const [toast, setToast] = useState('');
+  const [toast, setToast] = useState(null);
   const timerToast = useRef(null);
 
   useEffect(() => {
@@ -89,10 +89,11 @@ export default function App() {
     mostrarToast(`Perfil activo: ${nuevo}`);
   }
 
-  function mostrarToast(msg) {
-    setToast(msg);
+  /* `accion` agrega un boton al aviso (deshacer): lo destructivo es reversible. */
+  function mostrarToast(texto, accion) {
+    setToast({ texto, accion });
     clearTimeout(timerToast.current);
-    timerToast.current = setTimeout(() => setToast(''), 2600);
+    timerToast.current = setTimeout(() => setToast(null), accion ? 7000 : 2600);
   }
 
   /* Devuelve las ordenes creadas: quien las agrega puede seleccionarlas despues. */
@@ -114,14 +115,34 @@ export default function App() {
   }
 
   function eliminarOrden(id) {
+    const posicion = ordenes.findIndex((o) => o.id === id);
+    if (posicion < 0) return;
+    const borrada = ordenes[posicion];
     setOrdenes((prev) => prev.filter((o) => o.id !== id));
-    mostrarToast('Orden eliminada');
+    mostrarToast(`Orden ${borrada.sot} eliminada`, {
+      etiqueta: 'Deshacer',
+      hacer: () => {
+        setOrdenes((prev) => {
+          const copia = [...prev];
+          copia.splice(posicion, 0, borrada);
+          return copia;
+        });
+        setToast(null);
+      },
+    });
   }
 
   function vaciarTodo() {
-    if (!window.confirm(`¿Eliminar las ${ordenes.length} órdenes cargadas?`)) return;
+    if (!ordenes.length) return;
+    const previas = ordenes;
     setOrdenes([]);
-    mostrarToast('Lista vaciada');
+    mostrarToast(`${previas.length} órdenes eliminadas`, {
+      etiqueta: 'Deshacer',
+      hacer: () => {
+        setOrdenes(previas);
+        setToast(null);
+      },
+    });
   }
 
   function exportar() {
@@ -233,6 +254,7 @@ export default function App() {
                 onVaciar={vaciarTodo}
                 onExportar={exportar}
                 onImportar={importar}
+                onIrAPegar={() => setTab('plantillas')}
               />
             </>
           ) : tab === 'plantillas' ? (
@@ -294,7 +316,16 @@ export default function App() {
         ))}
       </datalist>
 
-      {toast ? <div className="mensaje">{toast}</div> : null}
+      {toast ? (
+        <div className="mensaje" role="status" aria-live="polite">
+          <span>{toast.texto}</span>
+          {toast.accion ? (
+            <button className="mensaje-accion" onClick={toast.accion.hacer}>
+              {toast.accion.etiqueta}
+            </button>
+          ) : null}
+        </div>
+      ) : null}
     </>
   );
 }

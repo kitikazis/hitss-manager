@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from 'react';
 import { Campo, Select } from './Campos';
 import { FORMATOS_FECHA } from '../lib/constantes';
 import { copiarAlPortapapeles, descargarArchivo, hoyArchivo } from '../lib/utils';
@@ -22,11 +23,30 @@ export function PanelScript({
   onToast,
 }) {
   const esManual = modo === 'manual';
+  const [copiado, setCopiado] = useState(false);
+  const temporizador = useRef(null);
 
   async function copiar() {
     const ok = await copiarAlPortapapeles(script);
+    if (ok) {
+      setCopiado(true);
+      clearTimeout(temporizador.current);
+      temporizador.current = setTimeout(() => setCopiado(false), 1800);
+    }
     onToast(ok ? 'Script copiado' : 'No se pudo copiar: selecciona el código manualmente');
   }
+
+  // Ctrl+Enter copia el script.
+  useEffect(() => {
+    function atajo(e) {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter' && ordenes.length) {
+        e.preventDefault();
+        copiar();
+      }
+    }
+    document.addEventListener('keydown', atajo);
+    return () => document.removeEventListener('keydown', atajo);
+  });
 
   function descargar() {
     const sufijo = filtro === 'todas' ? '' : `-${filtro}`;
@@ -106,8 +126,8 @@ export function PanelScript({
               Si Chrome lo pide, escribe <code>allow pasting</code> y presiona Enter.
             </li>
             <li>
-              Pulsa <strong>Copiar script</strong>, pégalo en la consola y presiona{' '}
-              <code>Enter</code>.
+              Pulsa <strong>Copiar script</strong> (o <code>Ctrl+Enter</code>), pégalo en la consola
+              y presiona <code>Enter</code>.
             </li>
             {esManual ? (
               <>
@@ -151,7 +171,7 @@ export function PanelScript({
           </div>
           <div className="empuje" />
           <button className="btn btn-primario btn-chico" onClick={copiar}>
-            Copiar script
+            {copiado ? 'Copiado' : 'Copiar script'}
           </button>
           <button className="btn btn-chico" onClick={descargar}>
             Descargar .js

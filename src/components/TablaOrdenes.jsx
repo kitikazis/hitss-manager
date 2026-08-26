@@ -1,7 +1,7 @@
 import { useMemo, useRef } from 'react';
 import { CLASE_TIPO, COLOR_TIPO, etiquetaTipo, tipoDeOrden } from '../lib/plantillas';
 
-export function TablaOrdenes({ ordenes, onEliminar, onVaciar, onExportar, onImportar }) {
+export function TablaOrdenes({ ordenes, onEliminar, onVaciar, onExportar, onImportar, onIrAPegar }) {
   const inputArchivo = useRef(null);
 
   const repetidos = useMemo(() => {
@@ -46,9 +46,17 @@ export function TablaOrdenes({ ordenes, onEliminar, onVaciar, onExportar, onImpo
 
       {ordenes.length === 0 ? (
         <div className="vacio">
-          <strong>Sin órdenes</strong>
-          Cárgalas con el formulario de arriba, pegando la actividad en Plantillas, o importando un
-          JSON.
+          <strong>Todavía no hay órdenes</strong>
+          Lo más rápido es pegar la actividad de Oracle Field Service; también puedes cargarla con el
+          formulario de arriba o importar un JSON que hayas exportado antes.
+          <div className="acciones-vacio">
+            <button className="btn btn-primario btn-chico" onClick={onIrAPegar}>
+              Pegar actividad
+            </button>
+            <button className="btn btn-chico" onClick={() => inputArchivo.current?.click()}>
+              Importar JSON
+            </button>
+          </div>
         </div>
       ) : (
         <div className="tabla-scroll">
