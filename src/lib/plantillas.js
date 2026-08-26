@@ -44,7 +44,7 @@ export function camposPorDefecto(tipo, orden) {
     return {
       idLlamada,
       cicloNro: '1',
-      cantidad: '3',
+      cantidad: '4',
       motivo: MOTIVOS_CICLO[0],
       subMotivo: 'No contesta',
     };
@@ -62,6 +62,7 @@ export function camposPorDefecto(tipo, orden) {
 }
 
 const CERCA = '```';
+const AREA = 'ADP MULTISKILL HITSS';
 const bloque = (lineas) => [CERCA, ...lineas, CERCA].join('\n');
 
 export function construirPlantilla({ tipo, orden, extra, perfil }) {
@@ -76,16 +77,13 @@ export function construirPlantilla({ tipo, orden, extra, perfil }) {
       '',
       bloque([
         'MESA MULTISKILL HITSS - CICLO DE LLAMADAS',
-        `DÍA Y FRANJA: ${orden.fecha} - ${orden.franja}`,
-        `CLIENTE: ${orden.cliente}`,
+        `CICLO DE LLAMADA NRO: ${campos.cicloNro ?? ''}`,
+        `CANTIDAD DE LLAMADAS: ${campos.cantidad ?? ''}`,
         `NUMERO: ${orden.telefono}`,
-        `CICLO NRO: ${campos.cicloNro ?? ''}`,
-        `CANTIDAD: ${campos.cantidad ?? ''}`,
         `MOTIVO: ${campos.motivo ?? ''}`,
         `SUB-MOTIVO: ${campos.subMotivo ?? ''}`,
-        `CONTRATA: ${orden.contrata}`,
         `ID DE LLAMADA: ${campos.idLlamada ?? ''}`,
-        `REALIZADO POR: ${realizadoPor}`,
+        `REALIZADO POR: ${realizadoPor} - ${AREA}`,
       ]),
     ].join('\n');
   }

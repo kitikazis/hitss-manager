@@ -54,6 +54,9 @@ varias seguidas.
 - **IDs**: correlativos `SOT-XXXXXX` desde `SOT-208548`. Es el ID interno de la app
   y se propone como *ID de llamada* en las plantillas.
 - **Duplicados**: si dos filas comparten SOT aparece la etiqueta `Repetido`.
+- **Tabla en cinco columnas** (Orden · Cliente · Programación · Zona · Formulario), cada
+  una con el dato principal arriba y el detalle debajo: entra completa sin scroll
+  horizontal. Bajo 760 px cada fila pasa a ser una tarjeta con sus etiquetas.
 - **Color por tipo**: confirmada en verde, ciclo en ámbar y rechazo en rojo, en la
   tabla, en la lista de Plantillas y en las fichas del pegado. El tipo sale del que
   elijas en Plantillas y, si nunca lo tocaste, de la gestión de la orden
@@ -116,9 +119,11 @@ cabecera que usaste.
 
 | Tipo | Campos que se llenan a mano |
 |---|---|
-| ✓ Confirma Visita | ID de llamada |
-| ☎ Ciclo Llamadas | ID de llamada, ciclo nro (1), cantidad (3), motivo, sub-motivo ("No contesta") |
-| ✕ Rechazo | ID de llamada, mesa/campo, persona que contesta, motivo, sub-motivo |
+| Confirmada | ID de llamada |
+| Ciclo de llamadas | ID de llamada, ciclo nro (1), cantidad (4), motivo, sub-motivo ("No contesta") |
+| Rechazo | ID de llamada, mesa/campo, persona que contesta, motivo, sub-motivo |
+
+La de ciclo firma con `REALIZADO POR: <nombre> - ADP MULTISKILL HITSS`.
 
 Los datos de la orden (cliente, número, fecha, franja, contrata, departamento) son
 **editables ahí mismo**: si algo salió mal del pegado o quedó vacío, se corrige en la

@@ -436,7 +436,50 @@ select.error {
 /* ============ Tabla ============ */
 .tabla-scroll {
   overflow: auto;
-  max-height: 62vh;
+  max-height: 66vh;
+}
+
+/* Celdas de dos lineas: dato principal arriba, detalle debajo. */
+.celda {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.celda-principal {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 500;
+}
+
+.celda-detalle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  color: var(--texto-3);
+}
+
+.tabla-ordenes {
+  table-layout: auto;
+}
+
+.tabla-ordenes td {
+  vertical-align: top;
+  padding: 10px 14px;
+}
+
+.celda-ancha {
+  max-width: 280px;
+}
+
+.celda-ancha .celda-principal {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 thead th {
@@ -948,6 +991,89 @@ footer {
 
   .lista {
     max-height: 220px;
+  }
+}
+
+/* Bajo 760px la tabla deja de ser tabla: cada orden es una tarjeta con sus etiquetas. */
+@media (max-width: 760px) {
+  .tabla-scroll {
+    max-height: none;
+    overflow: visible;
+    padding: var(--e3);
+  }
+
+  .tabla-ordenes thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+  }
+
+  .tabla-ordenes tbody tr {
+    display: block;
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--border-fuerte);
+    border-radius: var(--radio-chico);
+    padding: var(--e2) var(--e3);
+    margin-bottom: var(--e2);
+    background: var(--panel);
+  }
+
+  .tabla-ordenes tbody tr:nth-child(even) {
+    background: var(--panel);
+  }
+
+  .tabla-ordenes tbody tr.es-confi {
+    border-left-color: var(--ok);
+  }
+
+  .tabla-ordenes tbody tr.es-ciclo {
+    border-left-color: var(--aviso);
+  }
+
+  .tabla-ordenes tbody tr.es-rechazo {
+    border-left-color: var(--peligro);
+  }
+
+  .tabla-ordenes tbody tr td:first-child {
+    box-shadow: none;
+  }
+
+  .tabla-ordenes tbody td {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--e4);
+    border: 0;
+    padding: 5px 0;
+    white-space: normal;
+  }
+
+  .tabla-ordenes tbody td::before {
+    content: attr(data-label);
+    flex: none;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--texto-3);
+  }
+
+  .tabla-ordenes .celda {
+    align-items: flex-end;
+    text-align: right;
+  }
+
+  .celda-ancha {
+    max-width: none;
+  }
+
+  .tabla-ordenes td.acciones-fila {
+    justify-content: flex-end;
+    padding-top: var(--e2);
+    border-top: 1px solid var(--border);
+    margin-top: var(--e1);
   }
 }
 

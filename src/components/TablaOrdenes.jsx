@@ -1,6 +1,25 @@
 import { useMemo, useRef } from 'react';
 import { CLASE_TIPO, COLOR_TIPO, etiquetaTipo, tipoDeOrden } from '../lib/plantillas';
 
+/*
+ * Cada columna agrupa datos que se leen juntos (dato principal arriba, detalle
+ * abajo). Asi entran las once columnas de antes sin scroll horizontal, y en
+ * pantallas angostas cada fila se convierte en una tarjeta.
+ */
+function Celda({ etiqueta, principal, detalle, className = '' }) {
+  return (
+    <td data-label={etiqueta} className={className}>
+      <span className="celda">
+        <span className="celda-principal">{principal}</span>
+        {detalle ? <span className="celda-detalle">{detalle}</span> : null}
+      </span>
+    </td>
+  );
+}
+
+const sinDato = (texto, alternativa = 'Sin dato') =>
+  texto ? texto : <span className="tenue">{alternativa}</span>;
+
 export function TablaOrdenes({ ordenes, onEliminar, onVaciar, onExportar, onImportar, onIrAPegar }) {
   const inputArchivo = useRef(null);
 
@@ -60,59 +79,79 @@ export function TablaOrdenes({ ordenes, onEliminar, onVaciar, onExportar, onImpo
         </div>
       ) : (
         <div className="tabla-scroll">
-          <table>
+          <table className="tabla-ordenes">
             <thead>
               <tr>
-                <th>ID</th>
-                <th>SOT</th>
+                <th>Orden</th>
                 <th>Cliente</th>
-                <th>Teléfono</th>
-                <th>Contrata</th>
-                <th>Fecha</th>
-                <th>Franja</th>
-                <th>Plantilla</th>
-                <th>Gestión</th>
-                <th>Departamento</th>
-                <th>Ya gest.</th>
-                <th>Tipo</th>
-                <th />
+                <th>Programación</th>
+                <th>Zona</th>
+                <th>Formulario</th>
+                <th aria-label="Acciones" />
               </tr>
             </thead>
             <tbody>
-              {ordenes.map((o) => (
-                <tr key={o.id} className={CLASE_TIPO[tipoDeOrden(o)]}>
-                  <td className="mono tenue">{o.id}</td>
-                  <td className="mono">
-                    <b>{o.sot}</b>
-                    {repetidos[o.sot] > 1 ? <span className="etiqueta error dup">Repetido</span> : null}
-                  </td>
-                  <td>{o.cliente || <span className="tenue">Sin dato</span>}</td>
-                  <td className="mono">{o.telefono || <span className="tenue">Sin dato</span>}</td>
-                  <td>{o.contrata || <span className="tenue">—</span>}</td>
-                  <td className="mono">{o.fecha || <span className="tenue">—</span>}</td>
-                  <td>
-                    <span className="etiqueta">{o.franja}</span>
-                  </td>
-                  <td>
-                    <span className={'etiqueta ' + COLOR_TIPO[tipoDeOrden(o)]}>
-                      {etiquetaTipo(tipoDeOrden(o))}
-                    </span>
-                  </td>
-                  <td className="tenue">{o.gestion}</td>
-                  <td>{o.departamento}</td>
-                  <td>{o.yaGestion}</td>
-                  <td className="tenue">{o.sotManual}</td>
-                  <td className="acciones-fila">
-                    <button
-                      className="btn btn-chico btn-plano btn-peligro"
-                      onClick={() => onEliminar(o.id)}
-                      title={'Eliminar ' + o.sot}
-                    >
-                      Eliminar
-                    </button>
-                  </td>
-                </tr>
-              ))}
+              {ordenes.map((o) => {
+                const tipo = tipoDeOrden(o);
+                return (
+                  <tr key={o.id} className={CLASE_TIPO[tipo]}>
+                    <Celda
+                      etiqueta="Orden"
+                      principal={
+                        <>
+                          <b className="mono">{o.sot}</b>
+                          {repetidos[o.sot] > 1 ? (
+                            <span className="etiqueta error dup">Repetido</span>
+                          ) : null}
+                        </>
+                      }
+                      detalle={
+                        <>
+                          <span className={'etiqueta chica ' + COLOR_TIPO[tipo]}>
+                            {etiquetaTipo(tipo)}
+                          </span>
+                          <span className="mono">{o.id}</span>
+                        </>
+                      }
+                    />
+
+                    <Celda
+                      etiqueta="Cliente"
+                      className="celda-ancha"
+                      principal={sinDato(o.cliente, 'Sin cliente')}
+                      detalle={<span className="mono">{o.telefono || 'Sin teléfono'}</span>}
+                    />
+
+                    <Celda
+                      etiqueta="Programación"
+                      principal={<span className="mono">{o.fecha || '—'}</span>}
+                      detalle={<span className="etiqueta chica">{o.franja}</span>}
+                    />
+
+                    <Celda
+                      etiqueta="Zona"
+                      principal={o.departamento}
+                      detalle={sinDato(o.contrata, 'Sin contrata')}
+                    />
+
+                    <Celda
+                      etiqueta="Formulario"
+                      principal={o.gestion}
+                      detalle={`${o.sotManual} · Ya gest. ${o.yaGestion}`}
+                    />
+
+                    <td className="acciones-fila">
+                      <button
+                        className="btn btn-chico btn-plano btn-peligro"
+                        onClick={() => onEliminar(o.id)}
+                        title={'Eliminar la orden ' + o.sot}
+                      >
+                        Eliminar
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
