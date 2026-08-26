@@ -78,14 +78,21 @@ export function construirPlantilla({ tipo, orden, extra, perfil }) {
   const realizadoPor = perfil.realizadoPor || REALIZADO_POR_DEFAULT;
   const campos = extra || {};
 
+  // Horario y observaciones son opcionales: solo aparecen si tienen contenido.
+  const horario = (orden.horario || '').trim();
+  const observaciones = (orden.observaciones || '').trim();
+  const linea = (etiqueta, valor) => (valor ? [`${etiqueta}: ${valor}`] : []);
+
   if (tipo === 'CICLO') {
     return [
       'MESA MULTISKILL HITSS - CICLO DE LLAMADAS',
       `CICLO DE LLAMADA NRO: ${campos.cicloNro ?? ''}`,
       `CANTIDAD DE LLAMADAS: ${campos.cantidad ?? ''}`,
       `NUMERO: ${orden.telefono}`,
+      ...linea('HORARIO', horario),
       `MOTIVO: ${campos.motivo ?? ''}`,
       `SUB-MOTIVO: ${campos.subMotivo ?? ''}`,
+      ...linea('OBSERVACIONES', observaciones),
       `ID DE LLAMADA: ${campos.idLlamada ?? ''}`,
       `REALIZADO POR: ${realizadoPor} - ${AREA}`,
     ].join('\n');
@@ -98,8 +105,10 @@ export function construirPlantilla({ tipo, orden, extra, perfil }) {
       `RECHAZO EN MESA/CAMPO: ${campos.rechazoTipo ?? ''}`,
       `PERSONA QUE CONTESTA: ${campos.persona ?? ''}`,
       `NUMERO DE CONTACTO: ${orden.telefono}`,
+      ...linea('HORARIO', horario),
       `MOTIVO: ${campos.motivo ?? ''}`,
       `SUBMOTIVO: ${campos.subMotivo ?? ''}`,
+      ...linea('OBSERVACIONES', observaciones),
       `ID DE LLAMADA: ${campos.idLlamada ?? ''}`,
       `REALIZADO POR: ${realizadoPor}`,
     ].join('\n');
@@ -109,9 +118,11 @@ export function construirPlantilla({ tipo, orden, extra, perfil }) {
     'MESA MULTISKILL HITSS - CONFIRMA VISITA',
     `SOT: ${orden.sot}`,
     `DÍA Y FRANJA: ${orden.fecha} - ${orden.franja}`,
+    ...linea('HORARIO', horario),
     `CLIENTE: ${orden.cliente}`,
     `NUMERO: ${orden.telefono}`,
     `CONTRATA: ${orden.contrata}`,
+    ...linea('OBSERVACIONES', observaciones),
     `ID DE LLAMADA: ${campos.idLlamada ?? ''}`,
     `REALIZADO POR: ${realizadoPor}`,
   ].join('\n');

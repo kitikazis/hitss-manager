@@ -22,6 +22,8 @@ const FORM_VACIO = {
   contrata: '',
   fecha: FECHA_DEFAULT,
   franja: FRANJA_DEFAULT,
+  horario: '',
+  observaciones: '',
   gestion: GESTIONES[0],
   departamento: DEPARTAMENTOS[0],
   yaGestion: 'NO',
@@ -63,6 +65,8 @@ export function FormularioOrden({ proximoId, onAgregar }) {
       contrata: form.contrata.trim(),
       fecha: form.fecha.trim(),
       franja: form.franja,
+      horario: form.horario.trim(),
+      observaciones: form.observaciones.trim(),
       gestion: form.gestion,
       departamento: form.departamento,
       yaGestion: form.yaGestion,
@@ -155,6 +159,16 @@ export function FormularioOrden({ proximoId, onAgregar }) {
               <Select value={form.franja} onChange={set('franja')} opciones={FRANJAS} />
             </Campo>
 
+            <Campo label="Horario" pista="Opcional; sale en la plantilla si lo llenas">
+              <input
+                className="mono"
+                value={form.horario}
+                onChange={(e) => set('horario')(e.target.value)}
+                placeholder="09:00 - 13:00"
+                autoComplete="off"
+              />
+            </Campo>
+
             <Campo label="Departamento">
               <Select value={form.departamento} onChange={setDepartamento} opciones={DEPARTAMENTOS} />
             </Campo>
@@ -178,6 +192,16 @@ export function FormularioOrden({ proximoId, onAgregar }) {
             >
               <Select value={form.sotManual} onChange={set('sotManual')} opciones={SOT_MANUALES} />
             </Campo>
+          </div>
+
+          <div className="campo campo-largo" style={{ marginTop: 14 }}>
+            <label>Observaciones</label>
+            <textarea
+              rows={2}
+              value={form.observaciones}
+              onChange={(e) => set('observaciones')(e.target.value)}
+              placeholder="Opcional. Si escribes algo, aparece en la plantilla."
+            />
           </div>
         </div>
 

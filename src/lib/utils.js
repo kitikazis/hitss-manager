@@ -40,6 +40,16 @@ export function formatearFecha(texto, formato) {
   return formato === 'M/d/yyyy' ? `${mes}/${dia}/${anio}` : `${dia}/${mes}/${anio}`;
 }
 
+/* Hora de alta de una orden, en formato corto local. */
+export function horaCorta(marca) {
+  if (!marca) return '';
+  try {
+    return new Date(marca).toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit' });
+  } catch {
+    return '';
+  }
+}
+
 export function formatearId(n) {
   return `SOT-${String(n).padStart(6, '0')}`;
 }

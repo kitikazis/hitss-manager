@@ -125,7 +125,12 @@ export function TablaOrdenes({ ordenes, onEliminar, onVaciar, onExportar, onImpo
                     <Celda
                       etiqueta="Programación"
                       principal={<span className="mono">{o.fecha || '—'}</span>}
-                      detalle={<span className="etiqueta chica">{o.franja}</span>}
+                      detalle={
+                        <>
+                          <span className="etiqueta chica">{o.franja}</span>
+                          {o.horario ? <span className="mono">{o.horario}</span> : null}
+                        </>
+                      }
                     />
 
                     <Celda

@@ -19,28 +19,52 @@ import {
   MOTIVOS_RECHAZO,
   RECHAZO_TIPOS,
 } from '../lib/constantes';
-import { copiarAlPortapapeles, descargarArchivo } from '../lib/utils';
+import { copiarAlPortapapeles, descargarArchivo, horaCorta } from '../lib/utils';
 
-function ListaOrdenes({ ordenes, seleccionada, onSeleccionar, busqueda, onBusqueda, total }) {
+function ListaOrdenes({
+  ordenes,
+  seleccionada,
+  onSeleccionar,
+  busqueda,
+  onBusqueda,
+  total,
+  filtroTipo,
+  onFiltroTipo,
+  conteos,
+}) {
   return (
     <section className="tarjeta">
       <div className="tarjeta-cab">
         <div>
           <h2>Órdenes</h2>
           <p className="sub">
-            {busqueda
+            {busqueda || filtroTipo
               ? `${ordenes.length} de ${total}`
               : `${total} ${total === 1 ? 'orden' : 'órdenes'}`}
           </p>
         </div>
-        <div className="empuje" />
-        <div className="leyenda">
-          {TIPOS.map((t) => (
-            <span key={t.id} className={CLASE_TIPO[t.id]}>
-              {t.etiqueta}
-            </span>
-          ))}
-        </div>
+      </div>
+
+      <div className="filtros">
+        <button
+          type="button"
+          className={'chip-filtro' + (filtroTipo === '' ? ' activo' : '')}
+          onClick={() => onFiltroTipo('')}
+        >
+          Todas <b>{total}</b>
+        </button>
+        {TIPOS.map((t) => (
+          <button
+            key={t.id}
+            type="button"
+            className={
+              'chip-filtro ' + CLASE_TIPO[t.id] + (filtroTipo === t.id ? ' activo' : '')
+            }
+            onClick={() => onFiltroTipo(filtroTipo === t.id ? '' : t.id)}
+          >
+            {t.etiqueta} <b>{conteos[t.id] || 0}</b>
+          </button>
+        ))}
       </div>
       <div className="buscador">
         <input
@@ -76,7 +100,14 @@ function ListaOrdenes({ ordenes, seleccionada, onSeleccionar, busqueda, onBusque
               </span>
               <span className="lista-cliente">{o.cliente || 'Sin cliente'}</span>
               <span className="lista-meta">
-                {o.fecha || 'Sin fecha'} · {o.franja} · {o.departamento}
+                <span>
+                  {o.fecha || 'Sin fecha'} · {o.franja} · {o.departamento}
+                </span>
+                {o.creadaEn ? (
+                  <span className="lista-hora" title="Hora en que se agregó">
+                    {horaCorta(o.creadaEn)}
+                  </span>
+                ) : null}
               </span>
             </button>
           );
@@ -131,24 +162,39 @@ function CamposDinamicos({ tipo, extra, set }) {
 export function PanelPlantillas({ ordenes, perfil, onAgregarOrdenes, onActualizarOrden, onToast }) {
   const [idSeleccion, setIdSeleccion] = useState(null);
   const [busqueda, setBusqueda] = useState('');
+  const [filtroTipo, setFiltroTipo] = useState('');
   const [tipo, setTipo] = useState('CONFI');
   const [extra, setExtra] = useState(() => camposPorDefecto('CONFI', null));
   const [copiado, setCopiado] = useState(false);
   const temporizador = useRef(null);
 
+  const conteos = useMemo(() => {
+    const c = {};
+    ordenes.forEach((o) => {
+      const t = tipoDeOrden(o);
+      c[t] = (c[t] || 0) + 1;
+    });
+    return c;
+  }, [ordenes]);
+
+  /* Lo ultimo cargado va arriba: es lo que se acaba de gestionar. */
   const visibles = useMemo(() => {
     const q = busqueda.trim().toLowerCase();
-    if (!q) return ordenes;
-    return ordenes.filter(
-      (o) =>
-        o.sot.toLowerCase().includes(q) ||
-        (o.cliente || '').toLowerCase().includes(q) ||
-        (o.telefono || '').includes(q)
-    );
-  }, [ordenes, busqueda]);
+    return ordenes
+      .filter((o) => {
+        if (filtroTipo && tipoDeOrden(o) !== filtroTipo) return false;
+        if (!q) return true;
+        return (
+          o.sot.toLowerCase().includes(q) ||
+          (o.cliente || '').toLowerCase().includes(q) ||
+          (o.telefono || '').includes(q)
+        );
+      })
+      .reverse();
+  }, [ordenes, busqueda, filtroTipo]);
 
   // Si la orden elegida se borro (o no hay ninguna elegida) cae en la primera.
-  const seleccionada = ordenes.find((o) => o.id === idSeleccion) || ordenes[0] || null;
+  const seleccionada = ordenes.find((o) => o.id === idSeleccion) || visibles[0] || ordenes[0] || null;
 
   // Cada orden abre con su propio tipo: el guardado, o el que sugiere su gestion.
   useEffect(() => {
@@ -245,6 +291,9 @@ export function PanelPlantillas({ ordenes, perfil, onAgregarOrdenes, onActualiza
             total={ordenes.length}
             busqueda={busqueda}
             onBusqueda={setBusqueda}
+            filtroTipo={filtroTipo}
+            onFiltroTipo={setFiltroTipo}
+            conteos={conteos}
             seleccionada={seleccionada}
             onSeleccionar={setIdSeleccion}
           />
@@ -297,6 +346,14 @@ export function PanelPlantillas({ ordenes, perfil, onAgregarOrdenes, onActualiza
                 <Campo label="Franja">
                   <Select value={seleccionada.franja} onChange={editar('franja')} opciones={FRANJAS} />
                 </Campo>
+                <Campo label="Horario" pista="Sale en la plantilla si lo llenas">
+                  <input
+                    className="mono"
+                    value={seleccionada.horario || ''}
+                    onChange={(e) => editar('horario')(e.target.value)}
+                    placeholder="09:00 - 13:00"
+                  />
+                </Campo>
                 <Campo label="Contrata">
                   <input
                     value={seleccionada.contrata}
@@ -312,6 +369,16 @@ export function PanelPlantillas({ ordenes, perfil, onAgregarOrdenes, onActualiza
                     opciones={DEPARTAMENTOS}
                   />
                 </Campo>
+
+                <div className="campo campo-largo">
+                  <label>Observaciones</label>
+                  <textarea
+                    rows={2}
+                    value={seleccionada.observaciones || ''}
+                    onChange={(e) => editar('observaciones')(e.target.value)}
+                    placeholder="Opcional. Si escribes algo, aparece en la plantilla."
+                  />
+                </div>
               </div>
             </div>
 

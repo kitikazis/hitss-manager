@@ -104,7 +104,8 @@ export default function App() {
 
   /* Devuelve las ordenes creadas: quien las agrega puede seleccionarlas despues. */
   function agregarOrdenes(lista) {
-    const nuevas = lista.map((datos, i) => ({ id: formatearId(proximoId + i), ...datos }));
+    const creadaEn = Date.now();
+    const nuevas = lista.map((datos, i) => ({ id: formatearId(proximoId + i), creadaEn, ...datos }));
     setOrdenes((prev) => [...prev, ...nuevas]);
     setProximoId((n) => n + lista.length);
     return nuevas;
@@ -187,11 +188,14 @@ export default function App() {
             contrata: String(o.contrata || ''),
             fecha: String(o.fecha || FECHA_DEFAULT),
             franja: String(o.franja || FRANJA_DEFAULT),
+            horario: String(o.horario || ''),
+            observaciones: String(o.observaciones || ''),
             gestion: String(o.gestion || GESTIONES[0]),
             departamento: String(o.departamento || DEPARTAMENTOS[0]),
             yaGestion: String(o.yaGestion || 'NO'),
             sotManual: String(o.sotManual || SOT_MANUAL_DEFAULT),
             tipoPlantilla: o.tipoPlantilla || '',
+            creadaEn: o.creadaEn || null,
           }));
 
         if (!limpias.length) {

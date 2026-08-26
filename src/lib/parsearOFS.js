@@ -165,13 +165,15 @@ function detectarFranja(lineas, cabecera) {
     valida: (v) => PATRON_FRANJA.test(v) || tieneHorario(v),
   });
   if (intervalo) {
+    // Si el intervalo trae horas, esas horas son el horario de la visita.
+    const horario = PATRON_HORA.test(intervalo) ? intervalo : '';
     const token = intervalo.match(PATRON_FRANJA);
     if (token) {
-      return { franja: token[1].toUpperCase(), origen: `intervalo de tiempo: ${intervalo}` };
+      return { franja: token[1].toUpperCase(), origen: `intervalo de tiempo: ${intervalo}`, horario };
     }
     const hora = horaDeInicio(intervalo);
     if (hora !== null) {
-      return { franja: franjaPorHora(hora), origen: `intervalo de tiempo: ${intervalo}` };
+      return { franja: franjaPorHora(hora), origen: `intervalo de tiempo: ${intervalo}`, horario };
     }
   }
 
@@ -181,7 +183,10 @@ function detectarFranja(lineas, cabecera) {
   });
   if (sla) {
     const hora = horaDeInicio(sla);
-    if (hora !== null) return { franja: franjaPorHora(hora), origen: `SLA: ${sla}` };
+    const fin = buscarValor(lineas, ['SLA fin'], { ventana: 3, valida: (v) => PATRON_HORA.test(v) });
+    const soloHora = (v) => (v.match(PATRON_HORA) || [''])[0];
+    const horario = fin ? `${soloHora(sla)} - ${soloHora(fin)}` : soloHora(sla);
+    if (hora !== null) return { franja: franjaPorHora(hora), origen: `SLA: ${sla}`, horario };
   }
 
   // La franja sola en una linea, o precedida de "Franja"/"Horario".
@@ -318,6 +323,8 @@ function parsearBloque({ cabecera, lineas }, elegidos = {}) {
       contrata: contrataDelTitulo(lineas),
       fecha: fecha ? fecha.texto : '',
       franja,
+      horario: deteccion.horario || '',
+      observaciones: '',
       gestion,
       departamento: deptoFinal,
       yaGestion: 'NO',

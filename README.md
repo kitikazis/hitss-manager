@@ -111,10 +111,16 @@ INST CARLEI TARAPOTO FTTH - 4F TARAP, 24/08/26
 - Se pueden pegar **varias actividades de una**, cada una con su cabecera.
 - Lo que no encuentre lo dice con un aviso; sin SOT no deja agregar.
 
-Tres columnas: la **lista de órdenes** con buscador (filtra por SOT, cliente o
-teléfono mientras escribes e indica cuántas coinciden), los **campos** en el centro
-y la **vista previa** a la derecha, para editar y ver el resultado a la vez. En
-pantallas angostas las columnas se apilan. Botones *Copiar
+Tres columnas: la **lista de órdenes**, los **campos** en el centro y la **vista
+previa** a la derecha, para editar y ver el resultado a la vez. En pantallas angostas
+las columnas se apilan.
+
+La lista muestra **la última cargada arriba**, con la **hora en que se agregó** a la
+derecha, y se acota de dos formas combinables:
+
+- **Buscador**: por SOT, cliente o teléfono mientras escribes.
+- **Chips de tipo**: Todas · Confirmada · Ciclo · Rechazo, cada uno con su conteo y
+  su color. Pulsar el chip activo lo desactiva. Botones *Copiar
 plantilla* y *Descargar .md*.
 
 Las órdenes que entraron por pegado ya vienen con su tipo preseleccionado según la
@@ -125,6 +131,11 @@ cabecera que usaste.
 | Confirmada | ID de llamada |
 | Ciclo de llamadas | ID de llamada, ciclo nro (1), cantidad (4), motivo, sub-motivo ("No contesta") |
 | Rechazo | ID de llamada, mesa/campo, persona que contesta, motivo, sub-motivo |
+
+**Horario** y **Observaciones** son opcionales y viven en la orden: si los llenas
+aparecen en la plantilla (`HORARIO:` bajo el día y franja, `OBSERVACIONES:` antes del
+ID de llamada) y si los dejas vacíos, esas líneas no salen. El horario se completa
+solo cuando OFS trae el intervalo o el SLA con horas.
 
 La de ciclo firma con `REALIZADO POR: <nombre> - ADP MULTISKILL HITSS`.
 

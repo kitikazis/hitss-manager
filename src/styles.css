@@ -701,6 +701,10 @@ td.acciones-fila {
 }
 
 .lista-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--e2);
   font-size: 11px;
   color: var(--texto-3);
 }
@@ -1114,38 +1118,74 @@ footer {
   flex: none;
 }
 
-.leyenda {
+.filtros {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px 10px;
-  font-size: 10.5px;
-  color: var(--texto-3);
+  gap: var(--e1);
+  padding: var(--e2) var(--e3) 0;
 }
 
-.leyenda span {
+.chip-filtro {
+  appearance: none;
+  cursor: pointer;
+  font: inherit;
+  font-size: 11px;
+  color: var(--texto-2);
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 3px 9px;
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 5px;
+  min-height: 26px;
+  transition: background 0.12s, border-color 0.12s;
 }
 
-.leyenda span::before {
+.chip-filtro::before {
   content: '';
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
   border-radius: 2px;
   background: var(--texto-3);
 }
 
-.leyenda .es-confi::before {
+.chip-filtro.es-confi::before {
   background: var(--ok);
 }
 
-.leyenda .es-ciclo::before {
+.chip-filtro.es-ciclo::before {
   background: var(--aviso);
 }
 
-.leyenda .es-rechazo::before {
+.chip-filtro.es-rechazo::before {
   background: var(--peligro);
+}
+
+.chip-filtro b {
+  font-variant-numeric: tabular-nums;
+  color: var(--texto-3);
+}
+
+.chip-filtro:hover {
+  background: var(--panel-2);
+  border-color: var(--border-fuerte);
+}
+
+.chip-filtro.activo {
+  background: var(--acento-suave);
+  border-color: var(--acento-borde);
+  color: var(--acento);
+  font-weight: 600;
+}
+
+.chip-filtro.activo b {
+  color: var(--acento);
+}
+
+.lista-hora {
+  font-variant-numeric: tabular-nums;
+  flex: none;
 }
 
 tbody tr.es-confi td:first-child {
@@ -1253,4 +1293,13 @@ tbody tr.es-rechazo td:first-child {
     opacity: 0;
     transform: translateY(8px) scale(0.99);
   }
+}
+
+.campo-largo {
+  grid-column: 1 / -1;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 56px;
 }
