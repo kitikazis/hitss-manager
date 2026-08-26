@@ -10,7 +10,6 @@ import { PanelScript } from './components/PanelScript';
 import { useAlmacenado } from './hooks/useAlmacenado';
 import { generarScript } from './lib/generarScript';
 import { separarPorTipo } from './lib/plantillas';
-import { resolverSotManual } from './lib/parsearOFS';
 import {
   descargarArchivo,
   escribirAlmacen,
@@ -142,42 +141,9 @@ export default function App() {
   }
 
   /*
-   * El modo y la lista de departamentos valen para todo el trabajo, asi que al
-   * cambiarlos se recalculan las ordenes ya cargadas: el script sale sincronizado.
-   * Como puede pisar un valor puesto a mano, el aviso ofrece deshacer.
+   * El modo vale para lo que se cargue de ahora en adelante: las ordenes que
+   * ya estaban conservan el valor con el que entraron.
    */
-  function sincronizarModo(nuevoModo, nuevaLista) {
-    const elegidos = { sotManual: nuevoModo, deptosD1: nuevaLista };
-    const previas = ordenes;
-    const actualizadas = previas.map((o) => {
-      const sotManual = resolverSotManual(o.departamento, elegidos);
-      return sotManual === o.sotManual ? o : { ...o, sotManual };
-    });
-    const cambiadas = actualizadas.filter((o, i) => o !== previas[i]).length;
-    if (!cambiadas) return;
-
-    setOrdenes(actualizadas);
-    mostrarToast(
-      `${cambiadas} ${cambiadas === 1 ? 'orden actualizada' : 'órdenes actualizadas'} al modo nuevo`,
-      {
-        etiqueta: 'Deshacer',
-        hacer: () => {
-          setOrdenes(previas);
-          setToast(null);
-        },
-      }
-    );
-  }
-
-  function cambiarModo(nuevo) {
-    setModo(nuevo);
-    sincronizarModo(nuevo, deptosD1);
-  }
-
-  function cambiarDeptosD1(nueva) {
-    setDeptosD1(nueva);
-    sincronizarModo(modo, nueva);
-  }
 
   function actualizarOrden(id, cambios) {
     setOrdenes((prev) => prev.map((o) => (o.id === id ? { ...o, ...cambios } : o)));
@@ -361,9 +327,9 @@ export default function App() {
               ordenes={ordenes}
               perfil={perfil}
               modo={modo}
-              onModo={cambiarModo}
+              onModo={setModo}
               deptosD1={deptosD1}
-              onDeptosD1={cambiarDeptosD1}
+              onDeptosD1={setDeptosD1}
               pegadoAbierto={pegadoAbierto}
               onPegadoAbierto={setPegadoAbierto}
               onAgregarOrdenes={agregarOrdenes}
@@ -384,7 +350,6 @@ export default function App() {
               ordenes={ordenesScript}
               perfil={perfil}
               script={script}
-              modoSot={modo}
               filtro={filtroScript}
               onFiltro={setFiltroScript}
               formatoFecha={formatoFecha}

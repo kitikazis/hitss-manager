@@ -99,9 +99,9 @@ orden sola, la selecciona y deja la plantilla lista abajo, sin cambiar de pesta�
   departamento` o con `PROGRAMACIONES D+1` aparece **elegir departamentos**: los que
   marques entran como PROGRAMACIONES D+1 y el resto como PREDICTIVO, así acotas el
   trabajo a los departamentos que llevas. Vienen UCAYALI y SAN MARTIN, la lista es
-  tuya y se guarda por usuario. **Cambiar el modo o la lista recalcula las órdenes ya
-  cargadas**, así el script sale siempre sincronizado; el aviso dice cuántas cambiaron
-  y ofrece *Deshacer*. Con MIGRACIONES, PM3 o PREDICTIVO no hay lista:
+  tuya y se guarda por usuario. **El modo vale para lo que cargues de ahí en
+  adelante**: las órdenes que ya estaban conservan el valor con el que entraron, y el
+  script lleva cada una con el suyo. Con MIGRACIONES, PM3 o PREDICTIVO no hay lista:
   elegir PROGRAMACIONES D+1, MIGRACIONES, PM3 o PREDICTIVO fija ese valor para todo
   lo que cargues, pegado o a mano. Se guarda por usuario y se ve en el pie.
 - Si el texto pegado trae cabecera (`confi am1 lunes`), esa manda para ese bloque:
