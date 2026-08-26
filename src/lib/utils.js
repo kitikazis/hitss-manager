@@ -44,7 +44,11 @@ export function formatearFecha(texto, formato) {
 export function horaCorta(marca) {
   if (!marca) return '';
   try {
-    return new Date(marca).toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit' });
+    return new Date(marca).toLocaleTimeString('es-PE', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+    });
   } catch {
     return '';
   }

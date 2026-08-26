@@ -157,7 +157,12 @@ derecha, y se acota de dos formas combinables:
 
 - **Buscador**: por SOT, cliente o teléfono mientras escribes.
 - **Chips de tipo**: Todas · Confirmada · Ciclo · Rechazo, cada uno con su conteo y
-  su color. Pulsar el chip activo lo desactiva. Botones *Copiar
+  su color, en una sola fila que se desplaza de costado si no entran. Pulsar el chip
+  activo lo desactiva.
+
+La orden elegida se marca con fondo neutro, el SOT en rojo y una barra a la derecha;
+la barra de la izquierda siempre indica el tipo. El nombre del cliente y la línea de
+fecha se recortan con puntos suspensivos y el detalle completo queda en el tooltip. Botones *Copiar
 plantilla* y *Descargar .md*.
 
 Las órdenes que entraron por pegado ya vienen con su tipo preseleccionado según la
