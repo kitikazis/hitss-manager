@@ -187,15 +187,17 @@ cuando haga falta.
    Si Chrome bloquea el pegado, escribir `allow pasting` y `Enter` primero.
 2. *Copiar script* → pegar → `Enter`.
 
-Dos selectores:
+El script corre siempre en **automático**: llena, envía y repite hasta terminar, y
+cierra con el `RESUMEN`. En la consola quedan disponibles `autollenarTodo()`,
+`siguienteOrden()` (por si hace falta ir de a una), `ORDENES` y `RESULTADOS`.
 
-- **Modo**
-  - *Manual (una por una)* — el script llena la primera orden y se detiene; tú
-    revisas y envías. Para la siguiente corres `siguienteOrden()` en la consola.
-  - *Automático (todas)* — llena, envía y repite el array completo sin parar, y
-    termina imprimiendo el `RESUMEN`.
-  - En los dos modos quedan disponibles en la consola `siguienteOrden()`,
-    `autollenarTodo()`, `ORDENES` y `RESULTADOS`.
+El modal de instrucciones incluye **ocho problemas frecuentes con su solución**
+—F12 que no abre, el aviso de pegado de Chrome, pegar en la consola equivocada,
+«No se encontro boton de Enviar», valores que no existen en el formulario, quedarse
+a la mitad, cambiar de pestaña y pegar el script dos veces— escritos para quien no
+programa.
+
+Un selector:
 - **Órdenes incluidas** — todas, solo confirmados o solo ciclos.
 - **Formato de fecha** — `d/m/yyyy` o `M/d/yyyy`, según lo que espere el
   formulario. Las órdenes siempre se guardan como `d/m/aaaa`; la conversión se

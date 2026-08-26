@@ -1498,3 +1498,39 @@ textarea {
 .modal-acciones {
   align-items: center;
 }
+
+/* ============ Instrucciones ============ */
+.modal-scroll {
+  max-height: min(52vh, 420px);
+  overflow-y: auto;
+  margin: 0 calc(var(--e5) * -1);
+  padding: 0 var(--e5);
+}
+
+.modal-subtitulo {
+  margin: var(--e5) 0 var(--e3);
+  padding-top: var(--e4);
+  border-top: 1px solid var(--border);
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.problemas {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--e3);
+}
+
+.problema dt {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--texto);
+}
+
+.problema dd {
+  margin: 2px 0 0;
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: var(--texto-2);
+}

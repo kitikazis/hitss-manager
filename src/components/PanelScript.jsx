@@ -16,15 +16,12 @@ export function PanelScript({
   modoSot,
   filtro,
   onFiltro,
-  modo,
-  onModo,
   formatoFecha,
   onFormatoFecha,
   conteos,
   onVerInstrucciones,
   onToast,
 }) {
-  const esManual = modo === 'manual';
   const [copiado, setCopiado] = useState(false);
   const temporizador = useRef(null);
 
@@ -53,7 +50,7 @@ export function PanelScript({
   function descargar() {
     const sufijo = filtro === 'todas' ? '' : `-${filtro}`;
     descargarArchivo(
-      `hitss-${perfil.usuario}${sufijo}-${modo}-${hoyArchivo()}.js`,
+      `hitss-${perfil.usuario}${sufijo}-${hoyArchivo()}.js`,
       script,
       'text/javascript;charset=utf-8'
     );
@@ -66,22 +63,12 @@ export function PanelScript({
         <div className="tarjeta-cab">
           <div>
             <h2>Opciones del script</h2>
-            <p className="sub">Definen qué órdenes entran y cómo se ejecuta</p>
+            <p className="sub">El script llena y envía todas las órdenes seguidas</p>
           </div>
         </div>
 
         <div className="tarjeta-cuerpo">
           <div className="rejilla">
-            <Campo label="Modo de ejecución">
-              <select value={modo} onChange={(e) => onModo(e.target.value)}>
-                <option value="manual">Manual, una por una</option>
-                <option value="auto">Automático, todas seguidas</option>
-              </select>
-              <span className="pista">
-                {esManual ? 'Llena una y espera a que la envíes' : 'Llena y envía todas seguidas'}
-              </span>
-            </Campo>
-
             <Campo label="Órdenes incluidas">
               <select value={filtro} onChange={(e) => onFiltro(e.target.value)}>
                 <option value="todas">Todas ({conteos.todas})</option>

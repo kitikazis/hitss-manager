@@ -13,7 +13,7 @@ import { formatearFecha, hoyTexto } from './utils.js';
  * generado no puede usar backticks ni ${...}; por eso concatena con +.
  */
 export function generarScript(ordenes, perfil, opciones = {}) {
-  const { modo = 'manual', formatoFecha = 'd/m/yyyy' } = opciones;
+  const { modo = 'auto', formatoFecha = 'd/m/yyyy' } = opciones;
 
   const filas = ordenes
     .map(

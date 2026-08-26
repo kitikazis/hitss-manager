@@ -73,7 +73,6 @@ export default function App() {
 
   const [tab, setTab] = useState('ordenes');
   const [filtroScript, setFiltroScript] = useState('todas');
-  const [modoScript, setModoScript] = useState('manual');
   const [formatoFecha, setFormatoFecha] = useAlmacenado(CLAVE_FORMATO_FECHA, FORMATO_FECHA_DEFAULT);
   const [modo, setModo] = useAlmacenado(claveModo(usuario), '');
   const [deptosD1, setDeptosD1] = useAlmacenado(claveDeptosD1(usuario), DEPTOS_PROGRAMACION);
@@ -300,8 +299,8 @@ export default function App() {
     filtroScript === 'confirmados' ? confirmados : filtroScript === 'ciclos' ? ciclos : ordenes;
 
   const script = useMemo(
-    () => generarScript(ordenesScript, perfil, { modo: modoScript, formatoFecha }),
-    [ordenesScript, perfil, modoScript, formatoFecha]
+    () => generarScript(ordenesScript, perfil, { formatoFecha }),
+    [ordenesScript, perfil, formatoFecha]
   );
 
   return (
@@ -388,8 +387,6 @@ export default function App() {
               modoSot={modo}
               filtro={filtroScript}
               onFiltro={setFiltroScript}
-              modo={modoScript}
-              onModo={setModoScript}
               formatoFecha={formatoFecha}
               onFormatoFecha={setFormatoFecha}
               conteos={{
@@ -434,7 +431,6 @@ export default function App() {
 
       {instruccionesAbiertas ? (
         <ModalInstrucciones
-          modo={modoScript}
           cantidad={ordenesScript.length}
           recordar={recordarInstrucciones}
           onRecordar={setRecordarInstrucciones}
