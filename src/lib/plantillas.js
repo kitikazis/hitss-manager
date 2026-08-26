@@ -18,13 +18,10 @@ export const CLASE_TIPO = { CONFI: 'es-confi', CICLO: 'es-ciclo', RECHAZO: 'es-r
 export const COLOR_TIPO = { CONFI: 'ok', CICLO: 'aviso', RECHAZO: 'error' };
 
 export const TIPOS = [
-  { id: 'CONFI', etiqueta: 'Confirmada', corto: 'Confirmada', descripcion: 'Confirmación de visita' },
-  { id: 'CICLO', etiqueta: 'Ciclo de llamadas', corto: 'Ciclo', descripcion: 'Ciclo de llamadas' },
-  { id: 'RECHAZO', etiqueta: 'Rechazo', corto: 'Rechazo', descripcion: 'Rechazo en mesa' },
+  { id: 'CONFI', etiqueta: 'Confirmada', descripcion: 'Confirmación de visita' },
+  { id: 'CICLO', etiqueta: 'Ciclo de llamadas', descripcion: 'Ciclo de llamadas' },
+  { id: 'RECHAZO', etiqueta: 'Rechazo', descripcion: 'Rechazo en mesa' },
 ];
-
-/* Version corta para la lista y los filtros, donde el ancho es poco. */
-export const etiquetaCorta = (id) => (TIPOS.find((t) => t.id === id) || {}).corto || id;
 
 /*
  * Tipo de una orden: el que se eligio en Plantillas y, si no hay, el que se

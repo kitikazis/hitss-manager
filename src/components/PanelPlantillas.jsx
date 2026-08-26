@@ -8,7 +8,6 @@ import {
   camposPorDefecto,
   construirPlantilla,
   contextoPlantilla,
-  etiquetaCorta,
   etiquetaTipo,
   tipoDeOrden,
 } from '../lib/plantillas';
@@ -63,7 +62,7 @@ function ListaOrdenes({
             }
             onClick={() => onFiltroTipo(filtroTipo === t.id ? '' : t.id)}
           >
-            {t.corto} <b>{conteos[t.id] || 0}</b>
+            {t.etiqueta} <b>{conteos[t.id] || 0}</b>
           </button>
         ))}
       </div>
@@ -97,11 +96,11 @@ function ListaOrdenes({
             >
               <span className="lista-fila">
                 <span className="lista-sot">{o.sot}</span>
-                <span className={'etiqueta chica ' + COLOR_TIPO[tipo]}>{etiquetaCorta(tipo)}</span>
+                <span className={'etiqueta chica ' + COLOR_TIPO[tipo]}>{etiquetaTipo(tipo)}</span>
               </span>
               <span className="lista-cliente">{o.cliente || 'Sin cliente'}</span>
-              <span className="lista-meta" title={`${o.fecha} · ${o.franja} · ${o.departamento}`}>
-                <span className="lista-cuando">
+              <span className="lista-meta">
+                <span>
                   {o.fecha || 'Sin fecha'} · {o.franja} · {o.departamento}
                 </span>
                 {o.creadaEn ? (
