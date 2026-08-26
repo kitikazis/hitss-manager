@@ -238,6 +238,9 @@ function parsearBloque({ cabecera, lineas }, elegidos = {}) {
   const cab = tipoDeCabecera(cabecera);
   const tipoPlantilla = cab ? cab.tipo : elegidos.tipo || 'CONFI';
   const gestion = GESTION_POR_TIPO[tipoPlantilla] || 'CONFIRMO';
+  if (!cab && !elegidos.tipo) {
+    avisos.push('Sin cabecera ni tipo elegido: entra como Confirmada. Elígelo con los botones.');
+  }
 
   const deteccion = detectarFranja(lineas, cabecera);
   let franja = deteccion.franja;

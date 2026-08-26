@@ -7,6 +7,7 @@ import {
   TIPOS,
   camposPorDefecto,
   construirPlantilla,
+  contextoPlantilla,
   etiquetaTipo,
   tipoDeOrden,
 } from '../lib/plantillas';
@@ -334,7 +335,7 @@ export function PanelPlantillas({ ordenes, perfil, onAgregarOrdenes, onActualiza
           <div className="tarjeta-cab">
             <div>
               <h2>Vista previa</h2>
-              <p className="sub">Se actualiza mientras escribes</p>
+              <p className="sub">{contextoPlantilla(seleccionada, perfil)}</p>
             </div>
             <div className="empuje" />
             <button className="btn btn-primario btn-chico" onClick={copiar}>

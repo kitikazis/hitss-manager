@@ -835,42 +835,6 @@ textarea.pegado {
   position: relative;
 }
 
-.emergente {
-  position: absolute;
-  right: 0;
-  top: calc(100% + 6px);
-  width: 280px;
-  background: var(--panel);
-  border: 1px solid var(--border-fuerte);
-  border-radius: var(--radio);
-  box-shadow: var(--sombra-alta);
-  padding: 16px;
-  z-index: 40;
-  text-align: left;
-}
-
-.emergente h3 {
-  margin: 0 0 2px;
-  font-size: 13px;
-  font-weight: 600;
-}
-
-.emergente .sub {
-  margin: 0 0 14px;
-  font-size: 12px;
-  color: var(--texto-3);
-}
-
-.emergente .campo + .campo {
-  margin-top: 11px;
-}
-
-.emergente-acciones {
-  display: flex;
-  gap: 8px;
-  margin-top: 16px;
-}
-
 .chip-usuario {
   font-family: var(--mono);
   font-size: 12px;
@@ -1231,4 +1195,62 @@ tbody tr.es-rechazo td:first-child {
 
 .opcion .pista {
   margin-top: 2px;
+}
+
+/* ============ Modal ============ */
+.modal-fondo {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  padding: var(--e4);
+  background: rgba(15, 23, 42, 0.5);
+  animation: aparecer 0.12s ease-out;
+}
+
+.modal {
+  width: 100%;
+  max-width: 380px;
+  background: var(--panel);
+  border: 1px solid var(--border-fuerte);
+  border-radius: var(--radio);
+  box-shadow: var(--sombra-alta);
+  padding: var(--e5);
+  animation: entrar 0.16s ease-out;
+}
+
+.modal h3 {
+  margin: 0 0 2px;
+  font-size: 15px;
+  font-weight: 650;
+}
+
+.modal .sub {
+  margin: 0 0 var(--e4);
+  font-size: 12.5px;
+  color: var(--texto-3);
+}
+
+.modal .campo + .campo {
+  margin-top: var(--e3);
+}
+
+.modal-acciones {
+  display: flex;
+  gap: var(--e2);
+  margin-top: var(--e5);
+}
+
+@keyframes aparecer {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes entrar {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.99);
+  }
 }

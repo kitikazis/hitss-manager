@@ -14,7 +14,9 @@ SOT
 90220719
 ...`;
 
-const OPCIONES_FRANJA = [{ id: '', etiqueta: 'Auto' }, ...FRANJAS.map((f) => ({ id: f, etiqueta: f }))];
+const AUTO = { id: '', etiqueta: 'Auto' };
+const OPCIONES_TIPO = [AUTO, ...TIPOS];
+const OPCIONES_FRANJA = [AUTO, ...FRANJAS.map((f) => ({ id: f, etiqueta: f }))];
 
 function Ficha({ bloque, contrata, onContrata }) {
   const { orden, avisos, valido, tipoPlantilla, idActividad, franjaOrigen } = bloque;
@@ -65,7 +67,7 @@ export function PanelPegar({ onAgregar, onToast, abiertoInicial = true }) {
   const [abierto, setAbierto] = useState(abiertoInicial);
   const [texto, setTexto] = useState('');
   const [contratas, setContratas] = useState({});
-  const [tipo, setTipo] = useState('CONFI');
+  const [tipo, setTipo] = useState('');
   const [franja, setFranja] = useState('');
 
   const bloques = useMemo(() => parsearPegado(texto, { tipo, franja }), [texto, tipo, franja]);
@@ -120,7 +122,12 @@ export function PanelPegar({ onAgregar, onToast, abiertoInicial = true }) {
           <div className="opciones-pegado">
             <div className="opcion">
               <p className="seccion">Tipo</p>
-              <Segmentado valor={tipo} onCambio={setTipo} opciones={TIPOS} />
+              <Segmentado valor={tipo} onCambio={setTipo} opciones={OPCIONES_TIPO} />
+              <span className="pista">
+                {tipo
+                  ? `Todas entran como ${etiquetaTipo(tipo)}`
+                  : 'Auto: lo toma de la cabecera del pegado (confi, ciclo, rechazo)'}
+              </span>
             </div>
 
             <div className="opcion">

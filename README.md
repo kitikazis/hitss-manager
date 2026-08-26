@@ -73,6 +73,9 @@ orden sola, la selecciona y deja la plantilla lista abajo, sin cambiar de pesta�
 
 - **Tipo**: Confirmada · Ciclo de llamadas · Rechazo. De ahí sale la gestión
   (confirmada = CONFIRMO, el resto = NO CONTESTA) y el color de la orden.
+- **Tipo**: `Auto` respeta la cabecera de cada bloque (útil para pegar varias
+  actividades de distinto tipo juntas); Confirmada/Ciclo/Rechazo fuerzan una para
+  todo lo pegado.
 - **Franja**: `Auto` la deduce del pegado; AM0/AM1/AM2/PM1/PM2 la fijan a mano y
   avisan si OFS decía otra cosa.
 - Si el texto pegado trae cabecera (`confi am1 lunes`), esa manda para ese bloque:
@@ -125,6 +128,9 @@ cabecera que usaste.
 
 La de ciclo firma con `REALIZADO POR: <nombre> - ADP MULTISKILL HITSS`.
 
+La vista previa contiene **solo el texto de la plantilla**: lo que se copia se pega
+tal cual. El usuario, el SOT y el departamento se muestran encima, fuera del bloque.
+
 Los datos de la orden (cliente, número, fecha, franja, contrata, departamento) son
 **editables ahí mismo**: si algo salió mal del pegado o quedó vacío, se corrige en la
 plantilla y se guarda en la orden. `REALIZADO POR` sale del campo **Realizado por**
@@ -157,8 +163,9 @@ Dos selectores:
 
 ## Varios operadores
 
-El botón con el código de usuario (arriba a la derecha) abre **Mi perfil**: *Usuario
-E*, *Operador* y *Realizado por*.
+La primera vez que se abre la app aparece el modal **Antes de empezar** para
+confirmar *Usuario E*, *Operador* y *Realizado por*; después no vuelve a salir. El
+botón con el código de usuario (arriba a la derecha) lo reabre cuando haga falta.
 
 Cada código de usuario tiene su **propia lista de órdenes, su correlativo de ID y su
 propio operador/firma**, guardados en `localStorage` (`hitss.ordenes.<usuario>`,

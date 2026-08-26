@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Encabezado } from './components/Encabezado';
+import { PerfilModal } from './components/Perfil';
 import { FormularioOrden } from './components/FormularioOrden';
 import { TablaOrdenes } from './components/TablaOrdenes';
 import { PanelPlantillas } from './components/PanelPlantillas';
@@ -53,6 +54,11 @@ export default function App() {
     CLAVE_TEMA,
     window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
   );
+
+  /* La primera vez que se abre la app no hay usuario guardado: se pregunta. */
+  const [primeraVez] = useState(() => leerAlmacen(CLAVE_USUARIO, null) === null);
+  const [perfilAbierto, setPerfilAbierto] = useState(primeraVez);
+  const [bienvenida, setBienvenida] = useState(primeraVez);
 
   const [tab, setTab] = useState('ordenes');
   const [filtroScript, setFiltroScript] = useState('todas');
@@ -235,7 +241,7 @@ export default function App() {
     <>
       <Encabezado
         perfil={perfil}
-        onGuardarPerfil={guardarPerfil}
+        onAbrirPerfil={() => setPerfilAbierto(true)}
         total={ordenes.length}
         tema={tema}
         onTema={setTema}
@@ -308,6 +314,18 @@ export default function App() {
           </div>
         </div>
       </footer>
+
+      {perfilAbierto ? (
+        <PerfilModal
+          perfil={perfil}
+          bienvenida={bienvenida}
+          onGuardar={guardarPerfil}
+          onCerrar={() => {
+            setPerfilAbierto(false);
+            setBienvenida(false);
+          }}
+        />
+      ) : null}
 
       {/* Lista compartida por todos los campos de contrata. */}
       <datalist id={LISTA_CONTRATAS}>

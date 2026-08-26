@@ -61,9 +61,16 @@ export function camposPorDefecto(tipo, orden) {
   return { idLlamada };
 }
 
-const CERCA = '```';
 const AREA = 'ADP MULTISKILL HITSS';
-const bloque = (lineas) => [CERCA, ...lineas, CERCA].join('\n');
+
+/*
+ * Lo que se copia es solo el texto de la plantilla. El usuario, el SOT y el
+ * departamento se muestran aparte, fuera del bloque que se pega.
+ */
+export function contextoPlantilla(orden, perfil) {
+  if (!orden) return '';
+  return `Usuario ${perfil.usuario} · SOT ${orden.sot} · ${orden.departamento}`;
+}
 
 export function construirPlantilla({ tipo, orden, extra, perfil }) {
   if (!orden) return '';
@@ -73,51 +80,39 @@ export function construirPlantilla({ tipo, orden, extra, perfil }) {
 
   if (tipo === 'CICLO') {
     return [
-      `**USUARIO:** ${perfil.usuario} | **SOT:** ${orden.sot} | **DEPARTAMENTO:** ${orden.departamento}`,
-      '',
-      bloque([
-        'MESA MULTISKILL HITSS - CICLO DE LLAMADAS',
-        `CICLO DE LLAMADA NRO: ${campos.cicloNro ?? ''}`,
-        `CANTIDAD DE LLAMADAS: ${campos.cantidad ?? ''}`,
-        `NUMERO: ${orden.telefono}`,
-        `MOTIVO: ${campos.motivo ?? ''}`,
-        `SUB-MOTIVO: ${campos.subMotivo ?? ''}`,
-        `ID DE LLAMADA: ${campos.idLlamada ?? ''}`,
-        `REALIZADO POR: ${realizadoPor} - ${AREA}`,
-      ]),
+      'MESA MULTISKILL HITSS - CICLO DE LLAMADAS',
+      `CICLO DE LLAMADA NRO: ${campos.cicloNro ?? ''}`,
+      `CANTIDAD DE LLAMADAS: ${campos.cantidad ?? ''}`,
+      `NUMERO: ${orden.telefono}`,
+      `MOTIVO: ${campos.motivo ?? ''}`,
+      `SUB-MOTIVO: ${campos.subMotivo ?? ''}`,
+      `ID DE LLAMADA: ${campos.idLlamada ?? ''}`,
+      `REALIZADO POR: ${realizadoPor} - ${AREA}`,
     ].join('\n');
   }
 
   if (tipo === 'RECHAZO') {
     return [
-      `**USUARIO:** ${perfil.usuario} | **DEPARTAMENTO:** ${orden.departamento}`,
-      '',
-      bloque([
-        'MESA MULTISKILL HITSS - RECHAZO EN MESA',
-        `SOT: ${orden.sot}`,
-        `RECHAZO EN MESA/CAMPO: ${campos.rechazoTipo ?? ''}`,
-        `PERSONA QUE CONTESTA: ${campos.persona ?? ''}`,
-        `NUMERO DE CONTACTO: ${orden.telefono}`,
-        `MOTIVO: ${campos.motivo ?? ''}`,
-        `SUBMOTIVO: ${campos.subMotivo ?? ''}`,
-        `ID DE LLAMADA: ${campos.idLlamada ?? ''}`,
-        `REALIZADO POR: ${realizadoPor}`,
-      ]),
+      'MESA MULTISKILL HITSS - RECHAZO EN MESA',
+      `SOT: ${orden.sot}`,
+      `RECHAZO EN MESA/CAMPO: ${campos.rechazoTipo ?? ''}`,
+      `PERSONA QUE CONTESTA: ${campos.persona ?? ''}`,
+      `NUMERO DE CONTACTO: ${orden.telefono}`,
+      `MOTIVO: ${campos.motivo ?? ''}`,
+      `SUBMOTIVO: ${campos.subMotivo ?? ''}`,
+      `ID DE LLAMADA: ${campos.idLlamada ?? ''}`,
+      `REALIZADO POR: ${realizadoPor}`,
     ].join('\n');
   }
 
   return [
-    `**USUARIO:** ${perfil.usuario} | **DEPARTAMENTO:** ${orden.departamento}`,
-    '',
-    bloque([
-      'MESA MULTISKILL HITSS - CONFIRMA VISITA',
-      `SOT: ${orden.sot}`,
-      `DÍA Y FRANJA: ${orden.fecha} - ${orden.franja}`,
-      `CLIENTE: ${orden.cliente}`,
-      `NUMERO: ${orden.telefono}`,
-      `CONTRATA: ${orden.contrata}`,
-      `ID DE LLAMADA: ${campos.idLlamada ?? ''}`,
-      `REALIZADO POR: ${realizadoPor}`,
-    ]),
+    'MESA MULTISKILL HITSS - CONFIRMA VISITA',
+    `SOT: ${orden.sot}`,
+    `DÍA Y FRANJA: ${orden.fecha} - ${orden.franja}`,
+    `CLIENTE: ${orden.cliente}`,
+    `NUMERO: ${orden.telefono}`,
+    `CONTRATA: ${orden.contrata}`,
+    `ID DE LLAMADA: ${campos.idLlamada ?? ''}`,
+    `REALIZADO POR: ${realizadoPor}`,
   ].join('\n');
 }
