@@ -40,6 +40,14 @@ Decisiones de uso que conviene conocer:
   bloquee armar la plantilla.
 - **Contraste AA (4.5:1)** verificado en los dos temas, foco visible en todo lo
   interactivo y áreas táctiles de 44 px en móvil.
+- **Colores de Claro**: el acento es el rojo `#DA291C` (4.87:1 sobre blanco, así que
+  pasa AA justo); en tema oscuro se aclara a `#FF6B5E`. El rojo de error es más
+  oscuro (`#A4161A`) para no confundirse con el de marca.
+
+El favicon (`public/favicon.svg`) es un mosaico rojo Claro con la inicial de HITSS:
+**no reproduce el logo de Claro**, porque el sitio es público. Si quieres el logo
+oficial, deja el archivo en `public/` y se cambia la línea `rel="icon"` de
+`index.html`.
 
 ## Las tres pestañas
 

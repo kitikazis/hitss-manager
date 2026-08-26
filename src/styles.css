@@ -7,11 +7,11 @@
   --texto: #131a26;
   --texto-2: #5b6673;
   --texto-3: #69737f;
-  --acento: #1d4ed8;
-  --acento-suave: #eef3ff;
-  --acento-borde: #c3d4fb;
-  --peligro: #c62828;
-  --peligro-suave: #fdf2f2;
+  --acento: #da291c;
+  --acento-suave: #fef3f2;
+  --acento-borde: #f6c9c4;
+  --peligro: #a4161a;
+  --peligro-suave: #fdf0f0;
   --ok: #12704a;
   --ok-suave: #eefaf4;
   --aviso: #8a5100;
@@ -39,10 +39,10 @@ html[data-theme='dark'] {
   --texto: #e6edf3;
   --texto-2: #9aa5b1;
   --texto-3: #939eab;
-  --acento: #4d8ef7;
-  --acento-suave: #172338;
-  --acento-borde: #274566;
-  --peligro: #f16a6a;
+  --acento: #ff6b5e;
+  --acento-suave: #2b1a18;
+  --acento-borde: #5a2b26;
+  --peligro: #ff8f85;
   --peligro-suave: #2a1618;
   --ok: #4ec98d;
   --ok-suave: #11251c;
@@ -113,9 +113,23 @@ body {
 
 .marca {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 10px;
   min-width: 0;
+}
+
+.marca-mosaico {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  flex: none;
+  border-radius: 7px;
+  background: var(--acento);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
 }
 
 .marca h1 {
@@ -125,7 +139,7 @@ body {
   letter-spacing: -0.01em;
 }
 
-.marca span {
+.marca-nota {
   font-size: 12px;
   color: var(--texto-3);
   border-left: 1px solid var(--border-fuerte);

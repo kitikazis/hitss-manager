@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="HITSS Manager">
+  <rect width="64" height="64" rx="14" fill="#DA291C" />
+  <path
+    d="M20 17h7v11.5h10V17h7v30h-7V35H27v12h-7z"
+    fill="#ffffff"
+  />
+</svg>

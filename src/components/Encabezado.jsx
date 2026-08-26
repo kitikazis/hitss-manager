@@ -12,8 +12,11 @@ export function Encabezado({ perfil, onAbrirPerfil, total, tema, onTema, tab, on
       <div className="wrap">
         <div className="header-in">
           <div className="marca">
+            <span className="marca-mosaico" aria-hidden="true">
+              H
+            </span>
             <h1>HITSS Manager</h1>
-            <span>Mesa multiskill</span>
+            <span className="marca-nota">Mesa multiskill</span>
           </div>
 
           <div className="header-acciones">
