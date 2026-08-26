@@ -143,21 +143,21 @@ export function PanelPegar({
         <div className="tarjeta-cuerpo">
           <div className="opciones-pegado">
             <div className="opcion">
-              <p className="seccion">Tipo</p>
+              <p className="seccion">Tipo de las nuevas</p>
               <Segmentado valor={tipo} onCambio={setTipo} opciones={OPCIONES_TIPO} />
               <span className="pista">
                 {tipo
-                  ? `Todas entran como ${etiquetaTipo(tipo)}`
+                  ? `Las que agregues ahora entran como ${etiquetaTipo(tipo)}`
                   : 'Auto: lo toma de la cabecera del pegado (confi, ciclo, rechazo)'}
               </span>
             </div>
 
             <div className="opcion">
-              <p className="seccion">Franja</p>
+              <p className="seccion">Franja de las nuevas</p>
               <Segmentado valor={franja} onCambio={setFranja} opciones={OPCIONES_FRANJA} />
               <span className="pista">
                 {franja
-                  ? `Todas entran como ${franja}`
+                  ? `Las que agregues ahora entran como ${franja}`
                   : 'Auto: la toma del intervalo u horario del pegado'}
               </span>
             </div>
