@@ -162,7 +162,7 @@ export function PanelPegar({
               </span>
             </div>
             <div className="opcion">
-              <p className="seccion">Modo</p>
+              <p className="seccion">Modo de las nuevas</p>
               <select
                 value={modo}
                 onChange={(e) => onModo(e.target.value)}
@@ -177,12 +177,12 @@ export function PanelPegar({
               </select>
               <span className="pista">
                 {!usaLista ? (
-                  `Todas entran como ${modo}`
+                  `Las que agregues ahora entran como ${modo}. Las ya cargadas no cambian.`
                 ) : (
                   <>
                     {deptosD1.length === 0
                       ? modo
-                        ? `Todas entran como ${modo}`
+                        ? `Las que agregues ahora entran como ${modo}`
                         : `Ningún departamento va como ${SOT_MANUAL_PROGRAMACION}`
                       : `${modo ? 'Solo en' : SOT_MANUAL_PROGRAMACION + ' en'} ${
                           deptosD1.length <= 3
@@ -206,8 +206,8 @@ export function PanelPegar({
             <div className="deptos-d1">
               <p className="seccion">Tus departamentos de {SOT_MANUAL_PROGRAMACION}</p>
               <p className="pista" style={{ marginBottom: 10 }}>
-                Los marcados entran como {SOT_MANUAL_PROGRAMACION}; el resto, como{' '}
-                {SOT_MANUAL_DEFAULT}.
+                Rige para las órdenes que agregues de ahora en adelante: las marcadas entran como{' '}
+                {SOT_MANUAL_PROGRAMACION} y el resto como {SOT_MANUAL_DEFAULT}.
                 {modo ? '' : ' Sin marcar ninguno, todas van como ' + SOT_MANUAL_DEFAULT + '.'}
               </p>
               <div className="deptos-chips">

@@ -386,7 +386,7 @@ export default function App() {
               Confirmados: <b>{confirmados.length}</b> · Ciclos: <b>{ciclos.length}</b>
             </span>
             <span>
-              Modo: <b>{modo || 'automático por departamento'}</b>
+              Modo de las nuevas: <b>{modo || 'automático por departamento'}</b>
             </span>
           </div>
         </div>
