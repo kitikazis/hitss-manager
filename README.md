@@ -86,10 +86,11 @@ orden sola, la selecciona y deja la plantilla lista abajo, sin cambiar de pesta�
   todo lo pegado.
 - **Franja**: `Auto` la deduce del pegado; AM0/AM1/AM2/PM1/PM2 la fijan a mano y
   avisan si OFS decía otra cosa.
-- **Modo** (la pregunta *SOT gestionada manual* del formulario): `Automático por
-  departamento` aplica la regla de mesa, y con *cambiar* eliges **qué departamentos
-  van como PROGRAMACIONES D+1** (vienen UCAYALI y SAN MARTIN, pero la lista es tuya y
-  se guarda por usuario);
+- **Modo** (la pregunta *SOT gestionada manual* del formulario). Con `Automático por
+  departamento` o con `PROGRAMACIONES D+1` aparece **elegir departamentos**: los que
+  marques entran como PROGRAMACIONES D+1 y el resto como PREDICTIVO, así acotas el
+  trabajo a los departamentos que llevas. Vienen UCAYALI y SAN MARTIN, la lista es
+  tuya y se guarda por usuario. Con MIGRACIONES, PM3 o PREDICTIVO no hay lista:
   elegir PROGRAMACIONES D+1, MIGRACIONES, PM3 o PREDICTIVO fija ese valor para todo
   lo que cargues, pegado o a mano. Se guarda por usuario y se ve en el pie.
 - Si el texto pegado trae cabecera (`confi am1 lunes`), esa manda para ese bloque:

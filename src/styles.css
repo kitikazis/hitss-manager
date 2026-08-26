@@ -372,6 +372,15 @@ select.error {
   border-color: var(--border-fuerte);
 }
 
+/* Deshabilitado en gris: en rojo palido parecia activo. */
+.btn-primario:disabled,
+.btn-primario:disabled:hover {
+  background: var(--border);
+  border-color: var(--border);
+  color: var(--texto-3);
+  opacity: 1;
+}
+
 .btn-primario {
   background: var(--acento);
   border-color: var(--acento);

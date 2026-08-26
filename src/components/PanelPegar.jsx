@@ -7,6 +7,7 @@ import {
   FRANJAS,
   LISTA_CONTRATAS,
   SOT_MANUALES,
+  SOT_MANUAL_DEFAULT,
   SOT_MANUAL_PROGRAMACION,
 } from '../lib/constantes.js';
 
@@ -84,6 +85,9 @@ export function PanelPegar({
   const [tipo, setTipo] = useState('');
   const [franja, setFranja] = useState('');
   const [editandoDeptos, setEditandoDeptos] = useState(false);
+
+  // La lista de departamentos rige en automatico y al trabajar PROGRAMACIONES D+1.
+  const usaLista = !modo || modo === SOT_MANUAL_PROGRAMACION;
 
   const bloques = useMemo(
     () => parsearPegado(texto, { tipo, franja, sotManual: modo, deptosD1 }),
@@ -172,21 +176,25 @@ export function PanelPegar({
                 ))}
               </select>
               <span className="pista">
-                {modo ? (
+                {!usaLista ? (
                   `Todas entran como ${modo}`
                 ) : (
                   <>
                     {deptosD1.length === 0
-                      ? `Ningún departamento va como ${SOT_MANUAL_PROGRAMACION}`
-                      : deptosD1.length <= 3
-                        ? `${deptosD1.join(', ')} van como ${SOT_MANUAL_PROGRAMACION}`
-                        : `${deptosD1.length} departamentos van como ${SOT_MANUAL_PROGRAMACION}`}{' '}
+                      ? modo
+                        ? `Todas entran como ${modo}`
+                        : `Ningún departamento va como ${SOT_MANUAL_PROGRAMACION}`
+                      : `${modo ? 'Solo en' : SOT_MANUAL_PROGRAMACION + ' en'} ${
+                          deptosD1.length <= 3
+                            ? deptosD1.join(', ')
+                            : deptosD1.length + ' departamentos'
+                        }`}{' '}
                     <button
                       type="button"
                       className="enlace"
                       onClick={() => setEditandoDeptos((v) => !v)}
                     >
-                      {editandoDeptos ? 'listo' : 'cambiar'}
+                      {editandoDeptos ? 'listo' : 'elegir departamentos'}
                     </button>
                   </>
                 )}
@@ -194,9 +202,14 @@ export function PanelPegar({
             </div>
           </div>
 
-          {!modo && editandoDeptos ? (
+          {usaLista && editandoDeptos ? (
             <div className="deptos-d1">
-              <p className="seccion">Departamentos que van como {SOT_MANUAL_PROGRAMACION}</p>
+              <p className="seccion">Tus departamentos de {SOT_MANUAL_PROGRAMACION}</p>
+              <p className="pista" style={{ marginBottom: 10 }}>
+                Los marcados entran como {SOT_MANUAL_PROGRAMACION}; el resto, como{' '}
+                {SOT_MANUAL_DEFAULT}.
+                {modo ? '' : ' Sin marcar ninguno, todas van como ' + SOT_MANUAL_DEFAULT + '.'}
+              </p>
               <div className="deptos-chips">
                 {DEPARTAMENTOS.map((d) => {
                   const activo = deptosD1.includes(d);

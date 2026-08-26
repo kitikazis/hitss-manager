@@ -44,19 +44,24 @@ export function FormularioOrden({ proximoId, modo, deptosD1 = DEPTOS_PROGRAMACIO
    * Con un modo elegido, ese manda. En automatico rige la regla de mesa:
    * UCAYALI y SAN MARTIN van siempre como PROGRAMACIONES D+1.
    */
+  const usaLista = !modo || modo === SOT_MANUAL_PROGRAMACION;
+
   const setDepartamento = (valor) =>
     setForm((f) => ({
       ...f,
       departamento: valor,
-      sotManual:
-        !modo && deptosD1.includes(valor) ? SOT_MANUAL_PROGRAMACION : f.sotManual,
+      sotManual: usaLista
+        ? deptosD1.includes(valor)
+          ? SOT_MANUAL_PROGRAMACION
+          : SOT_MANUAL_DEFAULT
+        : f.sotManual,
     }));
 
-  const rigeRegla = !modo && deptosD1.includes(form.departamento);
+  const rigeRegla = usaLista && deptosD1.includes(form.departamento);
 
   // Si cambia el modo de trabajo, el formulario lo adopta.
   useEffect(() => {
-    if (modo) setForm((f) => ({ ...f, sotManual: modo }));
+    if (modo && modo !== SOT_MANUAL_PROGRAMACION) setForm((f) => ({ ...f, sotManual: modo }));
   }, [modo]);
 
   function enviar(ev) {

@@ -237,6 +237,26 @@ function contrataDelTitulo(lineas) {
  * el propio pegado tiene prioridad sobre el boton, porque va por bloque.
  * La franja elegida a mano si manda sobre lo que diga OFS, pero avisa si difieren.
  */
+/*
+ * SOT gestionada manual:
+ * - Sin modo elegido: van como PROGRAMACIONES D+1 los departamentos de la lista.
+ * - Con PROGRAMACIONES D+1 y lista: se acota a esos departamentos; el resto queda
+ *   en PREDICTIVO, porque no son parte de ese trabajo.
+ * - Con PROGRAMACIONES D+1 sin lista, o cualquier otro modo: vale para todas.
+ */
+function resolverSotManual(departamento, elegidos = {}) {
+  const lista = elegidos.deptosD1 || DEPTOS_PROGRAMACION;
+  const modo = elegidos.sotManual;
+
+  if (!modo) {
+    return lista.includes(departamento) ? SOT_MANUAL_PROGRAMACION : SOT_MANUAL_DEFAULT;
+  }
+  if (modo === SOT_MANUAL_PROGRAMACION && lista.length) {
+    return lista.includes(departamento) ? SOT_MANUAL_PROGRAMACION : SOT_MANUAL_DEFAULT;
+  }
+  return modo;
+}
+
 function parsearBloque({ cabecera, lineas }, elegidos = {}) {
   const avisos = [];
 
@@ -328,12 +348,7 @@ function parsearBloque({ cabecera, lineas }, elegidos = {}) {
       gestion,
       departamento: deptoFinal,
       yaGestion: 'NO',
-      // El modo elegido manda; en automatico rige la lista de departamentos D+1.
-      sotManual:
-        elegidos.sotManual ||
-        ((elegidos.deptosD1 || DEPTOS_PROGRAMACION).includes(deptoFinal)
-          ? SOT_MANUAL_PROGRAMACION
-          : SOT_MANUAL_DEFAULT),
+      sotManual: resolverSotManual(deptoFinal, elegidos),
       tipoPlantilla,
     },
   };
