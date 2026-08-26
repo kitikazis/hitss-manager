@@ -287,7 +287,7 @@ export default function App() {
   );
 
   return (
-    <>
+    <div className="app">
       <Encabezado
         perfil={perfil}
         onAbrirPerfil={() => setPerfilAbierto(true)}
@@ -298,7 +298,8 @@ export default function App() {
         onTab={setTab}
       />
 
-      <main>
+      <div className="contenido">
+        <main>
         <div className="wrap">
           {tab === 'ordenes' ? (
             <>
@@ -352,9 +353,9 @@ export default function App() {
             />
           )}
         </div>
-      </main>
+        </main>
 
-      <footer>
+        <footer>
         <div className="wrap">
           <div className="pie">
             <span>
@@ -378,6 +379,8 @@ export default function App() {
           </div>
         </div>
       </footer>
+
+      </div>
 
       {perfilAbierto ? (
         <PerfilModal
@@ -408,6 +411,6 @@ export default function App() {
           ) : null}
         </div>
       ) : null}
-    </>
+    </div>
   );
 }

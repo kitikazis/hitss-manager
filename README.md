@@ -25,8 +25,12 @@ npm run dev
 
 ## Cómo está pensada
 
-Las pestañas están numeradas porque son el orden del trabajo: **1 Órdenes** (cargar)
-→ **2 Plantillas** (armar y copiar) → **3 Script** (enviar al formulario). La pestaña
+Es un dashboard: el menú vive en una **barra lateral fija a la izquierda**, con la
+marca arriba, las tres secciones al medio y el perfil y el tema al pie. Bajo 900 px la
+barra pasa arriba como una fila.
+
+Las secciones están numeradas porque son el orden del trabajo: **1 Órdenes** (cargar)
+→ **2 Plantillas** (armar y copiar) → **3 Script** (enviar al formulario). La sección
 activa se marca visualmente y con `aria-current`.
 
 Decisiones de uso que conviene conocer:
@@ -49,9 +53,9 @@ El favicon (`public/favicon.svg`) es un mosaico rojo Claro con la inicial de HIT
 oficial, deja el archivo en `public/` y se cambia la línea `rel="icon"` de
 `index.html`.
 
-## Las tres pestañas
+## Las tres secciones
 
-### Órdenes
+### 1 · Órdenes
 
 Formulario manual (SOT, cliente y teléfono obligatorios) y tabla con todo lo
 cargado. El alta rápida por pegado está en la pestaña **Plantillas**.
@@ -73,7 +77,7 @@ varias seguidas.
   PCs. Al importar con órdenes ya cargadas: *Aceptar* reemplaza, *Cancelar* agrega
   al final.
 
-### Plantillas
+### 2 · Plantillas
 
 **Pegar desde Oracle Field Service** (el camino rápido): eliges **tipo** y **franja**
 con botones, copias el *Detalles de actividad* de OFS y lo pegas. La app arma la
@@ -167,7 +171,7 @@ del perfil.
 Solo el SOT es obligatorio al cargar una orden: todo lo demás se puede completar
 después, sin que eso impida armar la plantilla.
 
-### Script
+### 3 · Script
 
 Genera el JS que se pega en la consola del formulario.
 

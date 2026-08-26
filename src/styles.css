@@ -74,8 +74,19 @@ body {
 
 #root {
   min-height: 100%;
+}
+
+/* Dashboard: menu fijo a la izquierda, contenido a la derecha. */
+.app {
+  display: grid;
+  grid-template-columns: 236px minmax(0, 1fr);
+  min-height: 100vh;
+}
+
+.contenido {
   display: flex;
   flex-direction: column;
+  min-width: 0;
 }
 
 .wrap {
@@ -95,83 +106,100 @@ body {
   color: var(--texto-3);
 }
 
-/* ============ Encabezado ============ */
-.header {
+/* ============ Barra lateral ============ */
+.lateral {
   position: sticky;
   top: 0;
-  z-index: 30;
-  background: var(--panel);
-  border-bottom: 1px solid var(--border);
-}
-
-.header-in {
+  align-self: start;
+  height: 100vh;
   display: flex;
-  align-items: center;
-  gap: 20px;
-  padding: 16px 0 0;
+  flex-direction: column;
+  gap: var(--e5);
+  padding: var(--e4) var(--e3);
+  background: var(--panel);
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
 }
 
 .marca {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--e2);
+  padding: 0 var(--e2);
   min-width: 0;
 }
 
 .marca-mosaico {
   display: grid;
   place-items: center;
-  width: 26px;
-  height: 26px;
+  width: 28px;
+  height: 28px;
   flex: none;
-  border-radius: 7px;
+  border-radius: 8px;
   background: var(--acento);
   color: #fff;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 800;
   letter-spacing: -0.03em;
 }
 
+.marca-texto {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
 .marca h1 {
   margin: 0;
-  font-size: 16px;
-  font-weight: 600;
+  font-size: 14.5px;
+  font-weight: 650;
   letter-spacing: -0.01em;
+  white-space: nowrap;
 }
 
 .marca-nota {
-  font-size: 12px;
+  font-size: 11.5px;
   color: var(--texto-3);
-  border-left: 1px solid var(--border-fuerte);
-  padding-left: 10px;
+}
+
+.lateral-pie {
+  margin-top: auto;
 }
 
 .header-acciones {
-  margin-left: auto;
   display: flex;
-  align-items: center;
-  gap: 8px;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--e1);
 }
 
-/* ============ Pestañas ============ */
+.header-acciones .btn {
+  justify-content: flex-start;
+}
+
+/* ============ Navegación ============ */
 .tabs {
   display: flex;
-  gap: 4px;
-  margin-top: 14px;
+  flex-direction: column;
+  gap: 2px;
 }
 
 .tab {
   appearance: none;
   background: none;
   border: 0;
-  border-bottom: 2px solid transparent;
+  border-left: 2px solid transparent;
   cursor: pointer;
   color: var(--texto-2);
   font: inherit;
   font-weight: 500;
-  padding: 9px 14px 11px;
-  border-radius: var(--radio-chico) var(--radio-chico) 0 0;
-  transition: color 0.12s, background 0.12s, border-color 0.12s;
+  text-align: left;
+  padding: 9px 12px;
+  border-radius: var(--radio-chico);
+  display: flex;
+  align-items: center;
+  gap: 0;
+  transition: color 0.12s, background 0.12s;
 }
 
 .tab:hover {
@@ -181,25 +209,46 @@ body {
 
 .tab.activa {
   color: var(--acento);
-  border-bottom-color: var(--acento);
+  background: var(--acento-suave);
+  border-left-color: var(--acento);
   font-weight: 600;
 }
 
 .tab .cuenta {
-  margin-left: 7px;
+  margin-left: auto;
   font-size: 11px;
   font-weight: 600;
   color: var(--texto-2);
   background: var(--bg);
   border: 1px solid var(--border);
   border-radius: 20px;
-  padding: 1px 6px;
+  padding: 1px 7px;
 }
 
 .tab.activa .cuenta {
   color: var(--acento);
-  background: var(--acento-suave);
+  background: var(--panel);
   border-color: var(--acento-borde);
+}
+
+.tab-paso {
+  display: inline-grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  margin-right: 9px;
+  flex: none;
+  border-radius: 50%;
+  border: 1px solid var(--border-fuerte);
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--texto-3);
+}
+
+.tab.activa .tab-paso {
+  border-color: var(--acento);
+  background: var(--acento);
+  color: #fff;
 }
 
 /* ============ Estructura ============ */
@@ -925,27 +974,6 @@ footer {
   opacity: 0.8;
 }
 
-/* Numero de paso en cada pestaña: orienta sobre el orden del trabajo. */
-.tab-paso {
-  display: inline-grid;
-  place-items: center;
-  width: 18px;
-  height: 18px;
-  margin-right: 7px;
-  border-radius: 50%;
-  border: 1px solid var(--border-fuerte);
-  font-size: 10px;
-  font-weight: 700;
-  color: var(--texto-3);
-  vertical-align: 1px;
-}
-
-.tab.activa .tab-paso {
-  border-color: var(--acento);
-  background: var(--acento);
-  color: #fff;
-}
-
 /* Acciones dentro de un estado vacio */
 .vacio .acciones-vacio {
   display: flex;
@@ -972,6 +1000,39 @@ footer {
 }
 
 @media (max-width: 900px) {
+  .app {
+    grid-template-columns: 1fr;
+  }
+
+  .lateral {
+    position: static;
+    height: auto;
+    flex-direction: row;
+    align-items: center;
+    gap: var(--e4);
+    padding: var(--e2) var(--e3);
+    border-right: 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .lateral .tabs {
+    flex-direction: row;
+    overflow-x: auto;
+  }
+
+  .lateral-pie {
+    margin-top: 0;
+    margin-left: auto;
+  }
+
+  .header-acciones {
+    flex-direction: row;
+  }
+
+  .marca-nota {
+    display: none;
+  }
+
   .plantillas {
     grid-template-columns: 1fr;
   }
