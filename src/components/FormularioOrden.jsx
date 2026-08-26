@@ -6,6 +6,7 @@ import {
   FECHA_DEFAULT,
   FRANJAS,
   FRANJA_DEFAULT,
+  LISTA_CONTRATAS,
   GESTIONES,
   SI_NO,
   SOT_MANUALES,
@@ -126,10 +127,11 @@ export function FormularioOrden({ proximoId, onAgregar }) {
               />
             </Campo>
 
-            <Campo label="Contrata">
+            <Campo label="Contrata" pista="Elige una de la lista o escríbela">
               <input
                 value={form.contrata}
-                onChange={(e) => set('contrata')(e.target.value)}
+                onChange={(e) => set('contrata')(e.target.value.toUpperCase())}
+                list={LISTA_CONTRATAS}
                 autoComplete="off"
               />
             </Campo>

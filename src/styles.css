@@ -975,3 +975,27 @@ tbody tr.es-rechazo td:first-child {
 .ficha.invalida {
   border-left-color: var(--peligro);
 }
+
+/* ============ Opciones del pegado ============ */
+.opciones-pegado {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px 28px;
+  margin-bottom: 14px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.opcion {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.opcion .seccion {
+  margin: 0;
+}
+
+.opcion .pista {
+  margin-top: 2px;
+}

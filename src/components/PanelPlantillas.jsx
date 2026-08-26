@@ -13,6 +13,7 @@ import {
 import {
   DEPARTAMENTOS,
   FRANJAS,
+  LISTA_CONTRATAS,
   MOTIVOS_CICLO,
   MOTIVOS_RECHAZO,
   RECHAZO_TIPOS,
@@ -242,9 +243,10 @@ export function PanelPlantillas({ ordenes, perfil, onAgregarOrdenes, onActualiza
                   </Campo>
                   <Campo label="Contrata">
                     <input
-                      className="mono"
                       value={seleccionada.contrata}
                       onChange={(e) => editar('contrata')(e.target.value.toUpperCase())}
+                      list={LISTA_CONTRATAS}
+                      placeholder="Sin contrata"
                     />
                   </Campo>
                   <Campo label="Departamento">

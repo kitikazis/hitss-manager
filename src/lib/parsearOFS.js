@@ -1,5 +1,6 @@
 import {
   BANDAS_FRANJA,
+  CONTRATAS,
   DEPARTAMENTOS,
   DEPTOS_PROGRAMACION,
   FRANJAS,
@@ -28,10 +29,12 @@ const norm = (s) => sinAcentos(s).toUpperCase().trim().replace(/\s+/g, ' ');
 const DIAS = ['DOMINGO', 'LUNES', 'MARTES', 'MIERCOLES', 'JUEVES', 'VIERNES', 'SABADO'];
 
 const TIPOS_CABECERA = [
-  { tipo: 'CONFI', prefijo: /^confi/i, gestion: 'CONFIRMO' },
-  { tipo: 'CICLO', prefijo: /^ciclo/i, gestion: 'NO CONTESTA' },
-  { tipo: 'RECHAZO', prefijo: /^rechaz/i, gestion: 'NO CONTESTA' },
+  { tipo: 'CONFI', prefijo: /^confi/i },
+  { tipo: 'CICLO', prefijo: /^ciclo/i },
+  { tipo: 'RECHAZO', prefijo: /^rechaz/i },
 ];
+
+export const GESTION_POR_TIPO = { CONFI: 'CONFIRMO', CICLO: 'NO CONTESTA', RECHAZO: 'NO CONTESTA' };
 
 /*
  * Palabras que puede tener una cabecera. Sirve para no confundirla con una linea
@@ -214,22 +217,42 @@ function contrataDelTitulo(lineas) {
   const titulo = lineas.find((l) => /^\s*(INST|AVERIA|AVER[ÍI]A|MANT|MIGRA|MIGRACION|REPAR)\b/i.test(l));
   if (!titulo) return '';
   const partes = titulo.trim().split(/\s+/);
-  return partes.length > 1 ? norm(partes[1]) : '';
+  if (partes.length < 2) return '';
+  const abreviada = norm(partes[1]);
+  // Completa el nombre oficial a partir de la abreviatura del titulo.
+  const conocida = CONTRATAS.find((c) => {
+    const n = norm(c);
+    return n === abreviada || n.startsWith(abreviada + ' ') || n.includes('(' + abreviada + ')');
+  });
+  return conocida || abreviada;
 }
 
-function parsearBloque({ cabecera, lineas }) {
+/*
+ * `elegidos` son los botones de la app: { tipo, franja }. La cabecera escrita en
+ * el propio pegado tiene prioridad sobre el boton, porque va por bloque.
+ * La franja elegida a mano si manda sobre lo que diga OFS, pero avisa si difieren.
+ */
+function parsearBloque({ cabecera, lineas }, elegidos = {}) {
   const avisos = [];
 
   const cab = tipoDeCabecera(cabecera);
-  const tipoPlantilla = cab ? cab.tipo : 'CONFI';
-  const gestion = cab ? cab.gestion : 'CONFIRMO';
-  if (!cab) {
-    avisos.push('Sin cabecera (ej. "confi am1 lunes"): se asume CONFIRMO y confirma visita.');
-  }
+  const tipoPlantilla = cab ? cab.tipo : elegidos.tipo || 'CONFI';
+  const gestion = GESTION_POR_TIPO[tipoPlantilla] || 'CONFIRMO';
 
-  const { franja, origen: franjaOrigen } = detectarFranja(lineas, cabecera);
-  if (!franjaOrigen) {
-    avisos.push(`No se pudo deducir la franja: se usa ${FRANJA_DEFAULT}. Ponla en la cabecera.`);
+  const deteccion = detectarFranja(lineas, cabecera);
+  let franja = deteccion.franja;
+  let franjaOrigen = deteccion.origen;
+
+  if (elegidos.franja) {
+    franja = elegidos.franja;
+    franjaOrigen = 'la franja elegida';
+    if (deteccion.origen && deteccion.origen !== 'cabecera' && deteccion.franja !== franja) {
+      avisos.push(
+        `Elegiste ${franja} pero OFS marca ${deteccion.franja} (${deteccion.origen}). Se usa ${franja}.`
+      );
+    }
+  } else if (!franjaOrigen) {
+    avisos.push(`No se pudo deducir la franja: se usa ${FRANJA_DEFAULT}. Elígela con los botones.`);
   } else if (franjaOrigen !== 'cabecera') {
     const enCabecera = franjaDeCabecera(cabecera);
     if (enCabecera && enCabecera !== franja) {
@@ -303,7 +326,7 @@ function parsearBloque({ cabecera, lineas }) {
   };
 }
 
-export function parsearPegado(texto) {
+export function parsearPegado(texto, elegidos = {}) {
   if (!texto || !texto.trim()) return [];
-  return separarBloques(texto).map(parsearBloque);
+  return separarBloques(texto).map((b) => parsearBloque(b, elegidos));
 }

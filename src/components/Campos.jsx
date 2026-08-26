@@ -12,9 +12,12 @@ export function Campo({ label, req, pista, children }) {
 }
 
 export function Select({ value, onChange, opciones, className }) {
+  // Un valor guardado que ya no esta en la lista se muestra igual, no se pierde.
+  const lista = value && !opciones.includes(value) ? [value, ...opciones] : opciones;
+
   return (
     <select className={className} value={value} onChange={(e) => onChange(e.target.value)}>
-      {opciones.map((o) => (
+      {lista.map((o) => (
         <option key={o} value={o}>
           {o}
         </option>

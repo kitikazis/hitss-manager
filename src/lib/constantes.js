@@ -18,16 +18,31 @@ export const BANDAS_FRANJA = [
   { franja: 'PM1', desde: 14, hasta: 18 },
 ];
 export const GESTIONES = ['CONFIRMO', 'NO CONTESTA'];
+// En el mismo orden en que aparecen en el formulario.
 export const DEPARTAMENTOS = [
-  'ICA',
-  'LIMA',
+  'AMAZONAS',
   'AREQUIPA',
+  'ANCASH',
+  'AYACUCHO',
+  'APURIMAC',
+  'CAJAMARCA',
   'CUSCO',
-  'TRUJILLO',
-  'UCAYALI',
+  'ICA',
+  'HUANUCO',
+  'JUNIN',
+  'HUANCAVELICA',
+  'LAMBAYEQUE',
+  'LA LIBERTAD',
+  'LIMA',
+  'MOQUEGUA',
+  'MADRE DE DIOS',
   'PASCO',
+  'PIURA',
+  'PUNO',
   'SAN MARTIN',
-  'LORETO',
+  'TACNA',
+  'TUMBES',
+  'UCAYALI',
 ];
 export const SI_NO = ['SI', 'NO'];
 export const SOT_MANUALES = ['PROGRAMACIONES D+1', 'MIGRACIONES', 'PM3', 'PREDICTIVO'];
@@ -36,6 +51,25 @@ export const SOT_MANUAL_DEFAULT = 'PREDICTIVO';
 // Regla de mesa: UCAYALI y SAN MARTIN siempre van como PROGRAMACIONES D+1.
 export const DEPTOS_PROGRAMACION = ['UCAYALI', 'SAN MARTIN'];
 export const SOT_MANUAL_PROGRAMACION = 'PROGRAMACIONES D+1';
+
+// Contratas conocidas: el pegado las reconoce por la primera palabra del titulo
+// de la actividad y completa el nombre entero.
+export const CONTRATAS = [
+  'DIMERA SERVICIOS MULTIPLES SAC',
+  'CARLEI TELECOMUNICACIONES SAC',
+  'INSERTEL',
+  'INKA CELL S.A.C.',
+  'CICSA S.A.C.',
+  'IT WEBSOLUTIONS PERU S.A.C.',
+  'FELIPE BEDOYA ZAPANA E.I.R.LTDA (FEBEZA)',
+  'LICENCIAS PROYECTOS Y SEGURIDAD Y SALUD SL',
+  'TELECOMUNICACIONES MEGATIC SCRL',
+  'TELECOM DATA S.A.C.',
+  'WITLINK S.A.C',
+  'SOLUCIONES Y SERVICIOS MULTIPLES PERU SAC',
+  'CONEXIT S.A.C.',
+];
+export const LISTA_CONTRATAS = 'contratas-conocidas';
 
 // Campos dinamicos de las plantillas.
 export const MOTIVOS_CICLO = ['FALTA DE CONTACTO', 'CLIENTE NO DESEA', 'OTRO'];

@@ -32,6 +32,8 @@ import {
   clavePerfil,
   claveOrdenes,
   claveProximoId,
+  CONTRATAS,
+  LISTA_CONTRATAS,
 } from './lib/constantes';
 
 /* El usuario de fabrica arranca con los datos del titular; los demas, vacios. */
@@ -284,6 +286,13 @@ export default function App() {
           </div>
         </div>
       </footer>
+
+      {/* Lista compartida por todos los campos de contrata. */}
+      <datalist id={LISTA_CONTRATAS}>
+        {CONTRATAS.map((c) => (
+          <option key={c} value={c} />
+        ))}
+      </datalist>
 
       {toast ? <div className="mensaje">{toast}</div> : null}
     </>

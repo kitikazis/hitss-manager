@@ -1,15 +1,20 @@
 import { useMemo, useState } from 'react';
+import { Segmentado } from './Campos';
 import { parsearPegado } from '../lib/parsearOFS.js';
-import { CLASE_TIPO, COLOR_TIPO, etiquetaTipo } from '../lib/plantillas.js';
+import { CLASE_TIPO, COLOR_TIPO, TIPOS, etiquetaTipo } from '../lib/plantillas.js';
+import { FRANJAS, LISTA_CONTRATAS } from '../lib/constantes.js';
 
-const EJEMPLO = `confi am1 lunes
-Oracle Field Service
+const EJEMPLO = `Oracle Field Service
 Detalles de actividad
 INST CARLEI TARAPOTO FTTH - 4F TARAP, 24/08/26
-...
+Datos de la actividad
+ID de actividad
+22787020
 SOT
 90220719
 ...`;
+
+const OPCIONES_FRANJA = [{ id: '', etiqueta: 'Auto' }, ...FRANJAS.map((f) => ({ id: f, etiqueta: f }))];
 
 function Ficha({ bloque, contrata, onContrata }) {
   const { orden, avisos, valido, tipoPlantilla, idActividad, franjaOrigen } = bloque;
@@ -24,14 +29,14 @@ function Ficha({ bloque, contrata, onContrata }) {
         <span className="ficha-cliente">{orden.cliente || 'Sin cliente'}</span>
         <span className="tenue mono">{orden.telefono || 'Sin teléfono'}</span>
         <span className="tenue">
-          {orden.fecha || 'Sin fecha'} · {orden.franja} · {orden.departamento} · {orden.gestion}
+          {orden.fecha || 'Sin fecha'} · {orden.franja} · {orden.departamento}
         </span>
         {idActividad ? <span className="tenue">Actividad {idActividad}</span> : null}
       </div>
 
       {franjaOrigen && franjaOrigen !== 'cabecera' ? (
         <div className="ficha-origen">
-          Franja {orden.franja} detectada del {franjaOrigen}
+          Franja {orden.franja} según {franjaOrigen}
         </div>
       ) : null}
 
@@ -39,13 +44,12 @@ function Ficha({ bloque, contrata, onContrata }) {
         <label>
           Contrata
           <input
-            className="mono"
             value={contrata}
             onChange={(e) => onContrata(e.target.value.toUpperCase())}
-            placeholder="CARLEI"
+            list={LISTA_CONTRATAS}
+            placeholder="Sin contrata"
           />
         </label>
-        <span className="pista">Sale del título de la actividad</span>
       </div>
 
       {avisos.map((a, i) => (
@@ -61,8 +65,10 @@ export function PanelPegar({ onAgregar, onToast, abiertoInicial = true }) {
   const [abierto, setAbierto] = useState(abiertoInicial);
   const [texto, setTexto] = useState('');
   const [contratas, setContratas] = useState({});
+  const [tipo, setTipo] = useState('CONFI');
+  const [franja, setFranja] = useState('');
 
-  const bloques = useMemo(() => parsearPegado(texto), [texto]);
+  const bloques = useMemo(() => parsearPegado(texto, { tipo, franja }), [texto, tipo, franja]);
   const validos = bloques.filter((b) => b.valido);
 
   const contrataDe = (b) => (b.orden.sot in contratas ? contratas[b.orden.sot] : b.orden.contrata);
@@ -87,10 +93,7 @@ export function PanelPegar({ onAgregar, onToast, abiertoInicial = true }) {
       <div className="tarjeta-cab">
         <div>
           <h2>Pegar actividad de Oracle Field Service</h2>
-          <p className="sub">
-            Escribe <code>confi</code> o <code>ciclo</code> arriba del detalle y pégalo; la franja
-            sale del propio pegado
-          </p>
+          <p className="sub">Elige el tipo y la franja, pega el detalle y agrega</p>
         </div>
         <div className="empuje" />
         {abierto && texto ? (
@@ -114,6 +117,23 @@ export function PanelPegar({ onAgregar, onToast, abiertoInicial = true }) {
 
       {abierto ? (
         <div className="tarjeta-cuerpo">
+          <div className="opciones-pegado">
+            <div className="opcion">
+              <p className="seccion">Tipo</p>
+              <Segmentado valor={tipo} onCambio={setTipo} opciones={TIPOS} />
+            </div>
+
+            <div className="opcion">
+              <p className="seccion">Franja</p>
+              <Segmentado valor={franja} onCambio={setFranja} opciones={OPCIONES_FRANJA} />
+              <span className="pista">
+                {franja
+                  ? `Todas entran como ${franja}`
+                  : 'Auto: la toma del intervalo u horario del pegado'}
+              </span>
+            </div>
+          </div>
+
           <textarea
             className="pegado"
             value={texto}

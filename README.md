@@ -46,9 +46,16 @@ varias seguidas.
 
 ### Plantillas
 
-**Pegar desde Oracle Field Service** (el camino rápido): copias el *Detalles de
-actividad* de OFS, le pones arriba una cabecera y lo pegas. La app arma la orden
-sola, la selecciona y deja la plantilla lista abajo, sin cambiar de pestaña.
+**Pegar desde Oracle Field Service** (el camino rápido): eliges **tipo** y **franja**
+con botones, copias el *Detalles de actividad* de OFS y lo pegas. La app arma la
+orden sola, la selecciona y deja la plantilla lista abajo, sin cambiar de pestaña.
+
+- **Tipo**: Confirmada · Ciclo de llamadas · Rechazo. De ahí sale la gestión
+  (confirmada = CONFIRMO, el resto = NO CONTESTA) y el color de la orden.
+- **Franja**: `Auto` la deduce del pegado; AM0/AM1/AM2/PM1/PM2 la fijan a mano y
+  avisan si OFS decía otra cosa.
+- Si el texto pegado trae cabecera (`confi am1 lunes`), esa manda para ese bloque:
+  sirve para pegar varias actividades de distinto tipo de una sola vez.
 
 ```
 confi am1 lunes
@@ -58,9 +65,8 @@ INST CARLEI TARAPOTO FTTH - 4F TARAP, 24/08/26
 ...
 ```
 
-- La cabecera define el **tipo de plantilla**: `confi` / `confirmada` → confirmada ·
-  `ciclo` → ciclo de llamadas · `rechazo` → rechazo. La gestión sale de ahí:
-  confirmada = CONFIRMO, el resto = NO CONTESTA.
+- La cabecera opcional define el **tipo**: `confi` / `confirmada`, `ciclo`,
+  `rechazo`.
 - La **franja se detecta sola** del pegado, en este orden:
   1. `Intervalo de tiempo` con la franja escrita (`PM1`).
   2. `Intervalo de tiempo` con un rango horario (`09:00 - 13:00`, `9 a 13`).
@@ -75,8 +81,9 @@ INST CARLEI TARAPOTO FTTH - 4F TARAP, 24/08/26
   Programacion* del pegado, avisa.
 - Del volcado saca SOT, Nombre, Telefono (limpia el `[966...](tel:966...)`),
   Departmento y Fecha de Programacion (`24/08/26` → `24/8/2026`).
-- La **contrata** se deduce del título de la actividad (`INST CARLEI ...` → CARLEI)
-  y se puede corregir ahí mismo antes de agregar.
+- La **contrata** se deduce del título de la actividad y se completa con el nombre
+  oficial (`INST CARLEI ...` → `CARLEI TELECOMUNICACIONES SAC`). Los campos de
+  contrata sugieren las 13 conocidas y aceptan cualquier otra escrita a mano.
 - Se pueden pegar **varias actividades de una**, cada una con su cabecera.
 - Lo que no encuentre lo dice con un aviso; sin SOT no deja agregar.
 
@@ -155,6 +162,7 @@ Escribir un código nuevo estrena perfil con el nombre que pongas en ese momento
   DESEA CLIENTE"). Sí se usan en las plantillas.
 - **Tiempos**: espera 800 ms antes de enviar y 600 ms antes de pedir un formulario
   nuevo. Con internet lento, subir esos números en el `.js` descargado.
+- **Departamentos**: los 23 del formulario, en su mismo orden.
 - **Franjas**: AM0 07:00–09:00 · AM1 09:00–13:00 · PM1 14:00–18:00.
   AM2 y PM2 existen en el formulario pero no tienen banda horaria: solo se eligen a
   mano o si vienen escritas en el pegado. Las horas fuera de toda banda (13:00–14:00,
