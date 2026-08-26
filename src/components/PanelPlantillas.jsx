@@ -166,6 +166,8 @@ export function PanelPlantillas({
   onModo,
   deptosD1,
   onDeptosD1,
+  pegadoAbierto,
+  onPegadoAbierto,
   onAgregarOrdenes,
   onActualizarOrden,
   onToast,
@@ -270,7 +272,8 @@ export function PanelPlantillas({
       onModo={onModo}
       deptosD1={deptosD1}
       onDeptosD1={onDeptosD1}
-      abiertoInicial={!ordenes.length}
+      abierto={pegadoAbierto}
+      onAbierto={onPegadoAbierto}
     />
   );
 

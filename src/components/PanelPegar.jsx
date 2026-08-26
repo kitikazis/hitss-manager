@@ -77,9 +77,9 @@ export function PanelPegar({
   onModo,
   deptosD1,
   onDeptosD1,
-  abiertoInicial = true,
+  abierto,
+  onAbierto,
 }) {
-  const [abierto, setAbierto] = useState(abiertoInicial);
   const [texto, setTexto] = useState('');
   const [contratas, setContratas] = useState({});
   const [tipo, setTipo] = useState('');
@@ -134,7 +134,7 @@ export function PanelPegar({
             Agregar {validos.length || ''} {validos.length === 1 ? 'orden' : 'órdenes'}
           </button>
         ) : null}
-        <button className="btn btn-chico" onClick={() => setAbierto((v) => !v)}>
+        <button className="btn btn-chico" onClick={() => onAbierto(!abierto)}>
           {abierto ? 'Ocultar' : 'Pegar actividad'}
         </button>
       </div>

@@ -244,7 +244,7 @@ function contrataDelTitulo(lineas) {
  *   en PREDICTIVO, porque no son parte de ese trabajo.
  * - Con PROGRAMACIONES D+1 sin lista, o cualquier otro modo: vale para todas.
  */
-function resolverSotManual(departamento, elegidos = {}) {
+export function resolverSotManual(departamento, elegidos = {}) {
   const lista = elegidos.deptosD1 || DEPTOS_PROGRAMACION;
   const modo = elegidos.sotManual;
 

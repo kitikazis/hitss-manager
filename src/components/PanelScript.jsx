@@ -13,6 +13,7 @@ export function PanelScript({
   ordenes,
   perfil,
   script,
+  modoSot,
   filtro,
   onFiltro,
   modo,
@@ -166,7 +167,9 @@ export function PanelScript({
             <h2>Script generado</h2>
             <p className="sub">
               {ordenes.length} {ordenes.length === 1 ? 'orden' : 'órdenes'} · usuario{' '}
-              {perfil.usuario} · fechas en {formatoFecha} · {script.split('\n').length} líneas
+              {perfil.usuario} · fechas en {formatoFecha} · modo{' '}
+              {modoSot || 'automático por departamento'} ·{' '}
+              {script.split(String.fromCharCode(10)).length} líneas
             </p>
           </div>
           <div className="empuje" />
