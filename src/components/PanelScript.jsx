@@ -21,11 +21,11 @@ export function PanelScript({
   formatoFecha,
   onFormatoFecha,
   conteos,
+  onVerInstrucciones,
   onToast,
 }) {
   const esManual = modo === 'manual';
   const [copiado, setCopiado] = useState(false);
-  const [pasosAbiertos, setPasosAbiertos] = useState(false);
   const temporizador = useRef(null);
 
   async function copiar() {
@@ -115,61 +115,6 @@ export function PanelScript({
       <section className="tarjeta">
         <div className="tarjeta-cab">
           <div>
-            <h2>Cómo ejecutarlo</h2>
-            <p className="sub">Cuatro pasos, la primera vez</p>
-          </div>
-          <div className="empuje" />
-          <button className="btn btn-chico" onClick={() => setPasosAbiertos((v) => !v)}>
-            {pasosAbiertos ? 'Ocultar' : 'Ver pasos'}
-          </button>
-        </div>
-        <div className="tarjeta-cuerpo" hidden={!pasosAbiertos}>
-          <ol className="pasos">
-            <li>Abre el formulario HITSS en una pestaña del navegador.</li>
-            <li>
-              Presiona <code>F12</code> y entra a la pestaña <strong>Console</strong>.
-            </li>
-            <li>
-              Si Chrome lo pide, escribe <code>allow pasting</code> y presiona Enter.
-            </li>
-            <li>
-              Pulsa <strong>Copiar script</strong> (o <code>Ctrl+Enter</code>), pégalo en la consola
-              y presiona <code>Enter</code>.
-            </li>
-            {esManual ? (
-              <>
-                <li>
-                  Se llena la primera orden y se detiene. Revisa los campos y envía tú el
-                  formulario.
-                </li>
-                <li>
-                  Cuando cargue el formulario nuevo, corre <code>siguienteOrden()</code> para la
-                  siguiente, hasta terminar las {ordenes.length}.
-                </li>
-              </>
-            ) : (
-              <>
-                <li>
-                  No toques el mouse: llena, envía y pasa a la siguiente hasta terminar las{' '}
-                  {ordenes.length}, y al final imprime el resumen.
-                </li>
-                <li>
-                  Para relanzarlo desde el principio corre <code>autollenarTodo()</code>.
-                </li>
-              </>
-            )}
-          </ol>
-
-          <div className="alerta info" style={{ marginTop: 16 }}>
-            El script llena Usuario E, SOT, FECHA, FRANJA, GESTION, DEPARTAMENTO, YA TIENE GESTION y
-            SOT GESTIONADA MANUAL. Cliente, teléfono y contrata solo se usan en las plantillas.
-          </div>
-        </div>
-      </section>
-
-      <section className="tarjeta">
-        <div className="tarjeta-cab">
-          <div>
             <h2>Script generado</h2>
             <p className="sub">
               {ordenes.length} {ordenes.length === 1 ? 'orden' : 'órdenes'} · usuario{' '}
@@ -179,6 +124,9 @@ export function PanelScript({
             </p>
           </div>
           <div className="empuje" />
+          <button className="btn btn-chico" onClick={onVerInstrucciones}>
+            Ver instrucciones
+          </button>
           <button className="btn btn-primario btn-grande" onClick={copiar}>
             {copiado ? 'Copiado' : 'Copiar script'}
           </button>

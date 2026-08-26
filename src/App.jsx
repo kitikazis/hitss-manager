@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Encabezado } from './components/Encabezado';
 import { CabeceraSeccion } from './components/CabeceraSeccion';
+import { ModalInstrucciones } from './components/Instrucciones';
 import { PerfilModal } from './components/Perfil';
 import { FormularioOrden } from './components/FormularioOrden';
 import { TablaOrdenes } from './components/TablaOrdenes';
@@ -20,6 +21,7 @@ import {
 } from './lib/utils';
 import {
   CLAVE_FORMATO_FECHA,
+  CLAVE_INSTRUCCIONES,
   CLAVE_USUARIO,
   CLAVE_TEMA,
   DEPARTAMENTOS,
@@ -65,6 +67,8 @@ export default function App() {
   const [perfilAbierto, setPerfilAbierto] = useState(primeraVez);
   const [pegadoAbierto, setPegadoAbierto] = useState(true);
   const [formAbierto, setFormAbierto] = useState(false);
+  const [instruccionesAbiertas, setInstruccionesAbiertas] = useState(false);
+  const [recordarInstrucciones, setRecordarInstrucciones] = useAlmacenado(CLAVE_INSTRUCCIONES, true);
   const [bienvenida, setBienvenida] = useState(primeraVez);
 
   const [tab, setTab] = useState('ordenes');
@@ -105,6 +109,18 @@ export default function App() {
   }
 
   /* `accion` agrega un boton al aviso (deshacer): lo destructivo es reversible. */
+  /* Al entrar a Script se recuerdan los pasos, salvo que pidan no verlos mas. */
+  function cambiarTab(id) {
+    setTab(id);
+    if (id === 'script' && recordarInstrucciones) setInstruccionesAbiertas(true);
+  }
+
+  /* Nunca dos modales encima: abrir el perfil cierra las instrucciones. */
+  function abrirPerfil() {
+    setInstruccionesAbiertas(false);
+    setPerfilAbierto(true);
+  }
+
   function mostrarToast(texto, accion) {
     setToast({ texto, accion });
     clearTimeout(timerToast.current);
@@ -292,12 +308,12 @@ export default function App() {
     <div className="app">
       <Encabezado
         perfil={perfil}
-        onAbrirPerfil={() => setPerfilAbierto(true)}
+        onAbrirPerfil={abrirPerfil}
         total={ordenes.length}
         tema={tema}
         onTema={setTema}
         tab={tab}
-        onTab={setTab}
+        onTab={cambiarTab}
       />
 
       <div className="contenido">
@@ -310,7 +326,7 @@ export default function App() {
                 titulo="Carga tus órdenes"
                 descripcion="Pega la actividad de Oracle Field Service o cárgala a mano."
                 siguiente={{ id: 'plantillas', etiqueta: 'Armar plantillas' }}
-                onIr={setTab}
+                onIr={cambiarTab}
               />
               <FormularioOrden
                 proximoId={proximoId}
@@ -340,7 +356,7 @@ export default function App() {
                 titulo="Arma la plantilla"
                 descripcion="Elige una orden, completa lo que falte y copia el texto."
                 siguiente={{ id: 'script', etiqueta: 'Generar el script' }}
-                onIr={setTab}
+                onIr={cambiarTab}
               />
               <PanelPlantillas
               ordenes={ordenes}
@@ -363,7 +379,7 @@ export default function App() {
                 titulo="Envía al formulario"
                 descripcion="Copia el script y pégalo en la consola del formulario HITSS."
                 siguiente={{ id: 'ordenes', etiqueta: 'Volver a órdenes' }}
-                onIr={setTab}
+                onIr={cambiarTab}
               />
               <PanelScript
               ordenes={ordenesScript}
@@ -381,6 +397,7 @@ export default function App() {
                 confirmados: confirmados.length,
                 ciclos: ciclos.length,
               }}
+              onVerInstrucciones={() => setInstruccionesAbiertas(true)}
                 onToast={mostrarToast}
               />
             </>
@@ -414,6 +431,16 @@ export default function App() {
       </footer>
 
       </div>
+
+      {instruccionesAbiertas ? (
+        <ModalInstrucciones
+          modo={modoScript}
+          cantidad={ordenesScript.length}
+          recordar={recordarInstrucciones}
+          onRecordar={setRecordarInstrucciones}
+          onCerrar={() => setInstruccionesAbiertas(false)}
+        />
+      ) : null}
 
       {perfilAbierto ? (
         <PerfilModal

@@ -178,7 +178,10 @@ después, sin que eso impida armar la plantilla.
 
 ### 3 · Script
 
-Genera el JS que se pega en la consola del formulario.
+Genera el JS que se pega en la consola del formulario. **Al entrar a esta sección
+salen las instrucciones en un modal**; se cierran con *Entendido* o `Esc`, tienen la
+casilla *No volver a mostrar* y el botón **Ver instrucciones** las trae de vuelta
+cuando haga falta.
 
 1. Abrir el formulario HITSS, `F12` → *Console*.
    Si Chrome bloquea el pegado, escribir `allow pasting` y `Enter` primero.

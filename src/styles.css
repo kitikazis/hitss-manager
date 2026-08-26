@@ -1468,3 +1468,33 @@ textarea {
 [hidden] {
   display: none !important;
 }
+
+.modal-ancho {
+  max-width: 460px;
+}
+
+.modal .pasos {
+  margin-bottom: var(--e2);
+}
+
+.casilla {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12.5px;
+  color: var(--texto-2);
+  cursor: pointer;
+  user-select: none;
+}
+
+.casilla input {
+  width: auto;
+  min-height: 0;
+  margin: 0;
+  accent-color: var(--acento);
+  cursor: pointer;
+}
+
+.modal-acciones {
+  align-items: center;
+}

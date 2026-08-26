@@ -87,6 +87,7 @@ export const FORMATO_FECHA_DEFAULT = 'd/m/yyyy';
 
 export const CLAVE_USUARIO = 'hitss.usuarioActivo';
 export const CLAVE_FORMATO_FECHA = 'hitss.formatoFecha';
+export const CLAVE_INSTRUCCIONES = 'hitss.verInstrucciones';
 export const CLAVE_TEMA = 'hitss.tema';
 export const clavePerfil = (usuario) => `hitss.perfil.${usuario}`;
 export const claveOrdenes = (usuario) => `hitss.ordenes.${usuario}`;
