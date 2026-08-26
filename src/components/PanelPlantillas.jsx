@@ -164,6 +164,8 @@ export function PanelPlantillas({
   perfil,
   modo,
   onModo,
+  deptosD1,
+  onDeptosD1,
   onAgregarOrdenes,
   onActualizarOrden,
   onToast,
@@ -266,6 +268,8 @@ export function PanelPlantillas({
       onToast={onToast}
       modo={modo}
       onModo={onModo}
+      deptosD1={deptosD1}
+      onDeptosD1={onDeptosD1}
       abiertoInicial={!ordenes.length}
     />
   );

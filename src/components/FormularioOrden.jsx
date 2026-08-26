@@ -30,7 +30,7 @@ const FORM_VACIO = {
   sotManual: SOT_MANUAL_DEFAULT,
 };
 
-export function FormularioOrden({ proximoId, modo, onAgregar }) {
+export function FormularioOrden({ proximoId, modo, deptosD1 = DEPTOS_PROGRAMACION, onAgregar }) {
   const [form, setForm] = useState(() => ({ ...FORM_VACIO, sotManual: modo || SOT_MANUAL_DEFAULT }));
   const [errores, setErrores] = useState({});
   const refSot = useRef(null);
@@ -49,10 +49,10 @@ export function FormularioOrden({ proximoId, modo, onAgregar }) {
       ...f,
       departamento: valor,
       sotManual:
-        !modo && DEPTOS_PROGRAMACION.includes(valor) ? SOT_MANUAL_PROGRAMACION : f.sotManual,
+        !modo && deptosD1.includes(valor) ? SOT_MANUAL_PROGRAMACION : f.sotManual,
     }));
 
-  const rigeRegla = !modo && DEPTOS_PROGRAMACION.includes(form.departamento);
+  const rigeRegla = !modo && deptosD1.includes(form.departamento);
 
   // Si cambia el modo de trabajo, el formulario lo adopta.
   useEffect(() => {

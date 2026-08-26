@@ -87,7 +87,9 @@ orden sola, la selecciona y deja la plantilla lista abajo, sin cambiar de pesta�
 - **Franja**: `Auto` la deduce del pegado; AM0/AM1/AM2/PM1/PM2 la fijan a mano y
   avisan si OFS decía otra cosa.
 - **Modo** (la pregunta *SOT gestionada manual* del formulario): `Automático por
-  departamento` aplica la regla de mesa (UCAYALI y SAN MARTIN → PROGRAMACIONES D+1);
+  departamento` aplica la regla de mesa, y con *cambiar* eliges **qué departamentos
+  van como PROGRAMACIONES D+1** (vienen UCAYALI y SAN MARTIN, pero la lista es tuya y
+  se guarda por usuario);
   elegir PROGRAMACIONES D+1, MIGRACIONES, PM3 o PREDICTIVO fija ese valor para todo
   lo que cargues, pegado o a mano. Se guarda por usuario y se ve en el pie.
 - Si el texto pegado trae cabecera (`confi am1 lunes`), esa manda para ese bloque:
@@ -224,8 +226,9 @@ Escribir un código nuevo estrena perfil con el nombre que pongas en ese momento
   noche) caen en la franja de inicio más cercano. Se configuran en
   `BANDAS_FRANJA`, en `src/lib/constantes.js`.
 - **SOT gestionada manual**: PROGRAMACIONES D+1 / MIGRACIONES / PM3 / PREDICTIVO.
-  Se elige con el selector **Modo** de la pestaña Plantillas. En automático rige la
-  regla de mesa: **UCAYALI** y **SAN MARTIN** pasan solas a *PROGRAMACIONES D+1*.
+  Se elige con el selector **Modo** de la pestaña Plantillas. En automático, los
+  departamentos que marques ahí pasan solos a *PROGRAMACIONES D+1* (por defecto
+  UCAYALI y SAN MARTIN).
 - **Diagnóstico**: si una pregunta u opción no aparece en el formulario, el script
   avisa por consola con `console.warn` y lista las opciones que sí encontró.
 

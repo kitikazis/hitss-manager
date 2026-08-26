@@ -21,6 +21,7 @@ import {
   CLAVE_USUARIO,
   CLAVE_TEMA,
   DEPARTAMENTOS,
+  DEPTOS_PROGRAMACION,
   FECHA_DEFAULT,
   FORMATO_FECHA_DEFAULT,
   FRANJA_DEFAULT,
@@ -34,6 +35,7 @@ import {
   claveOrdenes,
   claveProximoId,
   claveModo,
+  claveDeptosD1,
   CONTRATAS,
   LISTA_CONTRATAS,
 } from './lib/constantes';
@@ -66,6 +68,7 @@ export default function App() {
   const [modoScript, setModoScript] = useState('manual');
   const [formatoFecha, setFormatoFecha] = useAlmacenado(CLAVE_FORMATO_FECHA, FORMATO_FECHA_DEFAULT);
   const [modo, setModo] = useAlmacenado(claveModo(usuario), '');
+  const [deptosD1, setDeptosD1] = useAlmacenado(claveDeptosD1(usuario), DEPTOS_PROGRAMACION);
   const [toast, setToast] = useState(null);
   const timerToast = useRef(null);
 
@@ -259,7 +262,12 @@ export default function App() {
         <div className="wrap">
           {tab === 'ordenes' ? (
             <>
-              <FormularioOrden proximoId={proximoId} modo={modo} onAgregar={agregarOrden} />
+              <FormularioOrden
+                proximoId={proximoId}
+                modo={modo}
+                deptosD1={deptosD1}
+                onAgregar={agregarOrden}
+              />
               <TablaOrdenes
                 ordenes={ordenes}
                 onEliminar={eliminarOrden}
@@ -275,6 +283,8 @@ export default function App() {
               perfil={perfil}
               modo={modo}
               onModo={setModo}
+              deptosD1={deptosD1}
+              onDeptosD1={setDeptosD1}
               onAgregarOrdenes={agregarOrdenes}
               onActualizarOrden={actualizarOrden}
               onToast={mostrarToast}

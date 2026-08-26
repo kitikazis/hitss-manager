@@ -1317,3 +1317,31 @@ textarea {
   resize: vertical;
   min-height: 56px;
 }
+
+/* ============ Departamentos D+1 ============ */
+.enlace {
+  appearance: none;
+  border: 0;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+  font: inherit;
+  color: var(--acento);
+  text-decoration: underline;
+}
+
+.deptos-d1 {
+  margin-bottom: var(--e4);
+  padding-bottom: var(--e4);
+  border-bottom: 1px solid var(--border);
+}
+
+.deptos-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--e1);
+}
+
+.chip-filtro.sin-punto::before {
+  display: none;
+}

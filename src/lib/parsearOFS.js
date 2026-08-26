@@ -328,10 +328,12 @@ function parsearBloque({ cabecera, lineas }, elegidos = {}) {
       gestion,
       departamento: deptoFinal,
       yaGestion: 'NO',
-      // El modo elegido manda; en automatico rige la regla del departamento.
+      // El modo elegido manda; en automatico rige la lista de departamentos D+1.
       sotManual:
         elegidos.sotManual ||
-        (DEPTOS_PROGRAMACION.includes(deptoFinal) ? SOT_MANUAL_PROGRAMACION : SOT_MANUAL_DEFAULT),
+        ((elegidos.deptosD1 || DEPTOS_PROGRAMACION).includes(deptoFinal)
+          ? SOT_MANUAL_PROGRAMACION
+          : SOT_MANUAL_DEFAULT),
       tipoPlantilla,
     },
   };

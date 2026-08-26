@@ -48,7 +48,7 @@ export const SI_NO = ['SI', 'NO'];
 export const SOT_MANUALES = ['PROGRAMACIONES D+1', 'MIGRACIONES', 'PM3', 'PREDICTIVO'];
 export const SOT_MANUAL_DEFAULT = 'PREDICTIVO';
 
-// Regla de mesa: UCAYALI y SAN MARTIN siempre van como PROGRAMACIONES D+1.
+// Regla de mesa por defecto; el operador puede cambiar la lista desde la app.
 export const DEPTOS_PROGRAMACION = ['UCAYALI', 'SAN MARTIN'];
 export const SOT_MANUAL_PROGRAMACION = 'PROGRAMACIONES D+1';
 
@@ -92,3 +92,4 @@ export const clavePerfil = (usuario) => `hitss.perfil.${usuario}`;
 export const claveOrdenes = (usuario) => `hitss.ordenes.${usuario}`;
 export const claveProximoId = (usuario) => `hitss.proximoId.${usuario}`;
 export const claveModo = (usuario) => `hitss.modo.${usuario}`;
+export const claveDeptosD1 = (usuario) => `hitss.deptosD1.${usuario}`;

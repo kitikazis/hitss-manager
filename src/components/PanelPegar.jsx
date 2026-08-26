@@ -2,7 +2,13 @@ import { useMemo, useState } from 'react';
 import { Segmentado } from './Campos';
 import { parsearPegado } from '../lib/parsearOFS.js';
 import { CLASE_TIPO, COLOR_TIPO, TIPOS, etiquetaTipo } from '../lib/plantillas.js';
-import { FRANJAS, LISTA_CONTRATAS, SOT_MANUALES } from '../lib/constantes.js';
+import {
+  DEPARTAMENTOS,
+  FRANJAS,
+  LISTA_CONTRATAS,
+  SOT_MANUALES,
+  SOT_MANUAL_PROGRAMACION,
+} from '../lib/constantes.js';
 
 const EJEMPLO = `Oracle Field Service
 Detalles de actividad
@@ -63,16 +69,25 @@ function Ficha({ bloque, contrata, onContrata }) {
   );
 }
 
-export function PanelPegar({ onAgregar, onToast, modo, onModo, abiertoInicial = true }) {
+export function PanelPegar({
+  onAgregar,
+  onToast,
+  modo,
+  onModo,
+  deptosD1,
+  onDeptosD1,
+  abiertoInicial = true,
+}) {
   const [abierto, setAbierto] = useState(abiertoInicial);
   const [texto, setTexto] = useState('');
   const [contratas, setContratas] = useState({});
   const [tipo, setTipo] = useState('');
   const [franja, setFranja] = useState('');
+  const [editandoDeptos, setEditandoDeptos] = useState(false);
 
   const bloques = useMemo(
-    () => parsearPegado(texto, { tipo, franja, sotManual: modo }),
-    [texto, tipo, franja, modo]
+    () => parsearPegado(texto, { tipo, franja, sotManual: modo, deptosD1 }),
+    [texto, tipo, franja, modo, deptosD1]
   );
   const validos = bloques.filter((b) => b.valido);
 
@@ -157,12 +172,51 @@ export function PanelPegar({ onAgregar, onToast, modo, onModo, abiertoInicial = 
                 ))}
               </select>
               <span className="pista">
-                {modo
-                  ? `Todas entran como ${modo}`
-                  : 'UCAYALI y SAN MARTIN van como PROGRAMACIONES D+1'}
+                {modo ? (
+                  `Todas entran como ${modo}`
+                ) : (
+                  <>
+                    {deptosD1.length === 0
+                      ? `Ningún departamento va como ${SOT_MANUAL_PROGRAMACION}`
+                      : deptosD1.length <= 3
+                        ? `${deptosD1.join(', ')} van como ${SOT_MANUAL_PROGRAMACION}`
+                        : `${deptosD1.length} departamentos van como ${SOT_MANUAL_PROGRAMACION}`}{' '}
+                    <button
+                      type="button"
+                      className="enlace"
+                      onClick={() => setEditandoDeptos((v) => !v)}
+                    >
+                      {editandoDeptos ? 'listo' : 'cambiar'}
+                    </button>
+                  </>
+                )}
               </span>
             </div>
           </div>
+
+          {!modo && editandoDeptos ? (
+            <div className="deptos-d1">
+              <p className="seccion">Departamentos que van como {SOT_MANUAL_PROGRAMACION}</p>
+              <div className="deptos-chips">
+                {DEPARTAMENTOS.map((d) => {
+                  const activo = deptosD1.includes(d);
+                  return (
+                    <button
+                      key={d}
+                      type="button"
+                      aria-pressed={activo}
+                      className={'chip-filtro sin-punto' + (activo ? ' activo' : '')}
+                      onClick={() =>
+                        onDeptosD1(activo ? deptosD1.filter((x) => x !== d) : [...deptosD1, d])
+                      }
+                    >
+                      {d}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          ) : null}
 
           <textarea
             className="pegado"
