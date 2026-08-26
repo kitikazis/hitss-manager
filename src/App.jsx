@@ -282,7 +282,7 @@ export default function App() {
       />
 
       <div className="contenido">
-        <main>
+        <main className={tab === 'plantillas' ? 'pleno' : undefined}>
         <div className="wrap">
           {tab === 'ordenes' ? (
             <>

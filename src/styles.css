@@ -80,13 +80,36 @@ body {
 .app {
   display: grid;
   grid-template-columns: 236px minmax(0, 1fr);
-  min-height: 100vh;
+  height: 100vh;
+  overflow: hidden;
 }
 
 .contenido {
   display: flex;
   flex-direction: column;
   min-width: 0;
+  overflow: hidden;
+}
+
+/*
+ * El scroll vive dentro del contenido, no en la pagina. En Plantillas ni eso:
+ * la vista ocupa la altura exacta y cada columna se desplaza por dentro.
+ */
+main {
+  overflow-y: auto;
+}
+
+main.pleno {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+main.pleno .wrap {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
 }
 
 .wrap {
@@ -254,7 +277,7 @@ body {
 /* ============ Estructura ============ */
 main {
   flex: 1;
-  padding: 24px 0 48px;
+  padding: var(--e4) 0 var(--e5);
 }
 
 .tarjeta {
@@ -698,9 +721,51 @@ td.acciones-fila {
 /* ============ Pestaña Plantillas ============ */
 .plantillas {
   display: grid;
-  grid-template-columns: 250px minmax(340px, 1fr) minmax(340px, 1fr);
-  gap: 16px;
-  align-items: start;
+  grid-template-columns: 240px minmax(320px, 1fr) minmax(320px, 1fr);
+  gap: var(--e3);
+  flex: 1;
+  min-height: 0;
+  align-items: stretch;
+  padding-bottom: var(--e3);
+}
+
+.plantillas > * {
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Cada tarjeta de la fila se estira y se desplaza por dentro. */
+.plantillas .tarjeta {
+  margin-bottom: 0;
+  max-height: 100%;
+  min-height: 0;
+}
+
+.plantillas .columna-lateral .tarjeta,
+.plantillas .vista {
+  overflow: hidden;
+}
+
+.plantillas .campos {
+  overflow: hidden;
+}
+
+.plantillas .campos .tarjeta-cuerpo {
+  overflow-y: auto;
+  min-height: 0;
+}
+
+.plantillas .lista {
+  flex: 1;
+  min-height: 0;
+  max-height: none;
+}
+
+.plantillas .vista .codigo {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
 }
 
 /* La vista previa vive al lado de los campos: se edita y se ve al mismo tiempo. */
@@ -832,7 +897,8 @@ code {
 
 /* ============ Pegado ============ */
 textarea.pegado {
-  min-height: 120px;
+  min-height: 66px;
+  max-height: 30vh;
   resize: vertical;
   font-family: var(--mono);
   font-size: 12px;
@@ -844,8 +910,10 @@ textarea.pegado {
 .fichas {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  margin-top: 14px;
+  gap: var(--e2);
+  margin-top: var(--e3);
+  max-height: 32vh;
+  overflow-y: auto;
 }
 
 .ficha {
@@ -926,9 +994,9 @@ footer {
 .pie {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px 24px;
-  padding: 14px 0;
-  font-size: 12px;
+  gap: 4px 20px;
+  padding: 8px 0;
+  font-size: 11.5px;
   color: var(--texto-3);
 }
 
@@ -1301,10 +1369,26 @@ tbody tr.es-rechazo td:first-child {
 .opciones-pegado {
   display: flex;
   flex-wrap: wrap;
-  gap: 14px 28px;
-  margin-bottom: 14px;
-  padding-bottom: 14px;
+  gap: var(--e3) var(--e5);
+  margin-bottom: var(--e3);
+  padding-bottom: var(--e3);
   border-bottom: 1px solid var(--border);
+}
+
+/* Resumen plegable de las opciones: ocupan mucho y casi siempre van en Auto. */
+.resumen-opciones {
+  display: flex;
+  align-items: center;
+  gap: var(--e2);
+  width: 100%;
+  margin-bottom: var(--e3);
+  font-size: 12px;
+  color: var(--texto-3);
+}
+
+.resumen-opciones b {
+  color: var(--texto-2);
+  font-weight: 500;
 }
 
 .opcion {
@@ -1419,14 +1503,22 @@ textarea {
 /* ============ Cabecera de sección ============ */
 .seccion-cab {
   display: flex;
-  align-items: flex-end;
-  gap: var(--e4);
+  align-items: baseline;
+  gap: var(--e2) var(--e4);
   flex-wrap: wrap;
-  margin-bottom: var(--e4);
+  margin-bottom: var(--e3);
+  flex: none;
+}
+
+.seccion-cab > div {
+  display: flex;
+  align-items: baseline;
+  gap: var(--e3);
+  flex-wrap: wrap;
 }
 
 .seccion-paso {
-  margin: 0 0 2px;
+  margin: 0;
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.06em;
@@ -1436,15 +1528,15 @@ textarea {
 
 .seccion-cab h2 {
   margin: 0;
-  font-size: 20px;
+  font-size: 17px;
   font-weight: 650;
   letter-spacing: -0.02em;
 }
 
 .seccion-desc {
-  margin: 3px 0 0;
-  font-size: 13.5px;
-  color: var(--texto-2);
+  margin: 0;
+  font-size: 12.5px;
+  color: var(--texto-3);
 }
 
 .btn-siguiente {

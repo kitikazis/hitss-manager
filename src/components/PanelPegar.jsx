@@ -93,6 +93,7 @@ export function PanelPegar({
   const [tipo, setTipo] = useState('');
   const [franja, setFranja] = useState('');
   const [editandoDeptos, setEditandoDeptos] = useState(false);
+  const [opcionesAbiertas, setOpcionesAbiertas] = useState(false);
   const [cuando, setCuando] = useState('');
   const [otraFecha, setOtraFecha] = useState('');
 
@@ -137,7 +138,7 @@ export function PanelPegar({
       <div className="tarjeta-cab">
         <div>
           <h2>Pegar actividad de Oracle Field Service</h2>
-          <p className="sub">Elige el tipo y la franja, pega el detalle y agrega</p>
+          <p className="sub">Pega el detalle de la actividad y agrega</p>
         </div>
         <div className="empuje" />
         {abierto && texto ? (
@@ -161,7 +162,23 @@ export function PanelPegar({
 
       {abierto ? (
         <div className="tarjeta-cuerpo">
-          <div className="opciones-pegado">
+          <div className="resumen-opciones">
+            <span>
+              Entran como <b>{tipo ? etiquetaTipo(tipo) : 'lo que diga el pegado'}</b> ·{' '}
+              <b>{franja || 'franja del pegado'}</b> · <b>{fechaElegida || 'fecha del pegado'}</b> ·{' '}
+              <b>{modo || 'modo automático'}</b>
+            </span>
+            <button
+              type="button"
+              className="enlace"
+              onClick={() => setOpcionesAbiertas((v) => !v)}
+              aria-expanded={opcionesAbiertas}
+            >
+              {opcionesAbiertas ? 'listo' : 'cambiar'}
+            </button>
+          </div>
+
+          <div className="opciones-pegado" hidden={!opcionesAbiertas}>
             <div className="opcion">
               <p className="seccion">Tipo de las nuevas</p>
               <Segmentado valor={tipo} onCambio={setTipo} opciones={OPCIONES_TIPO} />
@@ -241,7 +258,7 @@ export function PanelPegar({
             </div>
           </div>
 
-          {usaLista && editandoDeptos ? (
+          {opcionesAbiertas && usaLista && editandoDeptos ? (
             <div className="deptos-d1">
               <p className="seccion">Tus departamentos de {SOT_MANUAL_PROGRAMACION}</p>
               <p className="pista" style={{ marginBottom: 10 }}>
@@ -274,6 +291,7 @@ export function PanelPegar({
             className="pegado"
             value={texto}
             onChange={(e) => setTexto(e.target.value)}
+            rows={3}
             placeholder={EJEMPLO}
             spellCheck={false}
           />

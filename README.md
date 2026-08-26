@@ -142,8 +142,15 @@ INST CARLEI TARAPOTO FTTH - 4F TARAP, 24/08/26
 - Lo que no encuentre lo dice con un aviso; sin SOT no deja agregar.
 
 Tres columnas: la **lista de órdenes**, los **campos** en el centro y la **vista
-previa** a la derecha, para editar y ver el resultado a la vez. En pantallas angostas
-las columnas se apilan.
+previa** a la derecha, para editar y ver el resultado a la vez.
+
+**Entra en una pantalla sin scroll**: la sección ocupa exactamente el alto de la
+ventana y el desplazamiento vive dentro de cada columna, así los botones *Copiar
+plantilla* y *Descargar* quedan siempre visibles. El panel de pegado es compacto
+(tres líneas) y sus opciones —tipo, franja, fecha y modo— se pliegan tras un resumen
+de una línea: *Entran como lo que diga el pegado · franja del pegado · fecha del
+pegado · modo automático · cambiar*. En pantallas angostas las columnas se apilan y
+vuelve el scroll normal.
 
 La lista muestra **la última cargada arriba**, con la **hora en que se agregó** a la
 derecha, y se acota de dos formas combinables:
