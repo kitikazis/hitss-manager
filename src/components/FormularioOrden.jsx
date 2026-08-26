@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Campo, Select } from './Campos';
 import {
   DEPARTAMENTOS,
@@ -30,8 +30,8 @@ const FORM_VACIO = {
   sotManual: SOT_MANUAL_DEFAULT,
 };
 
-export function FormularioOrden({ proximoId, onAgregar }) {
-  const [form, setForm] = useState(FORM_VACIO);
+export function FormularioOrden({ proximoId, modo, onAgregar }) {
+  const [form, setForm] = useState(() => ({ ...FORM_VACIO, sotManual: modo || SOT_MANUAL_DEFAULT }));
   const [errores, setErrores] = useState({});
   const refSot = useRef(null);
 
@@ -40,15 +40,24 @@ export function FormularioOrden({ proximoId, onAgregar }) {
     setErrores((e) => (e[campo] ? { ...e, [campo]: false } : e));
   };
 
-  // Regla de mesa: UCAYALI y SAN MARTIN van siempre como PROGRAMACIONES D+1.
+  /*
+   * Con un modo elegido, ese manda. En automatico rige la regla de mesa:
+   * UCAYALI y SAN MARTIN van siempre como PROGRAMACIONES D+1.
+   */
   const setDepartamento = (valor) =>
     setForm((f) => ({
       ...f,
       departamento: valor,
-      sotManual: DEPTOS_PROGRAMACION.includes(valor) ? SOT_MANUAL_PROGRAMACION : f.sotManual,
+      sotManual:
+        !modo && DEPTOS_PROGRAMACION.includes(valor) ? SOT_MANUAL_PROGRAMACION : f.sotManual,
     }));
 
-  const rigeRegla = DEPTOS_PROGRAMACION.includes(form.departamento);
+  const rigeRegla = !modo && DEPTOS_PROGRAMACION.includes(form.departamento);
+
+  // Si cambia el modo de trabajo, el formulario lo adopta.
+  useEffect(() => {
+    if (modo) setForm((f) => ({ ...f, sotManual: modo }));
+  }, [modo]);
 
   function enviar(ev) {
     ev.preventDefault();
@@ -188,7 +197,13 @@ export function FormularioOrden({ proximoId, onAgregar }) {
 
             <Campo
               label="SOT gestionada manual"
-              pista={rigeRegla ? `${form.departamento} va como ${SOT_MANUAL_PROGRAMACION}` : undefined}
+              pista={
+                rigeRegla
+                  ? `${form.departamento} va como ${SOT_MANUAL_PROGRAMACION}`
+                  : modo
+                    ? 'Viene del modo elegido en Plantillas'
+                    : undefined
+              }
             >
               <Select value={form.sotManual} onChange={set('sotManual')} opciones={SOT_MANUALES} />
             </Campo>

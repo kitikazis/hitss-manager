@@ -159,7 +159,15 @@ function CamposDinamicos({ tipo, extra, set }) {
   return null;
 }
 
-export function PanelPlantillas({ ordenes, perfil, onAgregarOrdenes, onActualizarOrden, onToast }) {
+export function PanelPlantillas({
+  ordenes,
+  perfil,
+  modo,
+  onModo,
+  onAgregarOrdenes,
+  onActualizarOrden,
+  onToast,
+}) {
   const [idSeleccion, setIdSeleccion] = useState(null);
   const [busqueda, setBusqueda] = useState('');
   const [filtroTipo, setFiltroTipo] = useState('');
@@ -256,6 +264,8 @@ export function PanelPlantillas({ ordenes, perfil, onAgregarOrdenes, onActualiza
     <PanelPegar
       onAgregar={agregarDesdePegado}
       onToast={onToast}
+      modo={modo}
+      onModo={onModo}
       abiertoInicial={!ordenes.length}
     />
   );

@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { Segmentado } from './Campos';
 import { parsearPegado } from '../lib/parsearOFS.js';
 import { CLASE_TIPO, COLOR_TIPO, TIPOS, etiquetaTipo } from '../lib/plantillas.js';
-import { FRANJAS, LISTA_CONTRATAS } from '../lib/constantes.js';
+import { FRANJAS, LISTA_CONTRATAS, SOT_MANUALES } from '../lib/constantes.js';
 
 const EJEMPLO = `Oracle Field Service
 Detalles de actividad
@@ -63,14 +63,17 @@ function Ficha({ bloque, contrata, onContrata }) {
   );
 }
 
-export function PanelPegar({ onAgregar, onToast, abiertoInicial = true }) {
+export function PanelPegar({ onAgregar, onToast, modo, onModo, abiertoInicial = true }) {
   const [abierto, setAbierto] = useState(abiertoInicial);
   const [texto, setTexto] = useState('');
   const [contratas, setContratas] = useState({});
   const [tipo, setTipo] = useState('');
   const [franja, setFranja] = useState('');
 
-  const bloques = useMemo(() => parsearPegado(texto, { tipo, franja }), [texto, tipo, franja]);
+  const bloques = useMemo(
+    () => parsearPegado(texto, { tipo, franja, sotManual: modo }),
+    [texto, tipo, franja, modo]
+  );
   const validos = bloques.filter((b) => b.valido);
 
   const contrataDe = (b) => (b.orden.sot in contratas ? contratas[b.orden.sot] : b.orden.contrata);
@@ -137,6 +140,26 @@ export function PanelPegar({ onAgregar, onToast, abiertoInicial = true }) {
                 {franja
                   ? `Todas entran como ${franja}`
                   : 'Auto: la toma del intervalo u horario del pegado'}
+              </span>
+            </div>
+            <div className="opcion">
+              <p className="seccion">Modo</p>
+              <select
+                value={modo}
+                onChange={(e) => onModo(e.target.value)}
+                aria-label="SOT gestionada manual"
+              >
+                <option value="">Automático por departamento</option>
+                {SOT_MANUALES.map((m) => (
+                  <option key={m} value={m}>
+                    {m}
+                  </option>
+                ))}
+              </select>
+              <span className="pista">
+                {modo
+                  ? `Todas entran como ${modo}`
+                  : 'UCAYALI y SAN MARTIN van como PROGRAMACIONES D+1'}
               </span>
             </div>
           </div>

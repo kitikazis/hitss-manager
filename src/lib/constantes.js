@@ -91,3 +91,4 @@ export const CLAVE_TEMA = 'hitss.tema';
 export const clavePerfil = (usuario) => `hitss.perfil.${usuario}`;
 export const claveOrdenes = (usuario) => `hitss.ordenes.${usuario}`;
 export const claveProximoId = (usuario) => `hitss.proximoId.${usuario}`;
+export const claveModo = (usuario) => `hitss.modo.${usuario}`;

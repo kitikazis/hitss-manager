@@ -33,6 +33,7 @@ import {
   clavePerfil,
   claveOrdenes,
   claveProximoId,
+  claveModo,
   CONTRATAS,
   LISTA_CONTRATAS,
 } from './lib/constantes';
@@ -64,6 +65,7 @@ export default function App() {
   const [filtroScript, setFiltroScript] = useState('todas');
   const [modoScript, setModoScript] = useState('manual');
   const [formatoFecha, setFormatoFecha] = useAlmacenado(CLAVE_FORMATO_FECHA, FORMATO_FECHA_DEFAULT);
+  const [modo, setModo] = useAlmacenado(claveModo(usuario), '');
   const [toast, setToast] = useState(null);
   const timerToast = useRef(null);
 
@@ -257,7 +259,7 @@ export default function App() {
         <div className="wrap">
           {tab === 'ordenes' ? (
             <>
-              <FormularioOrden proximoId={proximoId} onAgregar={agregarOrden} />
+              <FormularioOrden proximoId={proximoId} modo={modo} onAgregar={agregarOrden} />
               <TablaOrdenes
                 ordenes={ordenes}
                 onEliminar={eliminarOrden}
@@ -271,6 +273,8 @@ export default function App() {
             <PanelPlantillas
               ordenes={ordenes}
               perfil={perfil}
+              modo={modo}
+              onModo={setModo}
               onAgregarOrdenes={agregarOrdenes}
               onActualizarOrden={actualizarOrden}
               onToast={mostrarToast}
@@ -314,6 +318,9 @@ export default function App() {
             </span>
             <span>
               Confirmados: <b>{confirmados.length}</b> · Ciclos: <b>{ciclos.length}</b>
+            </span>
+            <span>
+              Modo: <b>{modo || 'automático por departamento'}</b>
             </span>
           </div>
         </div>
