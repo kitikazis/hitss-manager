@@ -316,7 +316,9 @@ function parsearBloque({ cabecera, lineas }, elegidos = {}) {
 
   const fechaCruda = valorDe(lineas, 'Fecha de Programacion', 'Fecha de Programación');
   const fecha = convertirFecha(fechaCruda);
-  if (!fecha) avisos.push('No se encontró la fecha de programación.');
+  // La fecha elegida manda: la SOT puede reprogramarse para hoy, mañana o adelantarse.
+  const fechaFinal = elegidos.fecha || (fecha ? fecha.texto : '');
+  if (!fecha && !elegidos.fecha) avisos.push('No se encontró la fecha de programación.');
 
   // La cabecera puede nombrar el dia: sirve para detectar un pegado equivocado.
   const diaTexto = cabecera.match(PATRON_DIA);
@@ -334,6 +336,7 @@ function parsearBloque({ cabecera, lineas }, elegidos = {}) {
     valido: Boolean(sot),
     tipoPlantilla,
     idActividad: valorDe(lineas, 'ID de actividad'),
+    fechaOFS: fecha ? fecha.texto : '',
     franjaOrigen,
     avisos,
     orden: {
@@ -341,7 +344,7 @@ function parsearBloque({ cabecera, lineas }, elegidos = {}) {
       cliente,
       telefono,
       contrata: contrataDelTitulo(lineas),
-      fecha: fecha ? fecha.texto : '',
+      fecha: fechaFinal,
       franja,
       horario: deteccion.horario || '',
       observaciones: '',

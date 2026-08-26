@@ -95,6 +95,10 @@ orden sola, la selecciona y deja la plantilla lista abajo, sin cambiar de pesta�
   todo lo pegado.
 - **Franja**: `Auto` la deduce del pegado; AM0/AM1/AM2/PM1/PM2 la fijan a mano y
   avisan si OFS decía otra cosa.
+- **Fecha**: `Auto` toma la *Fecha de Programacion* del pegado; `Hoy`, `Mañana` u
+  `Otra` (con calendario) la fijan para todo el lote, porque una SOT puede
+  reprogramarse o adelantarse. Si la elegida no coincide con la de OFS, la ficha lo
+  dice antes de agregar.
 - **Modo** (la pregunta *SOT gestionada manual* del formulario). Con `Automático por
   departamento` o con `PROGRAMACIONES D+1` aparece **elegir departamentos**: los que
   marques entran como PROGRAMACIONES D+1 y el resto como PREDICTIVO, así acotas el
@@ -169,7 +173,8 @@ La vista previa contiene **solo el texto de la plantilla**: lo que se copia se p
 tal cual. El usuario, el SOT y el departamento se muestran encima, fuera del bloque.
 
 Los datos de la orden (cliente, número, fecha, franja, contrata, departamento) son
-**editables ahí mismo**: si algo salió mal del pegado o quedó vacío, se corrige en la
+**editables ahí mismo**; la fecha usa el calendario del navegador y tiene atajos
+*hoy* y *mañana*: si algo salió mal del pegado o quedó vacío, se corrige en la
 plantilla y se guarda en la orden. `REALIZADO POR` sale del campo **Realizado por**
 del perfil.
 

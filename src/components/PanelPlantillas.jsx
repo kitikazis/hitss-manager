@@ -19,7 +19,7 @@ import {
   MOTIVOS_RECHAZO,
   RECHAZO_TIPOS,
 } from '../lib/constantes';
-import { copiarAlPortapapeles, descargarArchivo, horaCorta } from '../lib/utils';
+import { aISO, copiarAlPortapapeles, deISO, descargarArchivo, fechaRelativa, horaCorta } from '../lib/utils';
 
 function ListaOrdenes({
   ordenes,
@@ -352,13 +352,32 @@ export function PanelPlantillas({
                     inputMode="tel"
                   />
                 </Campo>
-                <Campo label="Fecha">
-                  <input
-                    className="mono"
-                    value={seleccionada.fecha}
-                    onChange={(e) => editar('fecha')(e.target.value)}
-                    placeholder="24/8/2026"
-                  />
+                <Campo label="Fecha de la visita">
+                  <div className="fecha-campo">
+                    <input
+                      type="date"
+                      value={aISO(seleccionada.fecha)}
+                      onChange={(e) => editar('fecha')(deISO(e.target.value))}
+                      aria-label="Fecha de la visita"
+                    />
+                    <div className="fecha-atajos">
+                      <button
+                        type="button"
+                        className="enlace"
+                        onClick={() => editar('fecha')(fechaRelativa(0))}
+                      >
+                        hoy
+                      </button>
+                      <button
+                        type="button"
+                        className="enlace"
+                        onClick={() => editar('fecha')(fechaRelativa(1))}
+                      >
+                        mañana
+                      </button>
+                    </div>
+                  </div>
+                  <span className="pista">Sale en la plantilla: {seleccionada.fecha || '—'}</span>
                 </Campo>
                 <Campo label="Franja">
                   <Select value={seleccionada.franja} onChange={editar('franja')} opciones={FRANJAS} />

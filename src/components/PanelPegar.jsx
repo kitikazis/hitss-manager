@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Segmentado } from './Campos';
 import { parsearPegado } from '../lib/parsearOFS.js';
+import { aISO, deISO, fechaRelativa } from '../lib/utils.js';
 import { CLASE_TIPO, COLOR_TIPO, TIPOS, etiquetaTipo } from '../lib/plantillas.js';
 import {
   DEPARTAMENTOS,
@@ -22,11 +23,12 @@ SOT
 ...`;
 
 const AUTO = { id: '', etiqueta: 'Auto' };
+const OPCIONES_FECHA = [AUTO, { id: 'hoy', etiqueta: 'Hoy' }, { id: 'manana', etiqueta: 'Mañana' }, { id: 'otra', etiqueta: 'Otra' }];
 const OPCIONES_TIPO = [AUTO, ...TIPOS];
 const OPCIONES_FRANJA = [AUTO, ...FRANJAS.map((f) => ({ id: f, etiqueta: f }))];
 
 function Ficha({ bloque, contrata, onContrata }) {
-  const { orden, avisos, valido, tipoPlantilla, idActividad, franjaOrigen } = bloque;
+  const { orden, avisos, valido, tipoPlantilla, idActividad, franjaOrigen, fechaOFS } = bloque;
 
   return (
     <div className={'ficha ' + CLASE_TIPO[tipoPlantilla] + (valido ? '' : ' invalida')}>
@@ -42,6 +44,12 @@ function Ficha({ bloque, contrata, onContrata }) {
         </span>
         {idActividad ? <span className="tenue">Actividad {idActividad}</span> : null}
       </div>
+
+      {fechaOFS && fechaOFS !== orden.fecha ? (
+        <div className="ficha-aviso">
+          Entra con {orden.fecha}; en OFS estaba programada para {fechaOFS}.
+        </div>
+      ) : null}
 
       {franjaOrigen && franjaOrigen !== 'cabecera' ? (
         <div className="ficha-origen">
@@ -85,13 +93,25 @@ export function PanelPegar({
   const [tipo, setTipo] = useState('');
   const [franja, setFranja] = useState('');
   const [editandoDeptos, setEditandoDeptos] = useState(false);
+  const [cuando, setCuando] = useState('');
+  const [otraFecha, setOtraFecha] = useState('');
+
+  // Fecha con la que entran las ordenes nuevas; vacia = la que traiga el pegado.
+  const fechaElegida =
+    cuando === 'hoy'
+      ? fechaRelativa(0)
+      : cuando === 'manana'
+        ? fechaRelativa(1)
+        : cuando === 'otra'
+          ? deISO(otraFecha)
+          : '';
 
   // La lista de departamentos rige en automatico y al trabajar PROGRAMACIONES D+1.
   const usaLista = !modo || modo === SOT_MANUAL_PROGRAMACION;
 
   const bloques = useMemo(
-    () => parsearPegado(texto, { tipo, franja, sotManual: modo, deptosD1 }),
-    [texto, tipo, franja, modo, deptosD1]
+    () => parsearPegado(texto, { tipo, franja, sotManual: modo, deptosD1, fecha: fechaElegida }),
+    [texto, tipo, franja, modo, deptosD1, fechaElegida]
   );
   const validos = bloques.filter((b) => b.valido);
 
@@ -161,6 +181,25 @@ export function PanelPegar({
                   : 'Auto: la toma del intervalo u horario del pegado'}
               </span>
             </div>
+            <div className="opcion">
+              <p className="seccion">Fecha de las nuevas</p>
+              <Segmentado valor={cuando} onCambio={setCuando} opciones={OPCIONES_FECHA} />
+              {cuando === 'otra' ? (
+                <input
+                  type="date"
+                  className="fecha-otra"
+                  value={otraFecha}
+                  onChange={(e) => setOtraFecha(e.target.value)}
+                  aria-label="Fecha para las órdenes nuevas"
+                />
+              ) : null}
+              <span className="pista">
+                {fechaElegida
+                  ? `Las que agregues ahora quedan con ${fechaElegida}`
+                  : 'Auto: la fecha de programación que trae el pegado'}
+              </span>
+            </div>
+
             <div className="opcion">
               <p className="seccion">Modo de las nuevas</p>
               <select

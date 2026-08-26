@@ -50,6 +50,29 @@ export function horaCorta(marca) {
   }
 }
 
+/* Fecha de hoy + n dias, en el formato d/m/aaaa que usa la app. */
+export function fechaRelativa(dias = 0) {
+  const d = new Date();
+  d.setDate(d.getDate() + dias);
+  return `${d.getDate()}/${d.getMonth() + 1}/${d.getFullYear()}`;
+}
+
+/* d/m/aaaa <-> aaaa-mm-dd, para poder usar el calendario del navegador. */
+export function aISO(texto) {
+  const m = String(texto || '').match(/(\d{1,2})\/(\d{1,2})\/(\d{2,4})/);
+  if (!m) return '';
+  let anio = Number(m[3]);
+  if (anio < 100) anio += 2000;
+  const p = (n) => String(n).padStart(2, '0');
+  return `${anio}-${p(Number(m[2]))}-${p(Number(m[1]))}`;
+}
+
+export function deISO(iso) {
+  const m = String(iso || '').match(/(\d{4})-(\d{2})-(\d{2})/);
+  if (!m) return '';
+  return `${Number(m[3])}/${Number(m[2])}/${Number(m[1])}`;
+}
+
 export function formatearId(n) {
   return `SOT-${String(n).padStart(6, '0')}`;
 }
