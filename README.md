@@ -141,8 +141,8 @@ cabecera que usaste.
 | Rechazo | ID de llamada, mesa/campo, persona que contesta, motivo, sub-motivo |
 
 **Horario** y **Observaciones** son opcionales y viven en la orden: si los llenas
-aparecen en la plantilla (`HORARIO:` bajo el día y franja, `OBSERVACIONES:` antes del
-ID de llamada) y si los dejas vacíos, esas líneas no salen. El horario se completa
+aparecen en la plantilla (`HORARIO:` bajo el día y franja, `OBSERVACIONES:` como
+última línea) y si los dejas vacíos, esas líneas no salen. El horario se completa
 solo cuando OFS trae el intervalo o el SLA con horas.
 
 La de ciclo firma con `REALIZADO POR: <nombre> - ADP MULTISKILL HITSS`.

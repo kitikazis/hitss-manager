@@ -92,9 +92,9 @@ export function construirPlantilla({ tipo, orden, extra, perfil }) {
       ...linea('HORARIO', horario),
       `MOTIVO: ${campos.motivo ?? ''}`,
       `SUB-MOTIVO: ${campos.subMotivo ?? ''}`,
-      ...linea('OBSERVACIONES', observaciones),
       `ID DE LLAMADA: ${campos.idLlamada ?? ''}`,
       `REALIZADO POR: ${realizadoPor} - ${AREA}`,
+      ...linea('OBSERVACIONES', observaciones),
     ].join('\n');
   }
 
@@ -108,9 +108,9 @@ export function construirPlantilla({ tipo, orden, extra, perfil }) {
       ...linea('HORARIO', horario),
       `MOTIVO: ${campos.motivo ?? ''}`,
       `SUBMOTIVO: ${campos.subMotivo ?? ''}`,
-      ...linea('OBSERVACIONES', observaciones),
       `ID DE LLAMADA: ${campos.idLlamada ?? ''}`,
       `REALIZADO POR: ${realizadoPor}`,
+      ...linea('OBSERVACIONES', observaciones),
     ].join('\n');
   }
 
@@ -122,8 +122,8 @@ export function construirPlantilla({ tipo, orden, extra, perfil }) {
     `CLIENTE: ${orden.cliente}`,
     `NUMERO: ${orden.telefono}`,
     `CONTRATA: ${orden.contrata}`,
-    ...linea('OBSERVACIONES', observaciones),
     `ID DE LLAMADA: ${campos.idLlamada ?? ''}`,
     `REALIZADO POR: ${realizadoPor}`,
+    ...linea('OBSERVACIONES', observaciones),
   ].join('\n');
 }
