@@ -1415,3 +1415,56 @@ textarea {
 .chip-filtro.sin-punto::before {
   display: none;
 }
+
+/* ============ Cabecera de sección ============ */
+.seccion-cab {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--e4);
+  flex-wrap: wrap;
+  margin-bottom: var(--e4);
+}
+
+.seccion-paso {
+  margin: 0 0 2px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--acento);
+}
+
+.seccion-cab h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+}
+
+.seccion-desc {
+  margin: 3px 0 0;
+  font-size: 13.5px;
+  color: var(--texto-2);
+}
+
+.btn-siguiente {
+  margin-left: auto;
+  gap: 8px;
+}
+
+.seccion-nota {
+  margin: 0 0 var(--e4);
+  font-size: 12.5px;
+  color: var(--texto-3);
+}
+
+/* Acción principal de cada sección: más grande que el resto. */
+.btn-grande {
+  min-height: 40px;
+  padding: 9px 20px;
+  font-size: 14.5px;
+}
+
+[hidden] {
+  display: none !important;
+}

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Encabezado } from './components/Encabezado';
+import { CabeceraSeccion } from './components/CabeceraSeccion';
 import { PerfilModal } from './components/Perfil';
 import { FormularioOrden } from './components/FormularioOrden';
 import { TablaOrdenes } from './components/TablaOrdenes';
@@ -63,6 +64,7 @@ export default function App() {
   const [primeraVez] = useState(() => leerAlmacen(CLAVE_USUARIO, null) === null);
   const [perfilAbierto, setPerfilAbierto] = useState(primeraVez);
   const [pegadoAbierto, setPegadoAbierto] = useState(true);
+  const [formAbierto, setFormAbierto] = useState(false);
   const [bienvenida, setBienvenida] = useState(primeraVez);
 
   const [tab, setTab] = useState('ordenes');
@@ -303,10 +305,23 @@ export default function App() {
         <div className="wrap">
           {tab === 'ordenes' ? (
             <>
+              <CabeceraSeccion
+                paso={1}
+                titulo="Carga tus órdenes"
+                descripcion="Pega la actividad de Oracle Field Service o cárgala a mano."
+                siguiente={{ id: 'plantillas', etiqueta: 'Armar plantillas' }}
+                onIr={setTab}
+              />
               <FormularioOrden
                 proximoId={proximoId}
                 modo={modo}
                 deptosD1={deptosD1}
+                abierto={formAbierto}
+                onAbierto={setFormAbierto}
+                onPegar={() => {
+                  setPegadoAbierto(true);
+                  setTab('plantillas');
+                }}
                 onAgregar={agregarOrden}
               />
               <TablaOrdenes
@@ -319,7 +334,15 @@ export default function App() {
               />
             </>
           ) : tab === 'plantillas' ? (
-            <PanelPlantillas
+            <>
+              <CabeceraSeccion
+                paso={2}
+                titulo="Arma la plantilla"
+                descripcion="Elige una orden, completa lo que falte y copia el texto."
+                siguiente={{ id: 'script', etiqueta: 'Generar el script' }}
+                onIr={setTab}
+              />
+              <PanelPlantillas
               ordenes={ordenes}
               perfil={perfil}
               modo={modo}
@@ -330,10 +353,19 @@ export default function App() {
               onPegadoAbierto={setPegadoAbierto}
               onAgregarOrdenes={agregarOrdenes}
               onActualizarOrden={actualizarOrden}
-              onToast={mostrarToast}
-            />
+                onToast={mostrarToast}
+              />
+            </>
           ) : (
-            <PanelScript
+            <>
+              <CabeceraSeccion
+                paso={3}
+                titulo="Envía al formulario"
+                descripcion="Copia el script y pégalo en la consola del formulario HITSS."
+                siguiente={{ id: 'ordenes', etiqueta: 'Volver a órdenes' }}
+                onIr={setTab}
+              />
+              <PanelScript
               ordenes={ordenesScript}
               perfil={perfil}
               script={script}
@@ -349,8 +381,9 @@ export default function App() {
                 confirmados: confirmados.length,
                 ciclos: ciclos.length,
               }}
-              onToast={mostrarToast}
-            />
+                onToast={mostrarToast}
+              />
+            </>
           )}
         </div>
         </main>

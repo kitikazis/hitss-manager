@@ -30,8 +30,13 @@ marca arriba, las tres secciones al medio y el perfil y el tema al pie. Bajo 900
 barra pasa arriba como una fila.
 
 Las secciones están numeradas porque son el orden del trabajo: **1 Órdenes** (cargar)
-→ **2 Plantillas** (armar y copiar) → **3 Script** (enviar al formulario). La sección
-activa se marca visualmente y con `aria-current`.
+→ **2 Plantillas** (armar y copiar) → **3 Script** (enviar al formulario). Cada una
+abre con su título, en qué paso va y un botón que lleva al siguiente, así no hay que
+buscarlo en el menú. La sección activa se marca visualmente y con `aria-current`.
+
+Cada sección tiene **una sola acción principal**, en botón grande: *Pegar actividad*,
+*Copiar plantilla* y *Copiar script*. Lo secundario arranca plegado — el formulario
+manual y los pasos de uso del script — para que la primera pantalla no abrume.
 
 Decisiones de uso que conviene conocer:
 
@@ -57,8 +62,8 @@ oficial, deja el archivo en `public/` y se cambia la línea `rel="icon"` de
 
 ### 1 · Órdenes
 
-Formulario manual (SOT, cliente y teléfono obligatorios) y tabla con todo lo
-cargado. El alta rápida por pegado está en la pestaña **Plantillas**.
+Dos caminos: **Pegar actividad** (lleva al pegado de OFS, es el rápido) o **Cargar a
+mano**, que despliega el formulario. Debajo, la tabla con todo lo cargado.
 Al agregar, se limpian
 SOT/cliente/teléfono y se mantienen fecha, franja, gestión y departamento para meter
 varias seguidas.

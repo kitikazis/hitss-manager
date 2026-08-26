@@ -25,6 +25,7 @@ export function PanelScript({
 }) {
   const esManual = modo === 'manual';
   const [copiado, setCopiado] = useState(false);
+  const [pasosAbiertos, setPasosAbiertos] = useState(false);
   const temporizador = useRef(null);
 
   async function copiar() {
@@ -115,9 +116,14 @@ export function PanelScript({
         <div className="tarjeta-cab">
           <div>
             <h2>Cómo ejecutarlo</h2>
+            <p className="sub">Cuatro pasos, la primera vez</p>
           </div>
+          <div className="empuje" />
+          <button className="btn btn-chico" onClick={() => setPasosAbiertos((v) => !v)}>
+            {pasosAbiertos ? 'Ocultar' : 'Ver pasos'}
+          </button>
         </div>
-        <div className="tarjeta-cuerpo">
+        <div className="tarjeta-cuerpo" hidden={!pasosAbiertos}>
           <ol className="pasos">
             <li>Abre el formulario HITSS en una pestaña del navegador.</li>
             <li>
@@ -173,11 +179,11 @@ export function PanelScript({
             </p>
           </div>
           <div className="empuje" />
-          <button className="btn btn-primario btn-chico" onClick={copiar}>
+          <button className="btn btn-primario btn-grande" onClick={copiar}>
             {copiado ? 'Copiado' : 'Copiar script'}
           </button>
-          <button className="btn btn-chico" onClick={descargar}>
-            Descargar .js
+          <button className="btn btn-chico" onClick={descargar} title="Guardar como archivo .js">
+            Descargar
           </button>
         </div>
         <pre className="codigo">{script}</pre>

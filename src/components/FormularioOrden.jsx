@@ -30,7 +30,15 @@ const FORM_VACIO = {
   sotManual: SOT_MANUAL_DEFAULT,
 };
 
-export function FormularioOrden({ proximoId, modo, deptosD1 = DEPTOS_PROGRAMACION, onAgregar }) {
+export function FormularioOrden({
+  proximoId,
+  modo,
+  deptosD1 = DEPTOS_PROGRAMACION,
+  abierto,
+  onAbierto,
+  onPegar,
+  onAgregar,
+}) {
   const [form, setForm] = useState(() => ({ ...FORM_VACIO, sotManual: modo || SOT_MANUAL_DEFAULT }));
   const [errores, setErrores] = useState({});
   const refSot = useRef(null);
@@ -102,14 +110,24 @@ export function FormularioOrden({ proximoId, modo, deptosD1 = DEPTOS_PROGRAMACIO
     <form className="tarjeta" onSubmit={enviar}>
       <div className="tarjeta-cab">
         <div>
-          <h2>Nueva orden</h2>
-          <p className="sub">Solo el SOT es obligatorio; el resto se puede completar después</p>
+          <h2>Cargar órdenes</h2>
+          <p className="sub">Lo más rápido es pegar la actividad de Oracle Field Service</p>
         </div>
         <div className="empuje" />
-        <span className="contador">Próximo ID {formatearId(proximoId)}</span>
+        <button type="button" className="btn btn-primario btn-grande" onClick={onPegar}>
+          Pegar actividad
+        </button>
+        <button type="button" className="btn" onClick={() => onAbierto(!abierto)}>
+          {abierto ? 'Ocultar formulario' : 'Cargar a mano'}
+        </button>
       </div>
 
-      <div className="tarjeta-cuerpo">
+      <div className="tarjeta-cuerpo" hidden={!abierto}>
+        <p className="seccion-nota">
+          Solo el SOT es obligatorio; el resto se puede completar después. Esta orden será la{' '}
+          {formatearId(proximoId)}.
+        </p>
+
         <div className="grupo">
           <p className="seccion">Cliente</p>
           <div className="rejilla">
@@ -232,7 +250,7 @@ export function FormularioOrden({ proximoId, modo, deptosD1 = DEPTOS_PROGRAMACIO
         ) : null}
 
         <div className="acciones">
-          <button className="btn btn-primario" type="submit">
+          <button className="btn btn-primario btn-grande" type="submit">
             Agregar orden
           </button>
           <button
