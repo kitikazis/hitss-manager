@@ -19,6 +19,13 @@ import {
 } from '../lib/constantes';
 import { aISO, copiarAlPortapapeles, deISO, descargarArchivo, fechaRelativa, horaCorta } from '../lib/utils';
 
+const falta = (o) =>
+  [!o.cliente && 'cliente', !o.telefono && 'teléfono', !o.fecha && 'fecha'].filter(Boolean);
+
+/* "cliente, teléfono y fecha" lee mejor que tres "y" seguidas. */
+const enLista = (xs) =>
+  xs.length <= 1 ? xs.join('') : xs.slice(0, -1).join(', ') + ' y ' + xs[xs.length - 1];
+
 function ListaOrdenes({
   ordenes,
   seleccionada,
@@ -28,7 +35,10 @@ function ListaOrdenes({
   total,
   filtroTipo,
   onFiltroTipo,
+  filtroEstado,
+  onFiltroEstado,
   conteos,
+  refBuscador,
 }) {
   const caja = useRef(null);
 
@@ -46,24 +56,33 @@ function ListaOrdenes({
     }
   }, [seleccionada?.id, ordenes.length]);
 
+  const chipEstado = (id, etiqueta, cuenta) => (
+    <button
+      type="button"
+      className={'chip-filtro sin-punto' + (filtroEstado === id ? ' activo' : '')}
+      onClick={() => onFiltroEstado(id)}
+    >
+      {etiqueta} <b>{cuenta}</b>
+    </button>
+  );
+
   return (
     <section className="tarjeta columna-lateral">
       <div className="tarjeta-cab">
-        <h2>Órdenes</h2>
+        <h2>Cola de órdenes</h2>
         <span className="empuje" />
         <span className="contador">
-          {busqueda || filtroTipo ? `${ordenes.length} de ${total}` : total}
+          {conteos.pendientes ? `${conteos.pendientes} por copiar` : 'todas copiadas'}
         </span>
       </div>
 
       <div className="filtros">
-        <button
-          type="button"
-          className={'chip-filtro sin-punto' + (filtroTipo === '' ? ' activo' : '')}
-          onClick={() => onFiltroTipo('')}
-        >
-          Todas <b>{total}</b>
-        </button>
+        {chipEstado('', 'Todas', total)}
+        {chipEstado('pendientes', 'Pendientes', conteos.pendientes)}
+        {chipEstado('copiadas', 'Copiadas', total - conteos.pendientes)}
+      </div>
+
+      <div className="filtros">
         {TIPOS.map((t) => (
           <button
             key={t.id}
@@ -78,21 +97,21 @@ function ListaOrdenes({
 
       <div className="buscador">
         <input
+          ref={refBuscador}
           type="search"
           value={busqueda}
           onChange={(e) => onBusqueda(e.target.value)}
-          placeholder="Buscar SOT, cliente o teléfono"
-          aria-label="Buscar órdenes por SOT o cliente"
+          placeholder="Buscar SOT o cliente   /"
+          aria-label="Buscar órdenes por SOT, cliente o teléfono"
         />
       </div>
 
-      {ordenes.length === 0 ? (
-        <div className="vacio">Ninguna orden coincide.</div>
-      ) : null}
+      {ordenes.length === 0 ? <div className="vacio">Ninguna orden coincide.</div> : null}
 
       <div className="lista" ref={caja} role="listbox" aria-label="Órdenes cargadas">
         {ordenes.map((o) => {
           const tipo = tipoDeOrden(o);
+          const faltan = falta(o);
           return (
             <button
               key={o.id}
@@ -100,12 +119,25 @@ function ListaOrdenes({
               role="option"
               aria-selected={seleccionada?.id === o.id}
               className={
-                'lista-item ' + CLASE_TIPO[tipo] + (seleccionada?.id === o.id ? ' activo' : '')
+                'lista-item ' +
+                CLASE_TIPO[tipo] +
+                (seleccionada?.id === o.id ? ' activo' : '') +
+                (o.copiadaEn ? ' copiada' : '')
               }
               onClick={() => onSeleccionar(o.id)}
             >
               <span className="lista-fila">
                 <span className="lista-sot">{o.sot}</span>
+                {o.copiadaEn ? (
+                  <span className="marca-copiada" title={'Copiada ' + horaCorta(o.copiadaEn)}>
+                    ✓
+                  </span>
+                ) : null}
+                {faltan.length ? (
+                  <span className="marca-falta" title={'Falta ' + enLista(faltan)}>
+                    !
+                  </span>
+                ) : null}
                 <span
                   className={'punto-tipo p-' + CLASE_TIPO[tipo].replace('es-', '')}
                   title={etiquetaTipo(tipo)}
@@ -177,22 +209,29 @@ export function PanelPlantillas({
   perfil,
   onAbrirPegado,
   onActualizarOrden,
+  onCopiada,
   onToast,
   seleccion,
   onSeleccion,
 }) {
   const [busqueda, setBusqueda] = useState('');
   const [filtroTipo, setFiltroTipo] = useState('');
+  const [filtroEstado, setFiltroEstado] = useState('');
   const [tipo, setTipo] = useState('CONFI');
   const [extra, setExtra] = useState(() => camposPorDefecto('CONFI', null));
   const [copiado, setCopiado] = useState(false);
   const temporizador = useRef(null);
+  const refBuscador = useRef(null);
+  const refCliente = useRef(null);
+  const refTelefono = useRef(null);
+  const refFecha = useRef(null);
 
   const conteos = useMemo(() => {
-    const c = {};
+    const c = { pendientes: 0 };
     ordenes.forEach((o) => {
       const t = tipoDeOrden(o);
       c[t] = (c[t] || 0) + 1;
+      if (!o.copiadaEn) c.pendientes += 1;
     });
     return c;
   }, [ordenes]);
@@ -203,6 +242,8 @@ export function PanelPlantillas({
     return ordenes
       .filter((o) => {
         if (filtroTipo && tipoDeOrden(o) !== filtroTipo) return false;
+        if (filtroEstado === 'pendientes' && o.copiadaEn) return false;
+        if (filtroEstado === 'copiadas' && !o.copiadaEn) return false;
         if (!q) return true;
         return (
           o.sot.toLowerCase().includes(q) ||
@@ -211,7 +252,7 @@ export function PanelPlantillas({
         );
       })
       .reverse();
-  }, [ordenes, busqueda, filtroTipo]);
+  }, [ordenes, busqueda, filtroTipo, filtroEstado]);
 
   // Si la orden elegida se borro (o no hay ninguna elegida) cae en la primera.
   const seleccionada = ordenes.find((o) => o.id === seleccion) || visibles[0] || ordenes[0] || null;
@@ -240,17 +281,47 @@ export function PanelPlantillas({
     if (destino) onSeleccion(destino.id);
   };
 
-  async function copiar() {
-    const ok = await copiarAlPortapapeles(plantilla);
-    if (ok) {
-      setCopiado(true);
-      clearTimeout(temporizador.current);
-      temporizador.current = setTimeout(() => setCopiado(false), 1800);
-    }
-    onToast(ok ? 'Plantilla copiada' : 'No se pudo copiar: selecciona el texto manualmente');
+  /* La siguiente sin copiar: primero hacia abajo, y si no queda, desde arriba. */
+  function proximaPendiente() {
+    const resto = visibles.slice(posicion + 1).concat(visibles.slice(0, Math.max(posicion, 0)));
+    return resto.find((o) => !o.copiadaEn && o.id !== seleccionada?.id) || null;
   }
 
-  /* Ctrl+Enter copia; las flechas saltan de orden sin soltar el teclado. */
+  const faltantes = seleccionada ? falta(seleccionada) : [];
+
+  function enfocarFaltante() {
+    const destino = !seleccionada.cliente
+      ? refCliente
+      : !seleccionada.telefono
+        ? refTelefono
+        : refFecha;
+    destino.current?.focus();
+    destino.current?.select?.();
+  }
+
+  async function copiar() {
+    if (!seleccionada) return;
+    const ok = await copiarAlPortapapeles(plantilla);
+    if (!ok) {
+      onToast('No se pudo copiar: selecciona el texto manualmente');
+      return;
+    }
+
+    onCopiada(seleccionada.id);
+    setCopiado(true);
+    clearTimeout(temporizador.current);
+    temporizador.current = setTimeout(() => setCopiado(false), 1400);
+
+    const siguiente = proximaPendiente();
+    if (siguiente) {
+      onSeleccion(siguiente.id);
+      onToast(`Copiada ${seleccionada.sot} · sigue ${siguiente.sot}`);
+    } else {
+      onToast(`Copiada ${seleccionada.sot} · no quedan pendientes`);
+    }
+  }
+
+  /* Atajos: copiar, moverse por la cola, buscar y cambiar de tipo sin el mouse. */
   useEffect(() => {
     function atajo(e) {
       if (!ordenes.length) return;
@@ -259,8 +330,23 @@ export function PanelPlantillas({
         copiar();
         return;
       }
+      if (e.altKey && ['1', '2', '3'].includes(e.key)) {
+        e.preventDefault();
+        cambiarTipo(TIPOS[Number(e.key) - 1].id);
+        return;
+      }
       const enCampo = /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement?.tagName || '');
+      if (e.key === 'Escape' && enCampo) {
+        document.activeElement.blur();
+        return;
+      }
       if (enCampo || e.ctrlKey || e.metaKey || e.altKey) return;
+      if (e.key === '/') {
+        e.preventDefault();
+        refBuscador.current?.focus();
+        refBuscador.current?.select();
+        return;
+      }
       if (e.key === 'ArrowDown') {
         e.preventDefault();
         irA(posicion + 1);
@@ -302,16 +388,6 @@ export function PanelPlantillas({
     onToast('Plantilla descargada');
   }
 
-  /* "cliente, telefono y fecha" lee mejor que tres "y" seguidas. */
-  const enLista = (xs) =>
-    xs.length <= 1 ? xs.join('') : xs.slice(0, -1).join(', ') + ' y ' + xs[xs.length - 1];
-
-  const faltantes = [
-    !seleccionada.cliente && 'cliente',
-    !seleccionada.telefono && 'teléfono',
-    !seleccionada.fecha && 'fecha',
-  ].filter(Boolean);
-
   return (
     <>
       <ListaOrdenes
@@ -321,20 +397,24 @@ export function PanelPlantillas({
         onBusqueda={setBusqueda}
         filtroTipo={filtroTipo}
         onFiltroTipo={setFiltroTipo}
+        filtroEstado={filtroEstado}
+        onFiltroEstado={setFiltroEstado}
         conteos={conteos}
         seleccionada={seleccionada}
         onSeleccionar={onSeleccion}
+        refBuscador={refBuscador}
       />
 
       <section className="tarjeta campos">
         <div className="tarjeta-cab">
           <div className="pestanas" role="tablist" aria-label="Tipo de plantilla">
-            {TIPOS.map((t) => (
+            {TIPOS.map((t, i) => (
               <button
                 key={t.id}
                 type="button"
                 role="tab"
                 aria-selected={tipo === t.id}
+                title={`Alt+${i + 1}`}
                 className={'pest ' + CLASE_TIPO[t.id] + (tipo === t.id ? ' activo' : '')}
                 onClick={() => cambiarTipo(t.id)}
               >
@@ -350,9 +430,13 @@ export function PanelPlantillas({
 
         <div className="tarjeta-cuerpo">
           {faltantes.length ? (
-            <div className="alerta aviso" style={{ marginBottom: 10 }}>
-              Falta <b>{enLista(faltantes)}</b>. Complétalo en los campos marcados y la plantilla
-              se arma sola.
+            <div className="alerta aviso con-accion" style={{ marginBottom: 10 }}>
+              <span>
+                Falta <b>{enLista(faltantes)}</b> para que la plantilla salga completa.
+              </span>
+              <button type="button" className="btn btn-chico" onClick={enfocarFaltante}>
+                Completar
+              </button>
             </div>
           ) : null}
 
@@ -361,6 +445,7 @@ export function PanelPlantillas({
             <div className="rejilla">
               <Campo label="Cliente" ancho2 falta={!seleccionada.cliente}>
                 <input
+                  ref={refCliente}
                   value={seleccionada.cliente}
                   onChange={(e) => editar('cliente')(e.target.value)}
                   placeholder="Nombre del cliente"
@@ -368,6 +453,7 @@ export function PanelPlantillas({
               </Campo>
               <Campo label="Teléfono" falta={!seleccionada.telefono}>
                 <input
+                  ref={refTelefono}
                   className="mono"
                   value={seleccionada.telefono}
                   onChange={(e) => editar('telefono')(e.target.value)}
@@ -378,6 +464,7 @@ export function PanelPlantillas({
 
               <Campo label="Fecha de la visita" falta={!seleccionada.fecha}>
                 <input
+                  ref={refFecha}
                   type="date"
                   value={aISO(seleccionada.fecha)}
                   onChange={(e) => editar('fecha')(deISO(e.target.value))}
@@ -518,11 +605,15 @@ export function PanelPlantillas({
             className={'btn btn-primario btn-grande btn-copiar' + (copiado ? ' ok' : '')}
             onClick={copiar}
           >
-            {copiado ? 'Copiado ✓' : 'Copiar plantilla'}
+            {copiado ? 'Copiada ✓' : 'Copiar y seguir'}
           </button>
-          <span className="atajo">
-            <kbd>Ctrl</kbd> + <kbd>↵</kbd>
-          </span>
+          {faltantes.length ? (
+            <span className="atajo aviso-falta">Falta {enLista(faltantes)}</span>
+          ) : (
+            <span className="atajo">
+              <kbd>Ctrl</kbd> + <kbd>↵</kbd>
+            </span>
+          )}
         </div>
       </section>
     </>

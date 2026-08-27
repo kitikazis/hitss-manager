@@ -39,6 +39,8 @@ import {
   claveProximoId,
   claveModo,
   claveDeptosD1,
+  claveSeleccion,
+  clavePegado,
   CONTRATAS,
   LISTA_CONTRATAS,
 } from './lib/constantes';
@@ -71,7 +73,15 @@ export default function App() {
   const [bienvenida, setBienvenida] = useState(primeraVez);
 
   const [tab, setTab] = useState('ordenes');
-  const [seleccion, setSeleccion] = useState(null);
+  // La orden en la que se quedo se guarda: una interrupcion no le hace perder el sitio.
+  const [seleccion, setSeleccion] = useAlmacenado(claveSeleccion(usuario), null);
+  // Tipo, franja y fecha del pegado sobreviven al cierre del cajon y a la sesion.
+  const [opcionesPegado, setOpcionesPegado] = useAlmacenado(clavePegado(usuario), {
+    tipo: '',
+    franja: '',
+    cuando: '',
+    otraFecha: '',
+  });
   const [filtroScript, setFiltroScript] = useState('todas');
   const [formatoFecha, setFormatoFecha] = useAlmacenado(CLAVE_FORMATO_FECHA, FORMATO_FECHA_DEFAULT);
   const [modo, setModo] = useAlmacenado(claveModo(usuario), '');
@@ -157,6 +167,11 @@ export default function App() {
 
   function actualizarOrden(id, cambios) {
     setOrdenes((prev) => prev.map((o) => (o.id === id ? { ...o, ...cambios } : o)));
+  }
+
+  /* Queda marcada como copiada: es como sabe cuales de la cola ya salieron. */
+  function marcarCopiada(id) {
+    actualizarOrden(id, { copiadaEn: Date.now() });
   }
 
   function eliminarOrden(id) {
@@ -285,6 +300,9 @@ export default function App() {
     [ordenes]
   );
 
+  const pendientes = useMemo(() => ordenes.filter((o) => !o.copiadaEn).length, [ordenes]);
+  const sotsCargados = useMemo(() => ordenes.map((o) => o.sot), [ordenes]);
+
   const ordenesScript =
     filtroScript === 'confirmados' ? confirmados : filtroScript === 'ciclos' ? ciclos : ordenes;
 
@@ -331,7 +349,21 @@ export default function App() {
         </button>
       </CabeceraSeccion>
     ) : tab === 'plantillas' ? (
-      <CabeceraSeccion paso={2} titulo="Arma la plantilla" dato={cuenta}>
+      <CabeceraSeccion
+        paso={2}
+        titulo="Arma la plantilla"
+        dato={
+          <>
+            <b>{pendientes}</b> por copiar de <b>{ordenes.length}</b>
+            {incompletas ? (
+              <>
+                {' · '}
+                <b>{incompletas}</b> sin completar
+              </>
+            ) : null}
+          </>
+        }
+      >
         <button className="btn" onClick={abrirPegado}>
           Pegar de OFS
         </button>
@@ -368,6 +400,9 @@ export default function App() {
       onDeptosD1={setDeptosD1}
       abierto={pegadoAbierto}
       onAbierto={setPegadoAbierto}
+      opciones={opcionesPegado}
+      onOpciones={setOpcionesPegado}
+      sotsCargados={sotsCargados}
     />
   );
 
@@ -416,6 +451,7 @@ export default function App() {
               onSeleccion={setSeleccion}
               onAbrirPegado={abrirPegado}
               onActualizarOrden={actualizarOrden}
+              onCopiada={marcarCopiada}
               onToast={mostrarToast}
             />
             {pegar}
@@ -455,6 +491,11 @@ export default function App() {
           <span className="marcador">
             <i className="p-rechazo" /> Rechazos <b>{porTipo.RECHAZO}</b>
           </span>
+          {ordenes.length ? (
+            <span>
+              Copiadas <b>{ordenes.length - pendientes}</b> de <b>{ordenes.length}</b>
+            </span>
+          ) : null}
           <span className="empuje" />
           <span>
             Modo de las nuevas: <b>{modo || 'automático por departamento'}</b>

@@ -1547,6 +1547,176 @@ textarea.pegado:focus {
 }
 
 /* ============================================================
+   Estado de la cola: copiada, incompleta, repetida
+   ============================================================ */
+.lista-item.copiada .lista-sot,
+.lista-item.copiada .lista-cliente,
+.lista-item.copiada .lista-meta {
+  opacity: 0.62;
+}
+
+.lista-item.copiada .lista-sot {
+  text-decoration: line-through;
+  text-decoration-color: var(--texto-3);
+}
+
+.marca-copiada {
+  flex: none;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--ok);
+  line-height: 1;
+}
+
+.marca-falta {
+  flex: none;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: var(--aviso-suave);
+  border: 1px solid var(--aviso);
+  color: var(--aviso);
+  font-size: 9px;
+  font-weight: 700;
+  display: grid;
+  place-items: center;
+  line-height: 1;
+}
+
+/* Aviso con su propia accion al lado: completar lo que falta sin buscarlo. */
+.alerta.con-accion {
+  display: flex;
+  align-items: center;
+  gap: var(--e3);
+}
+
+.alerta.con-accion > span {
+  flex: 1;
+}
+
+.alerta.con-accion .btn {
+  flex: none;
+  border-color: var(--aviso);
+  color: var(--aviso);
+  background: var(--panel);
+}
+
+.aviso-falta {
+  color: var(--aviso);
+  font-weight: 600;
+}
+
+/* ---------- opciones del pegado, siempre a la vista ---------- */
+.opciones-fila {
+  display: flex;
+  align-items: center;
+  gap: var(--e2);
+  flex-wrap: wrap;
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radio-chico);
+  padding: 6px 9px;
+  margin-bottom: var(--e2);
+}
+
+.opcion-rotulo {
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--texto-3);
+}
+
+.opciones-fila .tenue {
+  font-size: 11.5px;
+}
+
+/* ---------- ficha del pegado ---------- */
+.ficha.repetida {
+  opacity: 0.72;
+  border-left-color: var(--texto-3);
+}
+
+.ficha-repetida {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--texto-3);
+}
+
+.ficha-campos {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 2fr);
+  gap: 6px 10px;
+  margin-top: 8px;
+  align-items: end;
+}
+
+.ficha-campos label {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--texto-3);
+}
+
+.ficha-campos label.falta {
+  color: var(--aviso);
+}
+
+.ficha-campos label.falta input {
+  border-color: var(--aviso);
+  background: var(--aviso-suave);
+}
+
+.ficha-campos input {
+  width: 100%;
+  padding: 4px 8px;
+  font-size: 12px;
+}
+
+/* ---------- resumen del script ---------- */
+.resumen-envio {
+  margin: 0;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 4px var(--e3);
+  font-size: 11.5px;
+}
+
+.resumen-envio dt {
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--texto-3);
+  padding-top: 1px;
+}
+
+.resumen-envio dd {
+  margin: 0;
+  color: var(--texto-2);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px 10px;
+}
+
+.resumen-envio b {
+  color: var(--texto);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.dato-cuenta {
+  white-space: nowrap;
+}
+
+/* ============================================================
    Modales
    ============================================================ */
 .modal-fondo {
@@ -1914,8 +2084,15 @@ code {
   }
 }
 
+@media (max-width: 1080px) {
+  .ficha-campos {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 @media (max-width: 640px) {
-  .rejilla {
+  .rejilla,
+  .ficha-campos {
     grid-template-columns: 1fr;
   }
 

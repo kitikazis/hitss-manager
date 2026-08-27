@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Campo, Select } from './Campos';
 import { FORMATOS_FECHA } from '../lib/constantes';
 import { copiarAlPortapapeles, descargarArchivo, hoyArchivo } from '../lib/utils';
@@ -58,6 +58,27 @@ export function PanelScript({
 
   const lineas = script.split(String.fromCharCode(10)).length;
 
+  /*
+   * Resumen legible de lo que va a salir. Sin esto hay que leer 200 lineas de
+   * codigo para saber si el lote es el correcto.
+   */
+  const resumen = useMemo(() => {
+    const cuenta = (clave) => {
+      const mapa = {};
+      ordenes.forEach((o) => {
+        const v = o[clave] || '—';
+        mapa[v] = (mapa[v] || 0) + 1;
+      });
+      return Object.entries(mapa).sort((a, b) => b[1] - a[1]);
+    };
+    return {
+      fechas: cuenta('fecha'),
+      franjas: cuenta('franja'),
+      sinTelefono: ordenes.filter((o) => !o.telefono).map((o) => o.sot),
+      sinCliente: ordenes.filter((o) => !o.cliente).map((o) => o.sot),
+    };
+  }, [ordenes]);
+
   return (
     <>
       <section className="tarjeta">
@@ -82,6 +103,61 @@ export function PanelScript({
               </Campo>
             </div>
           </div>
+
+          {ordenes.length ? (
+            <div className="grupo">
+              <p className="seccion">Lo que va a enviar</p>
+              <dl className="resumen-envio">
+                <dt>Órdenes</dt>
+                <dd>
+                  <span className="dato-cuenta">
+                    <b>{ordenes.length}</b> en total
+                  </span>
+                  <span className="dato-cuenta">{conteos.confirmados} confirmados</span>
+                  <span className="dato-cuenta">{conteos.ciclos} ciclos</span>
+                </dd>
+                <dt>Fechas</dt>
+                <dd>
+                  {resumen.fechas.map(([f, n]) => (
+                    <span key={f} className="dato-cuenta">
+                      <span className="mono">{f}</span> <b>×{n}</b>
+                    </span>
+                  ))}
+                </dd>
+                <dt>Franjas</dt>
+                <dd>
+                  {resumen.franjas.map(([f, n]) => (
+                    <span key={f} className="dato-cuenta">
+                      <span className="mono">{f}</span> <b>×{n}</b>
+                    </span>
+                  ))}
+                </dd>
+              </dl>
+
+              {resumen.sinTelefono.length || resumen.sinCliente.length ? (
+                <div className="alerta aviso" style={{ marginTop: 10 }}>
+                  Entran con datos vacíos:
+                  {resumen.sinCliente.length ? (
+                    <>
+                      {' '}
+                      sin cliente <b className="mono">{resumen.sinCliente.join(', ')}</b>.
+                    </>
+                  ) : null}
+                  {resumen.sinTelefono.length ? (
+                    <>
+                      {' '}
+                      sin teléfono <b className="mono">{resumen.sinTelefono.join(', ')}</b>.
+                    </>
+                  ) : null}{' '}
+                  El formulario los acepta igual.
+                </div>
+              ) : (
+                <p className="pista" style={{ marginTop: 8 }}>
+                  Todas llevan cliente, teléfono y fecha.
+                </p>
+              )}
+            </div>
+          ) : null}
 
           {!ordenes.length ? (
             <div className="alerta error" style={{ marginTop: 12 }}>

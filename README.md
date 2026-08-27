@@ -106,8 +106,10 @@ hasta que lo cierres con *Cerrar* o `Esc`.
 
 ### 2 · Plantillas
 
-**Pegar desde Oracle Field Service** (el camino rápido): eliges **tipo** y **franja**
-con botones, copias el *Detalles de actividad* de OFS y lo pegas. La app arma la
+**Pegar desde Oracle Field Service** (el camino rápido): **tipo** y **franja** están
+siempre a la vista en el cajón —OFS casi nunca trae el *Intervalo de tiempo*, así que
+son los dos que hay que fijar— y se **recuerdan** de una tanda a la siguiente. Copias
+el *Detalles de actividad* de OFS y lo pegas. La app arma la
 orden sola, la selecciona y deja la plantilla lista abajo, sin cambiar de pestaña.
 
 - **Tipo**: Confirmada · Ciclo de llamadas · Rechazo. De ahí sale la gestión
@@ -161,6 +163,11 @@ INST CARLEI TARAPOTO FTTH - 4F TARAP, 24/08/26
   oficial (`INST CARLEI ...` → `CARLEI TELECOMUNICACIONES SAC`). Los campos de
   contrata sugieren las 13 conocidas y aceptan cualquier otra escrita a mano.
 - Se pueden pegar **varias actividades de una**, cada una con su cabecera.
+- Cada ficha trae **cliente, teléfono, fecha y contrata editables** antes de que la
+  orden entre: lo que el volcado no traiga se completa ahí, en ámbar, y no llega
+  incompleta al paso 2.
+- Un **SOT ya cargado** se marca como repetido y no se agrega, salvo que pulses
+  *agregar igual*.
 - Lo que no encuentre lo dice con un aviso; sin SOT no deja agregar.
 
 Tres columnas: la **lista de órdenes**, los **campos** al centro y la **vista previa**
@@ -174,9 +181,22 @@ cinco botones —AM0 · AM1 · AM2 · PM1 · PM2— porque es el campo que más 
 borde.
 
 La **vista previa manda**: se lleva todo el alto sobrante, y debajo van las
-**observaciones** (que son su última línea) y el botón rojo de **Copiar plantilla**,
-fijo al pie. **Ctrl+↵** copia; **↑** y **↓** saltan de orden sin soltar el teclado, y
-al pie de los campos están *Anterior / Siguiente* con la posición (*3 de 12*).
+**observaciones** (que son su última línea) y el botón rojo de **Copiar y seguir**,
+fijo al pie.
+
+**La cola se gestiona sola.** Copiar hace tres cosas de una: copia, marca la orden
+como copiada (queda tachada y con un ✓ en la lista) y salta a la **siguiente
+pendiente**, avisando cuál sigue. Los filtros de arriba son *Todas · Pendientes ·
+Copiadas*, y la cabecera dice cuántas quedan *por copiar*. La orden en la que te
+quedaste se guarda: si te interrumpen o recargas, vuelves al mismo sitio.
+
+**Atajos**: `Ctrl+↵` copia y avanza · `↑` `↓` recorren la cola · `/` salta al buscador
+· `Alt+1/2/3` cambian de tipo · `Esc` suelta el campo. Al pie de los campos siguen
+*Anterior / Siguiente* con la posición (*3 de 12*).
+
+Cuando a una orden le falta cliente, teléfono o fecha: la lista la marca con **!**, el
+campo se pinta en ámbar, el aviso trae un botón **Completar** que lleva el cursor
+directo al primero que falta, y al lado del botón de copiar dice qué falta.
 
 Los cortes son: **tres columnas** desde 1080 px; entre 860 y 1080 la vista previa baja
 debajo de los campos y la lista conserva su columna a la izquierda; por debajo de
@@ -244,8 +264,11 @@ El modal de instrucciones incluye **ocho problemas frecuentes con su solución**
 a la mitad, cambiar de pestaña y pegar el script dos veces— escritos para quien no
 programa.
 
-A la izquierda quedan las **opciones** y los tres pasos de uso, con *Copiar script*
-fijo al pie; a la derecha, el script generado con su propio scroll.
+A la izquierda quedan las **opciones**, un **resumen de lo que va a enviar** (cuántas
+órdenes, de qué tipo, con qué fechas y franjas, y si alguna va sin cliente o sin
+teléfono) y los tres pasos de uso, con *Copiar script* fijo al pie; a la derecha, el
+script generado con su propio scroll. El resumen existe para no tener que leer 200
+líneas de código para saber si el lote es el correcto.
 
 - **Órdenes incluidas** — todas, solo confirmados o solo ciclos.
 - **Formato de fecha** — `d/m/yyyy` o `M/d/yyyy`, según lo que espere el

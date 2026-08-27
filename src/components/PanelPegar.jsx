@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Segmentado } from './Campos';
 import { parsearPegado } from '../lib/parsearOFS.js';
-import { deISO, fechaRelativa } from '../lib/utils.js';
+import { aISO, deISO, fechaRelativa } from '../lib/utils.js';
 import { CLASE_TIPO, COLOR_TIPO, TIPOS, etiquetaTipo } from '../lib/plantillas.js';
 import {
   DEPARTAMENTOS,
@@ -24,30 +24,46 @@ SOT
 
 const AUTO = { id: '', etiqueta: 'Auto' };
 const OPCIONES_FECHA = [AUTO, { id: 'hoy', etiqueta: 'Hoy' }, { id: 'manana', etiqueta: 'Mañana' }, { id: 'otra', etiqueta: 'Otra' }];
-const OPCIONES_TIPO = [AUTO, ...TIPOS];
+const OPCIONES_TIPO = [AUTO, ...TIPOS.map((t) => ({ id: t.id, etiqueta: t.id === 'CICLO' ? 'Ciclo' : t.etiqueta }))];
 const OPCIONES_FRANJA = [AUTO, ...FRANJAS.map((f) => ({ id: f, etiqueta: f }))];
 
-function Ficha({ bloque, contrata, onContrata }) {
+/*
+ * Ficha de una actividad reconocida. Lo que falte se completa aqui mismo: si el
+ * operador lo deja para despues, la orden entra incompleta y hay que buscarla.
+ */
+function Ficha({ bloque, valores, onCampo, duplicada, forzada, onForzar }) {
   const { orden, avisos, valido, tipoPlantilla, idActividad, franjaOrigen, fechaOFS } = bloque;
+  const falta = (campo) => !String(valores[campo] || '').trim();
 
   return (
-    <div className={'ficha ' + CLASE_TIPO[tipoPlantilla] + (valido ? '' : ' invalida')}>
+    <div
+      className={
+        'ficha ' + CLASE_TIPO[tipoPlantilla] + (valido ? '' : ' invalida') + (duplicada && !forzada ? ' repetida' : '')
+      }
+    >
       <div className="ficha-cab">
         <span className={'etiqueta ' + (valido ? COLOR_TIPO[tipoPlantilla] : 'error')}>
           {etiquetaTipo(tipoPlantilla)}
         </span>
         <b className="mono">{orden.sot || 'Sin SOT'}</b>
-        <span className="ficha-cliente">{orden.cliente || 'Sin cliente'}</span>
-        <span className="tenue mono">{orden.telefono || 'Sin teléfono'}</span>
         <span className="tenue">
-          {orden.fecha || 'Sin fecha'} · {orden.franja} · {orden.departamento}
+          {valores.fecha || 'Sin fecha'} · {orden.franja} · {orden.departamento}
         </span>
         {idActividad ? <span className="tenue">Actividad {idActividad}</span> : null}
+        <span className="empuje" />
+        {duplicada ? (
+          <span className="ficha-repetida">
+            Ya está cargada
+            <button type="button" className="enlace" onClick={() => onForzar(!forzada)}>
+              {forzada ? 'no agregar' : 'agregar igual'}
+            </button>
+          </span>
+        ) : null}
       </div>
 
-      {fechaOFS && fechaOFS !== orden.fecha ? (
+      {fechaOFS && fechaOFS !== valores.fecha ? (
         <div className="ficha-aviso">
-          Entra con {orden.fecha}; en OFS estaba programada para {fechaOFS}.
+          Entra con {valores.fecha}; en OFS estaba programada para {fechaOFS}.
         </div>
       ) : null}
 
@@ -57,23 +73,52 @@ function Ficha({ bloque, contrata, onContrata }) {
         </div>
       ) : null}
 
+      {/* Los cuatro campos que necesita la plantilla, editables antes de entrar. */}
       <div className="ficha-campos">
+        <label className={falta('cliente') ? 'falta' : undefined}>
+          Cliente
+          <input
+            value={valores.cliente}
+            onChange={(e) => onCampo('cliente', e.target.value)}
+            placeholder="Sin cliente"
+          />
+        </label>
+        <label className={falta('telefono') ? 'falta' : undefined}>
+          Teléfono
+          <input
+            className="mono"
+            value={valores.telefono}
+            onChange={(e) => onCampo('telefono', e.target.value)}
+            placeholder="Sin teléfono"
+            inputMode="tel"
+          />
+        </label>
+        <label className={falta('fecha') ? 'falta' : undefined}>
+          Fecha
+          <input
+            type="date"
+            value={aISO(valores.fecha)}
+            onChange={(e) => onCampo('fecha', deISO(e.target.value))}
+          />
+        </label>
         <label>
           Contrata
           <input
-            value={contrata}
-            onChange={(e) => onContrata(e.target.value.toUpperCase())}
+            value={valores.contrata}
+            onChange={(e) => onCampo('contrata', e.target.value.toUpperCase())}
             list={LISTA_CONTRATAS}
             placeholder="Sin contrata"
           />
         </label>
       </div>
 
-      {avisos.map((a, i) => (
-        <div className="ficha-aviso" key={i}>
-          {a}
-        </div>
-      ))}
+      {avisos
+        .filter((a) => !/nombre del cliente|el teléfono|fecha de programación/i.test(a))
+        .map((a, i) => (
+          <div className="ficha-aviso" key={i}>
+            {a}
+          </div>
+        ))}
     </div>
   );
 }
@@ -81,7 +126,8 @@ function Ficha({ bloque, contrata, onContrata }) {
 /*
  * Cajón: se abre sobre el banco de trabajo y se cierra solo al agregar. Antes
  * era una banda fija arriba que se llevaba 193 px de pantalla aunque ya no se
- * usara.
+ * usara. El tipo y la franja quedan a la vista porque OFS casi nunca trae el
+ * intervalo, y se recuerdan de una tanda a la siguiente.
  */
 export function PanelPegar({
   onAgregar,
@@ -92,15 +138,18 @@ export function PanelPegar({
   onDeptosD1,
   abierto,
   onAbierto,
+  opciones,
+  onOpciones,
+  sotsCargados = [],
 }) {
   const [texto, setTexto] = useState('');
-  const [contratas, setContratas] = useState({});
-  const [tipo, setTipo] = useState('');
-  const [franja, setFranja] = useState('');
+  const [ediciones, setEdiciones] = useState({});
+  const [forzados, setForzados] = useState({});
   const [editandoDeptos, setEditandoDeptos] = useState(false);
-  const [opcionesAbiertas, setOpcionesAbiertas] = useState(false);
-  const [cuando, setCuando] = useState('');
-  const [otraFecha, setOtraFecha] = useState('');
+  const [masAbiertas, setMasAbiertas] = useState(false);
+
+  const { tipo = '', franja = '', cuando = '', otraFecha = '' } = opciones || {};
+  const set = (cambios) => onOpciones({ ...opciones, ...cambios });
 
   // Fecha con la que entran las ordenes nuevas; vacia = la que traiga el pegado.
   const fechaElegida =
@@ -119,9 +168,17 @@ export function PanelPegar({
     () => parsearPegado(texto, { tipo, franja, sotManual: modo, deptosD1, fecha: fechaElegida }),
     [texto, tipo, franja, modo, deptosD1, fechaElegida]
   );
-  const validos = bloques.filter((b) => b.valido);
 
-  const contrataDe = (b) => (b.orden.sot in contratas ? contratas[b.orden.sot] : b.orden.contrata);
+  const valoresDe = (b) => ({ ...b.orden, ...(ediciones[b.orden.sot] || {}) });
+  const esDuplicada = (b) => Boolean(b.orden.sot) && sotsCargados.includes(b.orden.sot);
+  const entra = (b) => b.valido && (!esDuplicada(b) || forzados[b.orden.sot]);
+
+  const validos = bloques.filter(entra);
+  const repetidas = bloques.filter((b) => esDuplicada(b) && !forzados[b.orden.sot]).length;
+  const incompletos = validos.filter((b) => {
+    const v = valoresDe(b);
+    return !v.cliente || !v.telefono || !v.fecha;
+  }).length;
 
   useEffect(() => {
     if (!abierto) return;
@@ -136,11 +193,12 @@ export function PanelPegar({
 
   function limpiar() {
     setTexto('');
-    setContratas({});
+    setEdiciones({});
+    setForzados({});
   }
 
   function agregarTodo() {
-    onAgregar(validos.map((b) => ({ ...b.orden, contrata: contrataDe(b) })));
+    onAgregar(validos.map(valoresDe));
     onToast(
       validos.length === 1
         ? `Orden ${validos[0].orden.sot} lista`
@@ -150,6 +208,9 @@ export function PanelPegar({
     onAbierto(false);
   }
 
+  const editarCampo = (sot) => (campo, valor) =>
+    setEdiciones((prev) => ({ ...prev, [sot]: { ...(prev[sot] || {}), [campo]: valor } }));
+
   return (
     <>
       <div className="velo" onClick={() => onAbierto(false)} />
@@ -158,9 +219,11 @@ export function PanelPegar({
         <div className="cajon-cab">
           <h2>Pegar actividad de Oracle Field Service</h2>
           <span className="empuje" />
-          {validos.length ? (
+          {bloques.length ? (
             <span className="contador">
-              {validos.length} {validos.length === 1 ? 'orden reconocida' : 'órdenes reconocidas'}
+              {validos.length} {validos.length === 1 ? 'entra' : 'entran'}
+              {repetidas ? ` · ${repetidas} ya cargada${repetidas > 1 ? 's' : ''}` : ''}
+              {incompletos ? ` · ${incompletos} sin completar` : ''}
             </span>
           ) : null}
           {texto ? (
@@ -177,52 +240,34 @@ export function PanelPegar({
         </div>
 
         <div className="cajon-cuerpo">
-          <div className="resumen-opciones">
-            <span>
-              Entran como <b>{tipo ? etiquetaTipo(tipo) : 'lo que diga el pegado'}</b> ·{' '}
-              <b>{franja || 'franja del pegado'}</b> · <b>{fechaElegida || 'fecha del pegado'}</b> ·{' '}
-              <b>{modo || 'modo automático'}</b>
-            </span>
+          {/* Tipo y franja siempre a la vista: OFS casi nunca trae el intervalo. */}
+          <div className="opciones-fila">
+            <span className="opcion-rotulo">Entran como</span>
+            <Segmentado valor={tipo} onCambio={(v) => set({ tipo: v })} opciones={OPCIONES_TIPO} />
+            <Segmentado valor={franja} onCambio={(v) => set({ franja: v })} opciones={OPCIONES_FRANJA} />
+            <span className="tenue">{fechaElegida || 'fecha del pegado'}</span>
+            <span className="tenue">·</span>
+            <span className="tenue">{modo || 'modo automático'}</span>
             <button
               type="button"
               className="enlace"
-              onClick={() => setOpcionesAbiertas((v) => !v)}
-              aria-expanded={opcionesAbiertas}
+              onClick={() => setMasAbiertas((v) => !v)}
+              aria-expanded={masAbiertas}
             >
-              {opcionesAbiertas ? 'listo' : 'cambiar'}
+              {masAbiertas ? 'listo' : 'fecha y modo'}
             </button>
           </div>
 
-          <div className="opciones-pegado" hidden={!opcionesAbiertas}>
-            <div className="opcion">
-              <p className="seccion">Tipo de las nuevas</p>
-              <Segmentado valor={tipo} onCambio={setTipo} opciones={OPCIONES_TIPO} />
-              <span className="pista">
-                {tipo
-                  ? `Las que agregues ahora entran como ${etiquetaTipo(tipo)}`
-                  : 'Auto: lo toma de la cabecera del pegado (confi, ciclo, rechazo)'}
-              </span>
-            </div>
-
-            <div className="opcion">
-              <p className="seccion">Franja de las nuevas</p>
-              <Segmentado valor={franja} onCambio={setFranja} opciones={OPCIONES_FRANJA} />
-              <span className="pista">
-                {franja
-                  ? `Las que agregues ahora entran como ${franja}`
-                  : 'Auto: la toma del intervalo u horario del pegado'}
-              </span>
-            </div>
-
+          <div className="opciones-pegado" hidden={!masAbiertas}>
             <div className="opcion">
               <p className="seccion">Fecha de las nuevas</p>
-              <Segmentado valor={cuando} onCambio={setCuando} opciones={OPCIONES_FECHA} />
+              <Segmentado valor={cuando} onCambio={(v) => set({ cuando: v })} opciones={OPCIONES_FECHA} />
               {cuando === 'otra' ? (
                 <input
                   type="date"
                   className="fecha-otra"
                   value={otraFecha}
-                  onChange={(e) => setOtraFecha(e.target.value)}
+                  onChange={(e) => set({ otraFecha: e.target.value })}
                   aria-label="Fecha para las órdenes nuevas"
                 />
               ) : null}
@@ -274,7 +319,7 @@ export function PanelPegar({
             </div>
           </div>
 
-          {opcionesAbiertas && usaLista && editandoDeptos ? (
+          {masAbiertas && usaLista && editandoDeptos ? (
             <div className="deptos-d1">
               <p className="seccion">Tus departamentos de {SOT_MANUAL_PROGRAMACION}</p>
               <p className="pista" style={{ marginBottom: 8 }}>
@@ -324,8 +369,11 @@ export function PanelPegar({
                 <Ficha
                   key={b.orden.sot || i}
                   bloque={b}
-                  contrata={contrataDe(b)}
-                  onContrata={(v) => setContratas((prev) => ({ ...prev, [b.orden.sot]: v }))}
+                  valores={valoresDe(b)}
+                  onCampo={editarCampo(b.orden.sot)}
+                  duplicada={esDuplicada(b)}
+                  forzada={Boolean(forzados[b.orden.sot])}
+                  onForzar={(v) => setForzados((prev) => ({ ...prev, [b.orden.sot]: v }))}
                 />
               ))}
             </div>

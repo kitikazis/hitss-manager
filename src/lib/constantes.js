@@ -94,3 +94,6 @@ export const claveOrdenes = (usuario) => `hitss.ordenes.${usuario}`;
 export const claveProximoId = (usuario) => `hitss.proximoId.${usuario}`;
 export const claveModo = (usuario) => `hitss.modo.${usuario}`;
 export const claveDeptosD1 = (usuario) => `hitss.deptosD1.${usuario}`;
+// La orden en la que se quedo y las opciones del pegado: se recuperan al volver.
+export const claveSeleccion = (usuario) => `hitss.seleccion.${usuario}`;
+export const clavePegado = (usuario) => `hitss.opcionesPegado.${usuario}`;
