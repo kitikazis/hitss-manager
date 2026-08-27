@@ -721,7 +721,7 @@ td.acciones-fila {
 /* ============ Pestaña Plantillas ============ */
 .plantillas {
   display: grid;
-  grid-template-columns: 240px minmax(320px, 1fr) minmax(320px, 1fr);
+  grid-template-columns: 230px minmax(0, 1fr) minmax(0, 1fr);
   gap: var(--e3);
   flex: 1;
   min-height: 0;
@@ -1057,19 +1057,78 @@ footer {
   }
 }
 
-@media (max-width: 1180px) {
+@media (max-width: 1280px) {
   .plantillas {
-    grid-template-columns: 250px minmax(0, 1fr);
+    grid-template-columns: 230px minmax(0, 1fr);
   }
 
+  /* La vista previa baja debajo de los campos, en la misma columna. */
   .plantillas .vista {
     grid-column: 2;
   }
 }
 
+/*
+ * Con poco ancho, apilar y dejar que la pagina scrollee es mas usable que
+ * comprimir tres paneles en una altura fija.
+ */
+@media (max-width: 1100px) {
+  main.pleno {
+    display: block;
+    overflow-y: auto;
+  }
+
+  main.pleno .wrap {
+    display: block;
+  }
+
+  .plantillas {
+    grid-template-columns: 1fr;
+    flex: none;
+    min-height: 0;
+  }
+
+  .plantillas > * {
+    display: block;
+  }
+
+  .plantillas .tarjeta {
+    max-height: none;
+    margin-bottom: var(--e3);
+  }
+
+  .plantillas .columna-lateral .tarjeta,
+  .plantillas .vista,
+  .plantillas .campos {
+    overflow: visible;
+  }
+
+  .plantillas .lista {
+    max-height: 300px;
+  }
+
+  .plantillas .vista .codigo {
+    max-height: 50vh;
+  }
+
+  .plantillas .vista {
+    grid-column: 1;
+  }
+}
+
 @media (max-width: 900px) {
+  /* En pantallas chicas manda el scroll normal de la pagina. */
   .app {
     grid-template-columns: 1fr;
+    height: auto;
+    min-height: 100vh;
+    overflow: visible;
+  }
+
+  .contenido,
+  main,
+  main.pleno {
+    overflow: visible;
   }
 
   .lateral {

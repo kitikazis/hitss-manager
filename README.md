@@ -149,8 +149,13 @@ ventana y el desplazamiento vive dentro de cada columna, así los botones *Copia
 plantilla* y *Descargar* quedan siempre visibles. El panel de pegado es compacto
 (tres líneas) y sus opciones —tipo, franja, fecha y modo— se pliegan tras un resumen
 de una línea: *Entran como lo que diga el pegado · franja del pegado · fecha del
-pegado · modo automático · cambiar*. En pantallas angostas las columnas se apilan y
-vuelve el scroll normal.
+pegado · modo automático · cambiar*.
+
+Los cortes son: **tres columnas** desde 1280 px (el ancho útil descuenta la barra
+lateral), **dos** entre 1100 y 1280 con la vista previa debajo de los campos, y
+**apilado con scroll normal** por debajo de 1100 px, que es más usable que comprimir
+tres paneles. Ninguna columna impone un ancho mínimo, así que nunca desborda de
+costado.
 
 La lista muestra **la última cargada arriba**, con la **hora en que se agregó** a la
 derecha, y se acota de dos formas combinables:
