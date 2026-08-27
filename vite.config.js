@@ -1,7 +1,15 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
+/* Sello del build: se muestra en el pie para saber que version esta cargada. */
+const version = new Date()
+  .toLocaleString('es-PE', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false })
+  .replace(',', '');
+
 export default defineConfig({
+  define: {
+    __VERSION__: JSON.stringify(version),
+  },
   // Rutas relativas: el build sirve igual desde /, desde una subcarpeta o inline.
   base: './',
   plugins: [react()],

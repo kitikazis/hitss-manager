@@ -388,6 +388,9 @@ export default function App() {
             <span>
               Modo de las nuevas: <b>{modo || 'automático por departamento'}</b>
             </span>
+            <span title="Sirve para saber si el navegador tiene la última versión">
+              Versión <b className="mono">{__VERSION__}</b>
+            </span>
           </div>
         </div>
       </footer>
