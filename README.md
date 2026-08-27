@@ -145,7 +145,9 @@ Tres columnas: la **lista de órdenes**, los **campos** en el centro y la **vist
 previa** a la derecha, para editar y ver el resultado a la vez.
 
 **Entra en una pantalla sin scroll**: la sección ocupa exactamente el alto de la
-ventana y el desplazamiento vive dentro de cada columna, así los botones *Copiar
+ventana y el desplazamiento vive dentro de cada columna (medido en Chrome real a
+1920×1080, 1600×900 y 1366×768; en pantallas de menos de 820 px de alto se recorta lo
+prescindible para que la lista conserve espacio), así los botones *Copiar
 plantilla* y *Descargar* quedan siempre visibles. El panel de pegado es compacto
 (tres líneas) y sus opciones —tipo, franja, fecha y modo— se pliegan tras un resumen
 de una línea: *Entran como lo que diga el pegado · franja del pegado · fecha del

@@ -88,6 +88,7 @@ body {
   display: flex;
   flex-direction: column;
   min-width: 0;
+  min-height: 0;
   overflow: hidden;
 }
 
@@ -97,12 +98,15 @@ body {
  */
 main {
   overflow-y: auto;
+  /* Sin esto el main crece con su contenido y se sale de la pantalla. */
+  min-height: 0;
 }
 
 main.pleno {
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  min-height: 0;
 }
 
 main.pleno .wrap {
@@ -294,6 +298,7 @@ main {
   align-items: center;
   gap: 12px;
   flex-wrap: wrap;
+  flex: none;
   padding: 14px 18px;
   border-bottom: 1px solid var(--border);
 }
@@ -737,6 +742,8 @@ td.acciones-fila {
 
 /* Cada tarjeta de la fila se estira y se desplaza por dentro. */
 .plantillas .tarjeta {
+  display: flex;
+  flex-direction: column;
   margin-bottom: 0;
   max-height: 100%;
   min-height: 0;
@@ -747,11 +754,17 @@ td.acciones-fila {
   overflow: hidden;
 }
 
+.plantillas .filtros,
+.plantillas .buscador {
+  flex: none;
+}
+
 .plantillas .campos {
   overflow: hidden;
 }
 
 .plantillas .campos .tarjeta-cuerpo {
+  flex: 1;
   overflow-y: auto;
   min-height: 0;
 }
@@ -1707,4 +1720,33 @@ input[type='date'] {
 
 .fecha-otra {
   margin-top: var(--e1);
+}
+
+/* ============ Pantallas bajas ============
+   Con poco alto se recorta lo prescindible para que la lista y la vista
+   previa conserven espacio util. */
+@media (max-height: 820px) {
+  .seccion-desc {
+    display: none;
+  }
+
+  .tarjeta-cab {
+    padding: 9px 14px;
+  }
+
+  .tarjeta-cuerpo {
+    padding: 12px 14px;
+  }
+
+  main {
+    padding: var(--e3) 0 var(--e3);
+  }
+
+  .plantillas .columna-lateral .tarjeta-cab .sub {
+    display: none;
+  }
+
+  textarea.pegado {
+    min-height: 52px;
+  }
 }

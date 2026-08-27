@@ -316,7 +316,7 @@ export function PanelPlantillas({
           />
         </aside>
 
-        <section className="tarjeta">
+        <section className="tarjeta campos">
           <div className="tarjeta-cab">
             <Segmentado valor={tipo} onCambio={cambiarTipo} opciones={TIPOS} />
             <div className="empuje" />
