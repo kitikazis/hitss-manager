@@ -69,7 +69,7 @@ const AREA = 'ADP MULTISKILL HITSS';
  */
 export function contextoPlantilla(orden, perfil) {
   if (!orden) return '';
-  return `Usuario ${perfil.usuario} · SOT ${orden.sot} · ${orden.departamento}`;
+  return `${perfil.usuario} · SOT ${orden.sot} · ${orden.departamento}`;
 }
 
 export function construirPlantilla({ tipo, orden, extra, perfil }) {

@@ -143,7 +143,8 @@ INST CARLEI TARAPOTO FTTH - 4F TARAP, 24/08/26
 - Lo que no encuentre lo dice con un aviso; sin SOT no deja agregar.
 
 Tres columnas: la **lista de órdenes** (300 px, entra el nombre completo del
-cliente), los **campos** en el centro y la **vista previa** a la derecha, para editar
+cliente), los **campos** en el centro y la **vista previa** a la derecha, que se ciñe
+al ancho de la plantilla (`fit-content`, tope 480 px) para no dejar blanco al costado, para editar
 y ver el resultado a la vez. Al pie de los campos hay **Anterior / Siguiente orden**
 con la posición (*3 de 12*), para recorrer la lista sin volver a ella.
 

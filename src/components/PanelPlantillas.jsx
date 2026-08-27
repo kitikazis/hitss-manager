@@ -481,8 +481,8 @@ export function PanelPlantillas({
             <button className="btn btn-primario btn-chico" onClick={copiar}>
               {copiado ? 'Copiado' : 'Copiar plantilla'}
             </button>
-            <button className="btn btn-chico" onClick={descargar}>
-              Descargar .md
+            <button className="btn btn-chico" onClick={descargar} title="Guardar como archivo .md">
+              Descargar
             </button>
           </div>
           <pre className="codigo plantilla">{plantilla}</pre>

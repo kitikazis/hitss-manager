@@ -727,7 +727,11 @@ td.acciones-fila {
 /* ============ Pestaña Plantillas ============ */
 .plantillas {
   display: grid;
-  grid-template-columns: 300px minmax(0, 1.15fr) minmax(0, 1fr);
+  /*
+   * La vista previa se ajusta al ancho de la plantilla (sin pasar de 560px) y
+   * todo el resto queda para los campos: asi no sobra blanco a su derecha.
+   */
+  grid-template-columns: 300px minmax(0, 1fr) fit-content(480px);
   gap: var(--e3);
   flex: 1;
   min-height: 0;
