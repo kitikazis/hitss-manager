@@ -25,8 +25,9 @@ npm run dev
 
 ## Cómo está pensada
 
-Es un dashboard: el menú vive en una **barra lateral fija a la izquierda**, con la
-marca arriba, las tres secciones al medio y el perfil y el tema al pie. Bajo 900 px la
+Es un dashboard a **ancho completo**: el menú vive en una **barra lateral fija a la
+izquierda**, con la marca arriba, las tres secciones al medio y el perfil y el tema al
+pie; el contenido ocupa todo el espacio restante, sin márgenes muertos. Bajo 900 px la
 barra pasa arriba como una fila.
 
 Las secciones están numeradas porque son el orden del trabajo: **1 Órdenes** (cargar)
