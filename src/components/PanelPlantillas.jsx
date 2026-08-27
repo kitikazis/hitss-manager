@@ -260,6 +260,13 @@ export function PanelPlantillas({
     [tipo, seleccionada, extra, perfil]
   );
 
+  /* Posicion de la elegida dentro de lo que se ve, para moverse con los botones. */
+  const posicion = visibles.findIndex((o) => o.id === seleccionada?.id);
+  const irA = (i) => {
+    const destino = visibles[i];
+    if (destino) setIdSeleccion(destino.id);
+  };
+
   function agregarDesdePegado(lista) {
     const nuevas = onAgregarOrdenes(lista);
     // Se elige la ultima del lote: es la que queda arriba en la lista.
@@ -438,6 +445,29 @@ export function PanelPlantillas({
                 <CamposDinamicos tipo={tipo} extra={extra} set={set} />
               </div>
             </div>
+
+              {/* Llena el hueco del final y ahorra ir a la lista. */}
+              <div className="paso-orden">
+                <span className="contador">
+                  {posicion + 1} de {visibles.length}
+                </span>
+                <button
+                  type="button"
+                  className="btn btn-chico"
+                  onClick={() => irA(posicion - 1)}
+                  disabled={posicion <= 0}
+                >
+                  Anterior
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-chico"
+                  onClick={() => irA(posicion + 1)}
+                  disabled={posicion >= visibles.length - 1}
+                >
+                  Siguiente orden
+                </button>
+              </div>
           </div>
         </section>
 

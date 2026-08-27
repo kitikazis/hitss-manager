@@ -727,7 +727,7 @@ td.acciones-fila {
 /* ============ Pestaña Plantillas ============ */
 .plantillas {
   display: grid;
-  grid-template-columns: 260px minmax(0, 1.1fr) minmax(0, 1fr);
+  grid-template-columns: 300px minmax(0, 1.15fr) minmax(0, 1fr);
   gap: var(--e3);
   flex: 1;
   min-height: 0;
@@ -776,8 +776,9 @@ td.acciones-fila {
   max-height: none;
 }
 
+/* La plantilla ocupa lo que necesita: observaciones queda pegada debajo. */
 .plantillas .vista .codigo {
-  flex: 1;
+  flex: 0 1 auto;
   min-height: 0;
   overflow: auto;
 }
@@ -881,7 +882,8 @@ td.acciones-fila {
   white-space: pre-wrap;
   word-break: break-word;
   max-height: none;
-  font-size: 12.5px;
+  font-size: 13.5px;
+  line-height: 1.75;
 }
 
 .pasos {
@@ -1756,6 +1758,7 @@ input[type='date'] {
 /* Observaciones al pie de la vista previa: se escriben mirando el resultado. */
 .plantillas .vista .obs {
   flex: none;
+  margin-bottom: auto;
   display: flex;
   flex-direction: column;
   gap: 5px;
@@ -1773,4 +1776,17 @@ input[type='date'] {
 .plantillas .vista .obs textarea {
   min-height: 46px;
   font-size: 12.5px;
+}
+
+/* Pasar de una orden a la siguiente sin volver a la lista. */
+.paso-orden {
+  display: flex;
+  align-items: center;
+  gap: var(--e2);
+  margin-top: auto;
+  padding-top: var(--e4);
+}
+
+.paso-orden .contador {
+  margin-right: auto;
 }

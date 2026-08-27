@@ -142,8 +142,10 @@ INST CARLEI TARAPOTO FTTH - 4F TARAP, 24/08/26
 - Se pueden pegar **varias actividades de una**, cada una con su cabecera.
 - Lo que no encuentre lo dice con un aviso; sin SOT no deja agregar.
 
-Tres columnas: la **lista de órdenes**, los **campos** en el centro y la **vista
-previa** a la derecha, para editar y ver el resultado a la vez.
+Tres columnas: la **lista de órdenes** (300 px, entra el nombre completo del
+cliente), los **campos** en el centro y la **vista previa** a la derecha, para editar
+y ver el resultado a la vez. Al pie de los campos hay **Anterior / Siguiente orden**
+con la posición (*3 de 12*), para recorrer la lista sin volver a ella.
 
 **Entra en una pantalla sin scroll**: la sección ocupa exactamente el alto de la
 ventana y el desplazamiento vive dentro de cada columna (medido en Chrome real a
