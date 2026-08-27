@@ -160,8 +160,9 @@ lateral), **dos** entre 1100 y 1280 con la vista previa debajo de los campos, y
 tres paneles. Ninguna columna impone un ancho mínimo, así que nunca desborda de
 costado.
 
-La lista muestra **la última cargada arriba**, con la **hora en que se agregó** a la
-derecha, y se acota de dos formas combinables:
+La lista muestra **la última cargada arriba**, seleccionada y desplazada a la vista
+(al pegar un lote queda elegida la última del lote, que es la que encabeza), con la
+**hora en que se agregó** a la derecha, y se acota de dos formas combinables:
 
 - **Buscador**: por SOT, cliente o teléfono mientras escribes.
 - **Chips de tipo**: Todas · Confirmada · Ciclo · Rechazo, cada uno con su conteo y

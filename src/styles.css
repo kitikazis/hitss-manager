@@ -802,6 +802,7 @@ td.acciones-fila {
 }
 
 .lista {
+  position: relative;
   display: flex;
   flex-direction: column;
   max-height: 420px;

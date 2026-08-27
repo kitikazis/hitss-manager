@@ -32,6 +32,22 @@ function ListaOrdenes({
   onFiltroTipo,
   conteos,
 }) {
+  const caja = useRef(null);
+
+  /* Si la elegida quedo fuera del area visible, la lista se mueve hasta ella. */
+  useEffect(() => {
+    const caja2 = caja.current;
+    const activo = caja2?.querySelector(".lista-item.activo");
+    if (!activo) return;
+    const item = activo.getBoundingClientRect();
+    const lista = caja2.getBoundingClientRect();
+    if (item.top < lista.top) {
+      caja2.scrollTop -= lista.top - item.top + 8;
+    } else if (item.bottom > lista.bottom) {
+      caja2.scrollTop += item.bottom - lista.bottom + 8;
+    }
+  }, [seleccionada?.id, ordenes.length]);
+
   return (
     <section className="tarjeta">
       <div className="tarjeta-cab">
@@ -80,7 +96,7 @@ function ListaOrdenes({
         <div className="vacio">Ninguna orden coincide con «{busqueda}».</div>
       ) : null}
 
-      <div className="lista">
+      <div className="lista" ref={caja}>
         {ordenes.map((o) => {
           const tipo = tipoDeOrden(o);
           return (
@@ -246,7 +262,8 @@ export function PanelPlantillas({
 
   function agregarDesdePegado(lista) {
     const nuevas = onAgregarOrdenes(lista);
-    if (nuevas && nuevas.length) setIdSeleccion(nuevas[0].id);
+    // Se elige la ultima del lote: es la que queda arriba en la lista.
+    if (nuevas && nuevas.length) setIdSeleccion(nuevas[nuevas.length - 1].id);
   }
 
   async function copiar() {
