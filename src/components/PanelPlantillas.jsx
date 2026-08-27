@@ -1,9 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Campo, Segmentado, Select } from './Campos';
-import { PanelPegar } from './PanelPegar';
+import { Campo, Select } from './Campos';
 import {
   CLASE_TIPO,
-  COLOR_TIPO,
   TIPOS,
   camposPorDefecto,
   construirPlantilla,
@@ -37,7 +35,7 @@ function ListaOrdenes({
   /* Si la elegida quedo fuera del area visible, la lista se mueve hasta ella. */
   useEffect(() => {
     const caja2 = caja.current;
-    const activo = caja2?.querySelector(".lista-item.activo");
+    const activo = caja2?.querySelector('.lista-item.activo');
     if (!activo) return;
     const item = activo.getBoundingClientRect();
     const lista = caja2.getBoundingClientRect();
@@ -49,22 +47,19 @@ function ListaOrdenes({
   }, [seleccionada?.id, ordenes.length]);
 
   return (
-    <section className="tarjeta">
+    <section className="tarjeta columna-lateral">
       <div className="tarjeta-cab">
-        <div>
-          <h2>Órdenes</h2>
-          <p className="sub">
-            {busqueda || filtroTipo
-              ? `${ordenes.length} de ${total}`
-              : `${total} ${total === 1 ? 'orden' : 'órdenes'}`}
-          </p>
-        </div>
+        <h2>Órdenes</h2>
+        <span className="empuje" />
+        <span className="contador">
+          {busqueda || filtroTipo ? `${ordenes.length} de ${total}` : total}
+        </span>
       </div>
 
       <div className="filtros">
         <button
           type="button"
-          className={'chip-filtro' + (filtroTipo === '' ? ' activo' : '')}
+          className={'chip-filtro sin-punto' + (filtroTipo === '' ? ' activo' : '')}
           onClick={() => onFiltroTipo('')}
         >
           Todas <b>{total}</b>
@@ -73,46 +68,48 @@ function ListaOrdenes({
           <button
             key={t.id}
             type="button"
-            className={
-              'chip-filtro ' + CLASE_TIPO[t.id] + (filtroTipo === t.id ? ' activo' : '')
-            }
+            className={'chip-filtro ' + CLASE_TIPO[t.id] + (filtroTipo === t.id ? ' activo' : '')}
             onClick={() => onFiltroTipo(filtroTipo === t.id ? '' : t.id)}
           >
-            {t.etiqueta} <b>{conteos[t.id] || 0}</b>
+            {t.corto} <b>{conteos[t.id] || 0}</b>
           </button>
         ))}
       </div>
+
       <div className="buscador">
         <input
           type="search"
           value={busqueda}
           onChange={(e) => onBusqueda(e.target.value)}
-          placeholder="Buscar SOT o cliente"
+          placeholder="Buscar SOT, cliente o teléfono"
           aria-label="Buscar órdenes por SOT o cliente"
         />
       </div>
 
       {ordenes.length === 0 ? (
-        <div className="vacio">Ninguna orden coincide con «{busqueda}».</div>
+        <div className="vacio">Ninguna orden coincide.</div>
       ) : null}
 
-      <div className="lista" ref={caja}>
+      <div className="lista" ref={caja} role="listbox" aria-label="Órdenes cargadas">
         {ordenes.map((o) => {
           const tipo = tipoDeOrden(o);
           return (
             <button
               key={o.id}
               type="button"
+              role="option"
+              aria-selected={seleccionada?.id === o.id}
               className={
-                'lista-item ' +
-                CLASE_TIPO[tipo] +
-                (seleccionada?.id === o.id ? ' activo' : '')
+                'lista-item ' + CLASE_TIPO[tipo] + (seleccionada?.id === o.id ? ' activo' : '')
               }
               onClick={() => onSeleccionar(o.id)}
             >
               <span className="lista-fila">
                 <span className="lista-sot">{o.sot}</span>
-                <span className={'etiqueta chica ' + COLOR_TIPO[tipo]}>{etiquetaTipo(tipo)}</span>
+                <span
+                  className={'punto-tipo p-' + CLASE_TIPO[tipo].replace('es-', '')}
+                  title={etiquetaTipo(tipo)}
+                />
               </span>
               <span className="lista-cliente">{o.cliente || 'Sin cliente'}</span>
               <span className="lista-meta">
@@ -143,7 +140,7 @@ function CamposDinamicos({ tipo, extra, set }) {
         <Campo label="Cantidad">
           <input value={extra.cantidad} onChange={(e) => set('cantidad', e.target.value)} inputMode="numeric" />
         </Campo>
-        <Campo label="Motivo">
+        <Campo label="Motivo" ancho2>
           <Select value={extra.motivo} onChange={(v) => set('motivo', v)} opciones={MOTIVOS_CICLO} />
         </Campo>
         <Campo label="Sub-motivo">
@@ -162,7 +159,7 @@ function CamposDinamicos({ tipo, extra, set }) {
         <Campo label="Persona que contesta">
           <input value={extra.persona} onChange={(e) => set('persona', e.target.value)} />
         </Campo>
-        <Campo label="Motivo">
+        <Campo label="Motivo" ancho2>
           <Select value={extra.motivo} onChange={(v) => set('motivo', v)} opciones={MOTIVOS_RECHAZO} />
         </Campo>
         <Campo label="Sub-motivo">
@@ -178,17 +175,12 @@ function CamposDinamicos({ tipo, extra, set }) {
 export function PanelPlantillas({
   ordenes,
   perfil,
-  modo,
-  onModo,
-  deptosD1,
-  onDeptosD1,
-  pegadoAbierto,
-  onPegadoAbierto,
-  onAgregarOrdenes,
+  onAbrirPegado,
   onActualizarOrden,
   onToast,
+  seleccion,
+  onSeleccion,
 }) {
-  const [idSeleccion, setIdSeleccion] = useState(null);
   const [busqueda, setBusqueda] = useState('');
   const [filtroTipo, setFiltroTipo] = useState('');
   const [tipo, setTipo] = useState('CONFI');
@@ -222,7 +214,7 @@ export function PanelPlantillas({
   }, [ordenes, busqueda, filtroTipo]);
 
   // Si la orden elegida se borro (o no hay ninguna elegida) cae en la primera.
-  const seleccionada = ordenes.find((o) => o.id === idSeleccion) || visibles[0] || ordenes[0] || null;
+  const seleccionada = ordenes.find((o) => o.id === seleccion) || visibles[0] || ordenes[0] || null;
 
   // Cada orden abre con su propio tipo: el guardado, o el que sugiere su gestion.
   useEffect(() => {
@@ -236,42 +228,17 @@ export function PanelPlantillas({
 
   const set = (campo, valor) => setExtra((prev) => ({ ...prev, [campo]: valor }));
 
-  // Ctrl+Enter copia sin soltar el teclado.
-  useEffect(() => {
-    function atajo(e) {
-      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter' && ordenes.length) {
-        e.preventDefault();
-        copiar();
-      }
-    }
-    document.addEventListener('keydown', atajo);
-    return () => document.removeEventListener('keydown', atajo);
-  }); // sin deps: usa siempre la plantilla vigente
-
-  /* Cambiar el tipo lo guarda en la orden, para que la lista lo muestre en su color. */
-  function cambiarTipo(nuevo) {
-    setTipo(nuevo);
-    if (seleccionada) onActualizarOrden(seleccionada.id, { tipoPlantilla: nuevo });
-  }
-  const editar = (campo) => (valor) => onActualizarOrden(seleccionada.id, { [campo]: valor });
-
   const plantilla = useMemo(
     () => construirPlantilla({ tipo, orden: seleccionada, extra, perfil }),
     [tipo, seleccionada, extra, perfil]
   );
 
-  /* Posicion de la elegida dentro de lo que se ve, para moverse con los botones. */
+  /* Posicion de la elegida dentro de lo que se ve, para moverse con el teclado. */
   const posicion = visibles.findIndex((o) => o.id === seleccionada?.id);
   const irA = (i) => {
     const destino = visibles[i];
-    if (destino) setIdSeleccion(destino.id);
+    if (destino) onSeleccion(destino.id);
   };
-
-  function agregarDesdePegado(lista) {
-    const nuevas = onAgregarOrdenes(lista);
-    // Se elige la ultima del lote: es la que queda arriba en la lista.
-    if (nuevas && nuevas.length) setIdSeleccion(nuevas[nuevas.length - 1].id);
-  }
 
   async function copiar() {
     const ok = await copiarAlPortapapeles(plantilla);
@@ -283,37 +250,61 @@ export function PanelPlantillas({
     onToast(ok ? 'Plantilla copiada' : 'No se pudo copiar: selecciona el texto manualmente');
   }
 
+  /* Ctrl+Enter copia; las flechas saltan de orden sin soltar el teclado. */
+  useEffect(() => {
+    function atajo(e) {
+      if (!ordenes.length) return;
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        e.preventDefault();
+        copiar();
+        return;
+      }
+      const enCampo = /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement?.tagName || '');
+      if (enCampo || e.ctrlKey || e.metaKey || e.altKey) return;
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        irA(posicion + 1);
+      }
+      if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        irA(posicion - 1);
+      }
+    }
+    document.addEventListener('keydown', atajo);
+    return () => document.removeEventListener('keydown', atajo);
+  }); // sin deps: usa siempre la plantilla y la posicion vigentes
+
+  if (!ordenes.length) {
+    return (
+      <section className="tarjeta">
+        <div className="vacio">
+          <strong>Sin órdenes que armar</strong>
+          Pega una actividad de Oracle Field Service o cárgala a mano en el paso 1.
+          <div className="acciones-vacio">
+            <button className="btn btn-primario" onClick={onAbrirPegado}>
+              Pegar de OFS
+            </button>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  /* Cambiar el tipo lo guarda en la orden, para que la lista lo muestre en su color. */
+  function cambiarTipo(nuevo) {
+    setTipo(nuevo);
+    onActualizarOrden(seleccionada.id, { tipoPlantilla: nuevo });
+  }
+  const editar = (campo) => (valor) => onActualizarOrden(seleccionada.id, { [campo]: valor });
+
   function descargar() {
     descargarArchivo(`plantilla-${tipo}-${seleccionada.sot}.md`, plantilla, 'text/markdown;charset=utf-8');
     onToast('Plantilla descargada');
   }
 
-  const pegar = (
-    <PanelPegar
-      onAgregar={agregarDesdePegado}
-      onToast={onToast}
-      modo={modo}
-      onModo={onModo}
-      deptosD1={deptosD1}
-      onDeptosD1={onDeptosD1}
-      abierto={pegadoAbierto}
-      onAbierto={onPegadoAbierto}
-    />
-  );
-
-  if (!ordenes.length) {
-    return (
-      <>
-        {pegar}
-        <section className="tarjeta">
-        <div className="vacio">
-          <strong>Sin órdenes que armar</strong>
-          Pega una actividad arriba o cárgala a mano en la pestaña Órdenes.
-        </div>
-        </section>
-      </>
-    );
-  }
+  /* "cliente, telefono y fecha" lee mejor que tres "y" seguidas. */
+  const enLista = (xs) =>
+    xs.length <= 1 ? xs.join('') : xs.slice(0, -1).join(', ') + ' y ' + xs[xs.length - 1];
 
   const faltantes = [
     !seleccionada.cliente && 'cliente',
@@ -323,183 +314,217 @@ export function PanelPlantillas({
 
   return (
     <>
-      {pegar}
+      <ListaOrdenes
+        ordenes={visibles}
+        total={ordenes.length}
+        busqueda={busqueda}
+        onBusqueda={setBusqueda}
+        filtroTipo={filtroTipo}
+        onFiltroTipo={setFiltroTipo}
+        conteos={conteos}
+        seleccionada={seleccionada}
+        onSeleccionar={onSeleccion}
+      />
 
-      <div className="plantillas">
-        <aside className="columna-lateral">
-          <ListaOrdenes
-            ordenes={visibles}
-            total={ordenes.length}
-            busqueda={busqueda}
-            onBusqueda={setBusqueda}
-            filtroTipo={filtroTipo}
-            onFiltroTipo={setFiltroTipo}
-            conteos={conteos}
-            seleccionada={seleccionada}
-            onSeleccionar={setIdSeleccion}
-          />
-        </aside>
-
-        <section className="tarjeta campos">
-          <div className="tarjeta-cab">
-            <Segmentado valor={tipo} onCambio={cambiarTipo} opciones={TIPOS} />
-            <div className="empuje" />
-            <span className="contador">
-              SOT {seleccionada.sot} · {seleccionada.id}
-            </span>
+      <section className="tarjeta campos">
+        <div className="tarjeta-cab">
+          <div className="pestanas" role="tablist" aria-label="Tipo de plantilla">
+            {TIPOS.map((t) => (
+              <button
+                key={t.id}
+                type="button"
+                role="tab"
+                aria-selected={tipo === t.id}
+                className={'pest ' + CLASE_TIPO[t.id] + (tipo === t.id ? ' activo' : '')}
+                onClick={() => cambiarTipo(t.id)}
+              >
+                <span className="punto" />
+                {t.etiqueta}
+              </button>
+            ))}
           </div>
+          <span className="contador">
+            SOT {seleccionada.sot} · {seleccionada.id}
+          </span>
+        </div>
 
-          <div className="tarjeta-cuerpo">
-            {faltantes.length ? (
-              <div className="alerta aviso" style={{ marginBottom: 16 }}>
-                Esta orden no tiene {faltantes.join(', ')}. Complétalo abajo y la plantilla se
-                actualiza sola.
-              </div>
-            ) : null}
-
-            <div className="grupo">
-              <p className="seccion">Datos de la orden</p>
-              <div className="rejilla">
-                <Campo label="Cliente">
-                  <input
-                    value={seleccionada.cliente}
-                    onChange={(e) => editar('cliente')(e.target.value)}
-                    placeholder="Nombre del cliente"
-                  />
-                </Campo>
-                <Campo label="Teléfono">
-                  <input
-                    className="mono"
-                    value={seleccionada.telefono}
-                    onChange={(e) => editar('telefono')(e.target.value)}
-                    placeholder="987654321"
-                    inputMode="tel"
-                  />
-                </Campo>
-                <Campo label="Fecha de la visita">
-                  <div className="fecha-campo">
-                    <input
-                      type="date"
-                      value={aISO(seleccionada.fecha)}
-                      onChange={(e) => editar('fecha')(deISO(e.target.value))}
-                      aria-label="Fecha de la visita"
-                    />
-                    <div className="fecha-atajos">
-                      <button
-                        type="button"
-                        className="enlace"
-                        onClick={() => editar('fecha')(fechaRelativa(0))}
-                      >
-                        hoy
-                      </button>
-                      <button
-                        type="button"
-                        className="enlace"
-                        onClick={() => editar('fecha')(fechaRelativa(1))}
-                      >
-                        mañana
-                      </button>
-                    </div>
-                  </div>
-                  <span className="pista">Sale en la plantilla: {seleccionada.fecha || '—'}</span>
-                </Campo>
-                <Campo label="Franja">
-                  <Select value={seleccionada.franja} onChange={editar('franja')} opciones={FRANJAS} />
-                </Campo>
-                <Campo label="Horario" pista="Sale en la plantilla si lo llenas">
-                  <input
-                    className="mono"
-                    value={seleccionada.horario || ''}
-                    onChange={(e) => editar('horario')(e.target.value)}
-                    placeholder="09:00 - 13:00"
-                  />
-                </Campo>
-                <Campo label="Contrata">
-                  <input
-                    value={seleccionada.contrata}
-                    onChange={(e) => editar('contrata')(e.target.value.toUpperCase())}
-                    list={LISTA_CONTRATAS}
-                    placeholder="Sin contrata"
-                  />
-                </Campo>
-                <Campo label="Departamento">
-                  <Select
-                    value={seleccionada.departamento}
-                    onChange={editar('departamento')}
-                    opciones={DEPARTAMENTOS}
-                  />
-                </Campo>
-              </div>
+        <div className="tarjeta-cuerpo">
+          {faltantes.length ? (
+            <div className="alerta aviso" style={{ marginBottom: 10 }}>
+              Falta <b>{enLista(faltantes)}</b>. Complétalo en los campos marcados y la plantilla
+              se arma sola.
             </div>
+          ) : null}
 
-            <div className="grupo">
-              <p className="seccion">Datos de la plantilla</p>
-              <div className="rejilla">
-                <Campo label="ID de llamada" pista="Se propone el ID de la orden">
-                  <input
-                    className="mono"
-                    value={extra.idLlamada}
-                    onChange={(e) => set('idLlamada', e.target.value)}
-                  />
-                </Campo>
-                <CamposDinamicos tipo={tipo} extra={extra} set={set} />
-              </div>
-            </div>
+          <div className="grupo">
+            <p className="seccion">Datos de la orden</p>
+            <div className="rejilla">
+              <Campo label="Cliente" ancho2 falta={!seleccionada.cliente}>
+                <input
+                  value={seleccionada.cliente}
+                  onChange={(e) => editar('cliente')(e.target.value)}
+                  placeholder="Nombre del cliente"
+                />
+              </Campo>
+              <Campo label="Teléfono" falta={!seleccionada.telefono}>
+                <input
+                  className="mono"
+                  value={seleccionada.telefono}
+                  onChange={(e) => editar('telefono')(e.target.value)}
+                  placeholder="987654321"
+                  inputMode="tel"
+                />
+              </Campo>
 
-              {/* Llena el hueco del final y ahorra ir a la lista. */}
-              <div className="paso-orden">
-                <span className="contador">
-                  {posicion + 1} de {visibles.length}
+              <Campo label="Fecha de la visita" falta={!seleccionada.fecha}>
+                <input
+                  type="date"
+                  value={aISO(seleccionada.fecha)}
+                  onChange={(e) => editar('fecha')(deISO(e.target.value))}
+                  aria-label="Fecha de la visita"
+                />
+                <span className="atajos-fecha">
+                  <span>poner:</span>
+                  <button type="button" onClick={() => editar('fecha')(fechaRelativa(0))}>
+                    hoy
+                  </button>
+                  <button type="button" onClick={() => editar('fecha')(fechaRelativa(1))}>
+                    mañana
+                  </button>
                 </span>
-                <button
-                  type="button"
-                  className="btn btn-chico"
-                  onClick={() => irA(posicion - 1)}
-                  disabled={posicion <= 0}
-                >
-                  Anterior
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-chico"
-                  onClick={() => irA(posicion + 1)}
-                  disabled={posicion >= visibles.length - 1}
-                >
-                  Siguiente orden
-                </button>
-              </div>
-          </div>
-        </section>
+              </Campo>
 
-        <section className="tarjeta vista">
-          <div className="tarjeta-cab">
-            <div>
-              <h2>Vista previa</h2>
-              <p className="sub">{contextoPlantilla(seleccionada, perfil)}</p>
+              <Campo label="Franja">
+                <div className="franjas" role="group" aria-label="Franja">
+                  {FRANJAS.map((f) => (
+                    <button
+                      key={f}
+                      type="button"
+                      aria-pressed={seleccionada.franja === f}
+                      className={seleccionada.franja === f ? 'activo' : ''}
+                      onClick={() => editar('franja')(f)}
+                    >
+                      {f}
+                    </button>
+                  ))}
+                </div>
+              </Campo>
+
+              <Campo label="Horario" pista="Sale en la plantilla si lo llenas">
+                <input
+                  className="mono"
+                  value={seleccionada.horario || ''}
+                  onChange={(e) => editar('horario')(e.target.value)}
+                  placeholder="09:00 - 13:00"
+                />
+              </Campo>
+
+              <Campo label="Contrata" ancho2>
+                <input
+                  value={seleccionada.contrata}
+                  onChange={(e) => editar('contrata')(e.target.value.toUpperCase())}
+                  list={LISTA_CONTRATAS}
+                  placeholder="Sin contrata"
+                />
+              </Campo>
+              <Campo label="Departamento">
+                <Select
+                  value={seleccionada.departamento}
+                  onChange={editar('departamento')}
+                  opciones={DEPARTAMENTOS}
+                />
+              </Campo>
             </div>
-            <div className="empuje" />
-            <button className="btn btn-primario btn-chico" onClick={copiar}>
-              {copiado ? 'Copiado' : 'Copiar plantilla'}
-            </button>
-            <button className="btn btn-chico" onClick={descargar} title="Guardar como archivo .md">
-              Descargar
-            </button>
           </div>
-          <pre className="codigo plantilla">{plantilla}</pre>
 
-          {/* Se escribe mirando la plantilla: es su ultima linea. */}
-          <div className="obs">
-            <label htmlFor="obs-orden">Observaciones</label>
-            <textarea
-              id="obs-orden"
-              rows={2}
-              value={seleccionada.observaciones || ''}
-              onChange={(e) => editar('observaciones')(e.target.value)}
-              placeholder="Opcional. Si escribes algo, se agrega al final de la plantilla."
-            />
+          <div className="grupo">
+            <p className="seccion">
+              {tipo === 'CICLO'
+                ? 'Datos del ciclo'
+                : tipo === 'RECHAZO'
+                  ? 'Datos del rechazo'
+                  : 'Datos de la plantilla'}
+            </p>
+            <div className="rejilla">
+              <Campo label="ID de llamada">
+                <input
+                  className="mono"
+                  value={extra.idLlamada}
+                  onChange={(e) => set('idLlamada', e.target.value)}
+                />
+              </Campo>
+              <CamposDinamicos tipo={tipo} extra={extra} set={set} />
+            </div>
           </div>
-        </section>
-      </div>
+        </div>
+
+        <div className="paso-orden">
+          <span className="contador">
+            {posicion + 1} de {visibles.length}
+          </span>
+          <button
+            type="button"
+            className="btn btn-chico"
+            onClick={() => irA(posicion - 1)}
+            disabled={posicion <= 0}
+            title="También con la flecha ↑"
+          >
+            ↑ Anterior
+          </button>
+          <button
+            type="button"
+            className="btn btn-chico"
+            onClick={() => irA(posicion + 1)}
+            disabled={posicion >= visibles.length - 1}
+            title="También con la flecha ↓"
+          >
+            Siguiente ↓
+          </button>
+        </div>
+      </section>
+
+      <section className="tarjeta vista">
+        <div className="tarjeta-cab">
+          <h2>Vista previa</h2>
+          <span className="empuje" />
+          <span className="contador">{contextoPlantilla(seleccionada, perfil)}</span>
+          <button
+            className="btn btn-plano btn-chico"
+            onClick={descargar}
+            title="Guardar como archivo .md"
+          >
+            ↓
+          </button>
+        </div>
+
+        <pre className="codigo plantilla">{plantilla}</pre>
+
+        {/* Se escribe mirando la plantilla: es su ultima linea. */}
+        <div className="obs">
+          <label htmlFor="obs-orden">
+            Observaciones <span>última línea de la plantilla</span>
+          </label>
+          <textarea
+            id="obs-orden"
+            rows={2}
+            value={seleccionada.observaciones || ''}
+            onChange={(e) => editar('observaciones')(e.target.value)}
+            placeholder="Opcional. Si escribes algo, se agrega al final."
+          />
+        </div>
+
+        <div className="pie-vista">
+          <button
+            className={'btn btn-primario btn-grande btn-copiar' + (copiado ? ' ok' : '')}
+            onClick={copiar}
+          >
+            {copiado ? 'Copiado ✓' : 'Copiar plantilla'}
+          </button>
+          <span className="atajo">
+            <kbd>Ctrl</kbd> + <kbd>↵</kbd>
+          </span>
+        </div>
+      </section>
     </>
   );
 }

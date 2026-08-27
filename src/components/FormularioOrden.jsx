@@ -30,13 +30,16 @@ const FORM_VACIO = {
   sotManual: SOT_MANUAL_DEFAULT,
 };
 
+/*
+ * Carga a mano: es el camino raro (casi siempre se pega de OFS), asi que vive
+ * en un cajon y no le quita pantalla a la tabla.
+ */
 export function FormularioOrden({
   proximoId,
   modo,
   deptosD1 = DEPTOS_PROGRAMACION,
   abierto,
   onAbierto,
-  onPegar,
   onAgregar,
 }) {
   const [form, setForm] = useState(() => ({ ...FORM_VACIO, sotManual: modo || SOT_MANUAL_DEFAULT }));
@@ -50,7 +53,7 @@ export function FormularioOrden({
 
   /*
    * Con un modo elegido, ese manda. En automatico rige la regla de mesa:
-   * UCAYALI y SAN MARTIN van siempre como PROGRAMACIONES D+1.
+   * los departamentos marcados van como PROGRAMACIONES D+1.
    */
   const usaLista = !modo || modo === SOT_MANUAL_PROGRAMACION;
 
@@ -72,10 +75,22 @@ export function FormularioOrden({
     if (modo && modo !== SOT_MANUAL_PROGRAMACION) setForm((f) => ({ ...f, sotManual: modo }));
   }, [modo]);
 
+  useEffect(() => {
+    if (!abierto) return;
+    function esc(e) {
+      if (e.key === 'Escape') onAbierto(false);
+    }
+    document.addEventListener('keydown', esc);
+    return () => document.removeEventListener('keydown', esc);
+  }, [abierto, onAbierto]);
+
+  if (!abierto) return null;
+
   function enviar(ev) {
     ev.preventDefault();
     if (!form.sot.trim()) {
       setErrores({ sot: true });
+      refSot.current?.focus();
       return;
     }
     setErrores({});
@@ -107,154 +122,19 @@ export function FormularioOrden({
   ].filter(Boolean);
 
   return (
-    <form className="tarjeta" onSubmit={enviar}>
-      <div className="tarjeta-cab">
-        <div>
-          <h2>Cargar órdenes</h2>
-          <p className="sub">Lo más rápido es pegar la actividad de Oracle Field Service</p>
-        </div>
-        <div className="empuje" />
-        <button type="button" className="btn btn-primario btn-grande" onClick={onPegar}>
-          Pegar actividad
-        </button>
-        <button type="button" className="btn" onClick={() => onAbierto(!abierto)}>
-          {abierto ? 'Ocultar formulario' : 'Cargar a mano'}
-        </button>
-      </div>
+    <>
+      <div className="velo" onClick={() => onAbierto(false)} />
 
-      <div className="tarjeta-cuerpo" hidden={!abierto}>
-        <p className="seccion-nota">
-          Solo el SOT es obligatorio; el resto se puede completar después. Esta orden será la{' '}
-          {formatearId(proximoId)}.
-        </p>
-
-        <div className="grupo">
-          <p className="seccion">Cliente</p>
-          <div className="rejilla">
-            <Campo label="SOT" req>
-              <input
-                ref={refSot}
-                className={'mono' + (errores.sot ? ' error' : '')}
-                value={form.sot}
-                onChange={(e) => set('sot')(e.target.value)}
-                placeholder="90256466"
-                inputMode="numeric"
-                autoComplete="off"
-              />
-            </Campo>
-
-            <Campo label="Cliente">
-              <input
-                value={form.cliente}
-                onChange={(e) => set('cliente')(e.target.value)}
-                placeholder="Nombre del cliente"
-                autoComplete="off"
-              />
-            </Campo>
-
-            <Campo label="Teléfono">
-              <input
-                className="mono"
-                value={form.telefono}
-                onChange={(e) => set('telefono')(e.target.value)}
-                placeholder="987654321"
-                inputMode="tel"
-                autoComplete="off"
-              />
-            </Campo>
-
-            <Campo label="Contrata" pista="Elige una de la lista o escríbela">
-              <input
-                value={form.contrata}
-                onChange={(e) => set('contrata')(e.target.value.toUpperCase())}
-                list={LISTA_CONTRATAS}
-                autoComplete="off"
-              />
-            </Campo>
-          </div>
-        </div>
-
-        <div className="grupo">
-          <p className="seccion">Programación</p>
-          <div className="rejilla">
-            <Campo label="Fecha" pista="Formato d/m/aaaa">
-              <input
-                className="mono"
-                value={form.fecha}
-                onChange={(e) => set('fecha')(e.target.value)}
-                placeholder={FECHA_DEFAULT}
-                autoComplete="off"
-              />
-            </Campo>
-
-            <Campo label="Franja">
-              <Select value={form.franja} onChange={set('franja')} opciones={FRANJAS} />
-            </Campo>
-
-            <Campo label="Horario" pista="Opcional; sale en la plantilla si lo llenas">
-              <input
-                className="mono"
-                value={form.horario}
-                onChange={(e) => set('horario')(e.target.value)}
-                placeholder="09:00 - 13:00"
-                autoComplete="off"
-              />
-            </Campo>
-
-            <Campo label="Departamento">
-              <Select value={form.departamento} onChange={setDepartamento} opciones={DEPARTAMENTOS} />
-            </Campo>
-
-            <Campo label="Gestión">
-              <Select value={form.gestion} onChange={set('gestion')} opciones={GESTIONES} />
-            </Campo>
-          </div>
-        </div>
-
-        <div className="grupo">
-          <p className="seccion">Formulario</p>
-          <div className="rejilla">
-            <Campo label="¿Ya tiene gestión?">
-              <Select value={form.yaGestion} onChange={set('yaGestion')} opciones={SI_NO} />
-            </Campo>
-
-            <Campo
-              label="SOT gestionada manual"
-              pista={
-                rigeRegla
-                  ? `${form.departamento} va como ${SOT_MANUAL_PROGRAMACION}`
-                  : modo
-                    ? 'Viene del modo elegido en Plantillas'
-                    : undefined
-              }
-            >
-              <Select value={form.sotManual} onChange={set('sotManual')} opciones={SOT_MANUALES} />
-            </Campo>
-          </div>
-
-          <div className="campo campo-largo" style={{ marginTop: 14 }}>
-            <label>Observaciones</label>
-            <textarea
-              rows={2}
-              value={form.observaciones}
-              onChange={(e) => set('observaciones')(e.target.value)}
-              placeholder="Opcional. Si escribes algo, aparece en la plantilla."
-            />
-          </div>
-        </div>
-
-        {errores.sot ? (
-          <div className="alerta error" style={{ marginTop: 16 }}>
-            Falta el <b>SOT</b>: es lo único que no se puede completar después.
-          </div>
-        ) : null}
-
-        <div className="acciones">
-          <button className="btn btn-primario btn-grande" type="submit">
+      <form className="cajon" onSubmit={enviar} role="dialog" aria-label="Cargar una orden a mano">
+        <div className="cajon-cab">
+          <h2>Cargar una orden a mano</h2>
+          <span className="empuje" />
+          <span className="contador">Será la {formatearId(proximoId)}</span>
+          <button className="btn btn-primario" type="submit">
             Agregar orden
           </button>
           <button
-            className="btn btn-plano"
+            className="btn btn-plano btn-chico"
             type="button"
             onClick={() => {
               setForm(FORM_VACIO);
@@ -263,11 +143,154 @@ export function FormularioOrden({
           >
             Limpiar
           </button>
+          <button className="btn btn-plano btn-chico" type="button" onClick={() => onAbierto(false)}>
+            Cerrar (Esc)
+          </button>
+        </div>
+
+        <div className="cajon-cuerpo">
+          {errores.sot ? (
+            <div className="alerta error" style={{ marginBottom: 10 }}>
+              Falta el <b>SOT</b>: es lo único que no se puede completar después.
+            </div>
+          ) : null}
+
+          <div className="grupo">
+            <p className="seccion">Cliente</p>
+            <div className="rejilla">
+              <Campo label="SOT" req>
+                <input
+                  ref={refSot}
+                  className={'mono' + (errores.sot ? ' error' : '')}
+                  value={form.sot}
+                  onChange={(e) => set('sot')(e.target.value)}
+                  placeholder="90256466"
+                  inputMode="numeric"
+                  autoComplete="off"
+                  autoFocus
+                />
+              </Campo>
+
+              <Campo label="Cliente" ancho2>
+                <input
+                  value={form.cliente}
+                  onChange={(e) => set('cliente')(e.target.value)}
+                  placeholder="Nombre del cliente"
+                  autoComplete="off"
+                />
+              </Campo>
+
+              <Campo label="Teléfono">
+                <input
+                  className="mono"
+                  value={form.telefono}
+                  onChange={(e) => set('telefono')(e.target.value)}
+                  placeholder="987654321"
+                  inputMode="tel"
+                  autoComplete="off"
+                />
+              </Campo>
+
+              <Campo label="Contrata" ancho2>
+                <input
+                  value={form.contrata}
+                  onChange={(e) => set('contrata')(e.target.value.toUpperCase())}
+                  list={LISTA_CONTRATAS}
+                  placeholder="Sin contrata"
+                  autoComplete="off"
+                />
+              </Campo>
+            </div>
+          </div>
+
+          <div className="grupo">
+            <p className="seccion">Programación</p>
+            <div className="rejilla">
+              <Campo label="Fecha" pista="Formato d/m/aaaa">
+                <input
+                  className="mono"
+                  value={form.fecha}
+                  onChange={(e) => set('fecha')(e.target.value)}
+                  placeholder={FECHA_DEFAULT}
+                  autoComplete="off"
+                />
+              </Campo>
+
+              <Campo label="Franja">
+                <div className="franjas" role="group" aria-label="Franja">
+                  {FRANJAS.map((f) => (
+                    <button
+                      key={f}
+                      type="button"
+                      aria-pressed={form.franja === f}
+                      className={form.franja === f ? 'activo' : ''}
+                      onClick={() => set('franja')(f)}
+                    >
+                      {f}
+                    </button>
+                  ))}
+                </div>
+              </Campo>
+
+              <Campo label="Horario" pista="Sale en la plantilla si lo llenas">
+                <input
+                  className="mono"
+                  value={form.horario}
+                  onChange={(e) => set('horario')(e.target.value)}
+                  placeholder="09:00 - 13:00"
+                  autoComplete="off"
+                />
+              </Campo>
+
+              <Campo label="Departamento" ancho2>
+                <Select value={form.departamento} onChange={setDepartamento} opciones={DEPARTAMENTOS} />
+              </Campo>
+
+              <Campo label="Gestión">
+                <Select value={form.gestion} onChange={set('gestion')} opciones={GESTIONES} />
+              </Campo>
+            </div>
+          </div>
+
+          <div className="grupo">
+            <p className="seccion">Formulario</p>
+            <div className="rejilla">
+              <Campo label="¿Ya tiene gestión?">
+                <Select value={form.yaGestion} onChange={set('yaGestion')} opciones={SI_NO} />
+              </Campo>
+
+              <Campo
+                label="SOT gestionada manual"
+                ancho2
+                pista={
+                  rigeRegla
+                    ? `${form.departamento} va como ${SOT_MANUAL_PROGRAMACION}`
+                    : modo
+                      ? 'Viene del modo elegido al pegar'
+                      : undefined
+                }
+              >
+                <Select value={form.sotManual} onChange={set('sotManual')} opciones={SOT_MANUALES} />
+              </Campo>
+
+              <Campo label="Observaciones" largo>
+                <textarea
+                  rows={2}
+                  value={form.observaciones}
+                  onChange={(e) => set('observaciones')(e.target.value)}
+                  placeholder="Opcional. Si escribes algo, aparece al final de la plantilla."
+                />
+              </Campo>
+            </div>
+          </div>
+
           {faltan.length && form.sot.trim() ? (
-            <span className="pista">Sin {faltan.join(', ')}: se puede completar en Plantillas</span>
+            <p className="pista" style={{ marginTop: 10 }}>
+              Sin {faltan.join(', ')}: se puede completar en el paso 2.
+            </p>
           ) : null}
         </div>
-      </div>
-    </form>
+      </form>
+    </>
   );
 }

@@ -25,19 +25,40 @@ npm run dev
 
 ## Cómo está pensada
 
-Es un dashboard a **ancho completo**: el menú vive en una **barra lateral fija a la
-izquierda**, con la marca arriba, las tres secciones al medio y el perfil y el tema al
-pie; el contenido ocupa todo el espacio restante, sin márgenes muertos. Bajo 900 px la
-barra pasa arriba como una fila.
+Es un **banco de trabajo de una sola pantalla**, pensado para un puesto de call
+center: los tres pasos entran en `100dvh` sin scroll de página a 1366×768 y a
+1920×1080, y el desplazamiento vive dentro de cada panel (la lista, la tabla y el
+bloque de código), nunca en la ventana.
+
+El menú es un **riel de 64 px** a la izquierda: la marca, los tres pasos numerados y,
+al pie, el tema y el código de usuario. Son tres pasos —no necesitan una columna
+entera—, y el ancho que se ahorra se va a los datos. Bajo 860 px el riel pasa arriba
+como una fila y la página vuelve al scroll normal.
+
+Arriba, una **barra de 44 px** dice en qué paso vas, cómo va el turno (*12 órdenes ·
+2 sin completar*) y trae las acciones de ese paso a la derecha. Abajo, una **barra de
+estado de 26 px** con el operador, el conteo por tipo, el modo vigente y la versión
+del build.
 
 Las secciones están numeradas porque son el orden del trabajo: **1 Órdenes** (cargar)
-→ **2 Plantillas** (armar y copiar) → **3 Script** (enviar al formulario). Cada una
-abre con su título, en qué paso va y un botón que lleva al siguiente, así no hay que
-buscarlo en el menú. La sección activa se marca visualmente y con `aria-current`.
+→ **2 Plantillas** (armar y copiar) → **3 Script** (enviar al formulario). Cada paso
+tiene **una sola acción principal** en rojo: *Pegar de OFS*, *Copiar plantilla* y
+*Copiar script*, siempre visible sin rodar.
 
-Cada sección tiene **una sola acción principal**, en botón grande: *Pegar actividad*,
-*Copiar plantilla* y *Copiar script*. Lo secundario arranca plegado — el formulario
-manual y los pasos de uso del script — para que la primera pantalla no abrume.
+Lo que no se usa todo el rato vive en un **cajón** que se abre sobre el banco y se
+cierra solo al terminar: el pegado de Oracle Field Service (disponible en los pasos 1
+y 2) y la carga a mano. Antes el pegado era una banda fija que se llevaba 193 px de
+pantalla aunque ya no se usara.
+
+**El color dice el estado.** El rojo de Claro queda reservado para la marca, la orden
+seleccionada y la acción principal; los tipos tienen su propio color en la lista, las
+pestañas, los filtros y la barra inferior: Confirmada verde, Ciclo ámbar, Rechazo
+granate. Así el rojo de «Rechazo» ya no compite con el del botón de copiar.
+
+**La tipografía es IBM Plex Sans y Plex Mono** (Google Fonts): leen mejor que la del
+sistema en rótulos de 10 px y alinean los dígitos de SOT, teléfono y fecha. Si el
+navegador no las alcanza —por ejemplo con el archivo suelto sin internet— cae a la
+fuente del sistema y el diseño no se mueve.
 
 Decisiones de uso que conviene conocer:
 
@@ -63,11 +84,11 @@ oficial, deja el archivo en `public/` y se cambia la línea `rel="icon"` de
 
 ### 1 · Órdenes
 
-Dos caminos: **Pegar actividad** (lleva al pegado de OFS, es el rápido) o **Cargar a
-mano**, que despliega el formulario. Debajo, la tabla con todo lo cargado.
-Al agregar, se limpian
-SOT/cliente/teléfono y se mantienen fecha, franja, gestión y departamento para meter
-varias seguidas.
+La tabla ocupa la pantalla entera. Los dos caminos para llenarla están en la barra de
+arriba y ambos abren un **cajón** sobre ella: **Pegar de OFS** (el rápido) o **Cargar
+a mano**. Al agregar a mano se limpian SOT/cliente/teléfono y se mantienen fecha,
+franja, gestión y departamento para meter varias seguidas; el cajón queda abierto
+hasta que lo cierres con *Cerrar* o `Esc`.
 
 - **IDs**: correlativos `SOT-XXXXXX` desde `SOT-208548`. Es el ID interno de la app
   y se propone como *ID de llamada* en las plantillas.
@@ -75,7 +96,7 @@ varias seguidas.
 - **Tabla en cinco columnas** (Orden · Cliente · Programación · Zona · Formulario), cada
   una con el dato principal arriba y el detalle debajo: entra completa sin scroll
   horizontal. Bajo 760 px cada fila pasa a ser una tarjeta con sus etiquetas.
-- **Color por tipo**: confirmada en verde, ciclo en ámbar y rechazo en rojo, en la
+- **Color por tipo**: confirmada en verde, ciclo en ámbar y rechazo en granate, en la
   tabla, en la lista de Plantillas y en las fichas del pegado. El tipo sale del que
   elijas en Plantillas y, si nunca lo tocaste, de la gestión de la orden
   (CONFIRMO = confirmada, el resto = ciclo).
@@ -142,26 +163,27 @@ INST CARLEI TARAPOTO FTTH - 4F TARAP, 24/08/26
 - Se pueden pegar **varias actividades de una**, cada una con su cabecera.
 - Lo que no encuentre lo dice con un aviso; sin SOT no deja agregar.
 
-Tres columnas: la **lista de órdenes** (300 px, entra el nombre completo del
-cliente), los **campos** en el centro y la **vista previa** a la derecha, que se ciñe
-al ancho de la plantilla (`fit-content`, tope 480 px) para no dejar blanco al costado, para editar
-y ver el resultado a la vez. Al pie de los campos hay **Anterior / Siguiente orden**
-con la posición (*3 de 12*), para recorrer la lista sin volver a ella.
+Tres columnas: la **lista de órdenes**, los **campos** al centro y la **vista previa**
+a la derecha, para editar y ver el resultado a la vez.
 
-**Entra en una pantalla sin scroll**: la sección ocupa exactamente el alto de la
-ventana y el desplazamiento vive dentro de cada columna (medido en Chrome real a
-1920×1080, 1600×900 y 1366×768; en pantallas de menos de 820 px de alto se recorta lo
-prescindible para que la lista conserve espacio), así los botones *Copiar
-plantilla* y *Descargar* quedan siempre visibles. El panel de pegado es compacto
-(tres líneas) y sus opciones —tipo, franja, fecha y modo— se pliegan tras un resumen
-de una línea: *Entran como lo que diga el pegado · franja del pegado · fecha del
-pegado · modo automático · cambiar*.
+Los campos van agrupados por filas en vez de apilados: **Cliente** (ocupa dos huecos,
+los nombres son largos) con **Teléfono**; **Fecha**, **Franja** y **Horario** en una
+fila; **Contrata** y **Departamento** en otra. La franja se elige **con un clic** en
+cinco botones —AM0 · AM1 · AM2 · PM1 · PM2— porque es el campo que más se toca. A
+1366×768 la columna de datos pasa de 288 px a 614 px y ya no esconde campos bajo el
+borde.
 
-Los cortes son: **tres columnas** desde 1280 px (el ancho útil descuenta la barra
-lateral), **dos** entre 1100 y 1280 con la vista previa debajo de los campos, y
-**apilado con scroll normal** por debajo de 1100 px, que es más usable que comprimir
-tres paneles. Ninguna columna impone un ancho mínimo, así que nunca desborda de
-costado.
+La **vista previa manda**: se lleva todo el alto sobrante, y debajo van las
+**observaciones** (que son su última línea) y el botón rojo de **Copiar plantilla**,
+fijo al pie. **Ctrl+↵** copia; **↑** y **↓** saltan de orden sin soltar el teclado, y
+al pie de los campos están *Anterior / Siguiente* con la posición (*3 de 12*).
+
+Los cortes son: **tres columnas** desde 1080 px; entre 860 y 1080 la vista previa baja
+debajo de los campos y la lista conserva su columna a la izquierda; por debajo de
+860 px se apila con scroll normal de página, que es más usable que comprimir cuatro
+paneles. En pantallas de menos de 800 px de alto se recorta lo prescindible. Con
+1750 px o más el formulario pasa a **cuatro campos por fila** —densidad en vez de
+campos estirados— y la plantilla sube de cuerpo.
 
 La lista muestra **la última cargada arriba**, seleccionada y desplazada a la vista
 (al pegar un lote queda elegida la última del lote, que es la que encabeza), con la
@@ -222,7 +244,9 @@ El modal de instrucciones incluye **ocho problemas frecuentes con su solución**
 a la mitad, cambiar de pestaña y pegar el script dos veces— escritos para quien no
 programa.
 
-Un selector:
+A la izquierda quedan las **opciones** y los tres pasos de uso, con *Copiar script*
+fijo al pie; a la derecha, el script generado con su propio scroll.
+
 - **Órdenes incluidas** — todas, solo confirmados o solo ciclos.
 - **Formato de fecha** — `d/m/yyyy` o `M/d/yyyy`, según lo que espere el
   formulario. Las órdenes siempre se guardan como `d/m/aaaa`; la conversión se

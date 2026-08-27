@@ -20,7 +20,15 @@ function Celda({ etiqueta, principal, detalle, className = '' }) {
 const sinDato = (texto, alternativa = 'Sin dato') =>
   texto ? texto : <span className="tenue">{alternativa}</span>;
 
-export function TablaOrdenes({ ordenes, onEliminar, onVaciar, onExportar, onImportar, onIrAPegar }) {
+export function TablaOrdenes({
+  ordenes,
+  onEliminar,
+  onVaciar,
+  onExportar,
+  onImportar,
+  onIrAPegar,
+  onCargarAMano,
+}) {
   const inputArchivo = useRef(null);
 
   const repetidos = useMemo(() => {
@@ -34,18 +42,16 @@ export function TablaOrdenes({ ordenes, onEliminar, onVaciar, onExportar, onImpo
   return (
     <section className="tarjeta">
       <div className="tarjeta-cab">
-        <div>
-          <h2>Órdenes cargadas</h2>
-          <p className="sub">
-            {ordenes.length} {ordenes.length === 1 ? 'orden pendiente' : 'órdenes pendientes'}
-          </p>
-        </div>
-        <div className="empuje" />
+        <h2>Órdenes cargadas</h2>
+        <span className="contador">
+          {ordenes.length} {ordenes.length === 1 ? 'pendiente' : 'pendientes'}
+        </span>
+        <span className="empuje" />
         <button className="btn btn-chico" onClick={onExportar} disabled={!ordenes.length}>
-          Exportar
+          Exportar JSON
         </button>
         <button className="btn btn-chico" onClick={() => inputArchivo.current?.click()}>
-          Importar
+          Importar JSON
         </button>
         <button className="btn btn-chico btn-peligro" onClick={onVaciar} disabled={!ordenes.length}>
           Vaciar
@@ -66,13 +72,16 @@ export function TablaOrdenes({ ordenes, onEliminar, onVaciar, onExportar, onImpo
       {ordenes.length === 0 ? (
         <div className="vacio">
           <strong>Todavía no hay órdenes</strong>
-          Lo más rápido es pegar la actividad de Oracle Field Service; también puedes cargarla con el
-          formulario de arriba o importar un JSON que hayas exportado antes.
+          Lo más rápido es pegar la actividad de Oracle Field Service. También puedes cargarla a mano
+          o importar un JSON que hayas exportado antes.
           <div className="acciones-vacio">
-            <button className="btn btn-primario btn-chico" onClick={onIrAPegar}>
-              Pegar actividad
+            <button className="btn btn-primario" onClick={onIrAPegar}>
+              Pegar de OFS
             </button>
-            <button className="btn btn-chico" onClick={() => inputArchivo.current?.click()}>
+            <button className="btn" onClick={onCargarAMano}>
+              Cargar a mano
+            </button>
+            <button className="btn" onClick={() => inputArchivo.current?.click()}>
               Importar JSON
             </button>
           </div>

@@ -18,9 +18,9 @@ export const CLASE_TIPO = { CONFI: 'es-confi', CICLO: 'es-ciclo', RECHAZO: 'es-r
 export const COLOR_TIPO = { CONFI: 'ok', CICLO: 'aviso', RECHAZO: 'error' };
 
 export const TIPOS = [
-  { id: 'CONFI', etiqueta: 'Confirmada', descripcion: 'Confirmación de visita' },
-  { id: 'CICLO', etiqueta: 'Ciclo de llamadas', descripcion: 'Ciclo de llamadas' },
-  { id: 'RECHAZO', etiqueta: 'Rechazo', descripcion: 'Rechazo en mesa' },
+  { id: 'CONFI', etiqueta: 'Confirmada', corto: 'Confirmadas', descripcion: 'Confirmación de visita' },
+  { id: 'CICLO', etiqueta: 'Ciclo de llamadas', corto: 'Ciclos', descripcion: 'Ciclo de llamadas' },
+  { id: 'RECHAZO', etiqueta: 'Rechazo', corto: 'Rechazos', descripcion: 'Rechazo en mesa' },
 ];
 
 /*

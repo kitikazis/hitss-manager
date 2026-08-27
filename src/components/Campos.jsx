@@ -1,6 +1,9 @@
-export function Campo({ label, req, pista, children }) {
+export function Campo({ label, req, pista, ancho2, largo, falta, children }) {
+  const clases =
+    'campo' + (ancho2 ? ' ancho-2' : '') + (largo ? ' campo-largo' : '') + (falta ? ' falta' : '');
+
   return (
-    <div className="campo">
+    <div className={clases}>
       <label>
         {label}
         {req ? <span className="req">*</span> : null}

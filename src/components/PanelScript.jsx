@@ -56,67 +56,95 @@ export function PanelScript({
     onToast('Archivo .js descargado');
   }
 
+  const lineas = script.split(String.fromCharCode(10)).length;
+
   return (
     <>
       <section className="tarjeta">
         <div className="tarjeta-cab">
-          <div>
-            <h2>Opciones del script</h2>
-            <p className="sub">El script llena y envía todas las órdenes seguidas</p>
-          </div>
+          <h2>Opciones</h2>
         </div>
 
         <div className="tarjeta-cuerpo">
-          <div className="rejilla">
-            <Campo label="Órdenes incluidas">
-              <select value={filtro} onChange={(e) => onFiltro(e.target.value)}>
-                <option value="todas">Todas ({conteos.todas})</option>
-                <option value="confirmados">Solo confirmados ({conteos.confirmados})</option>
-                <option value="ciclos">Solo ciclos ({conteos.ciclos})</option>
-              </select>
-            </Campo>
+          <div className="grupo">
+            <p className="seccion">Qué se envía</p>
+            <div className="rejilla" style={{ gridTemplateColumns: '1fr' }}>
+              <Campo label="Órdenes incluidas">
+                <select value={filtro} onChange={(e) => onFiltro(e.target.value)}>
+                  <option value="todas">Todas ({conteos.todas})</option>
+                  <option value="confirmados">Solo confirmados ({conteos.confirmados})</option>
+                  <option value="ciclos">Solo ciclos ({conteos.ciclos})</option>
+                </select>
+              </Campo>
 
-            <Campo label="Formato de fecha" pista="El que espera el formulario">
-              <Select value={formatoFecha} onChange={onFormatoFecha} opciones={FORMATOS_FECHA} />
-            </Campo>
+              <Campo label="Formato de fecha" pista="El que espera el formulario">
+                <Select value={formatoFecha} onChange={onFormatoFecha} opciones={FORMATOS_FECHA} />
+              </Campo>
+            </div>
           </div>
 
           {!ordenes.length ? (
-            <div className="alerta error" style={{ marginTop: 16 }}>
+            <div className="alerta error" style={{ marginTop: 12 }}>
               {conteos.todas === 0 ? (
                 <>
-                  No hay órdenes cargadas. Ve a <b>Órdenes</b> antes de generar el script.
+                  No hay órdenes cargadas. Vuelve al <b>paso 1</b> antes de generar el script.
                 </>
               ) : (
                 <>
-                  Ninguna orden entra en el filtro <b>{ETIQUETAS[filtro]}</b>. Cambia el filtro para
-                  incluir las {conteos.todas} cargadas.
+                  Ninguna orden entra en el filtro <b>{ETIQUETAS[filtro]}</b>. Cámbialo para incluir
+                  las {conteos.todas} cargadas.
                 </>
               )}
             </div>
-          ) : null}
+          ) : (
+            <div className="grupo">
+              <p className="seccion">Cómo se usa</p>
+              <ol className="pasos">
+                <li>
+                  Abre el formulario HITSS y pulsa <strong>F12</strong>.
+                </li>
+                <li>
+                  Entra a <strong>Console</strong> y pega el script.
+                </li>
+                <li>
+                  Pulsa <strong>Enter</strong>: llena y envía las {ordenes.length} seguidas.
+                </li>
+              </ol>
+              <button
+                className="btn btn-chico"
+                onClick={onVerInstrucciones}
+                style={{ marginTop: 10 }}
+              >
+                Ver instrucciones completas
+              </button>
+            </div>
+          )}
+        </div>
+
+        <div className="pie-vista">
+          <button
+            className={'btn btn-primario btn-grande btn-copiar' + (copiado ? ' ok' : '')}
+            onClick={copiar}
+            disabled={!ordenes.length}
+          >
+            {copiado ? 'Copiado ✓' : 'Copiar script'}
+          </button>
+          <span className="atajo">
+            <kbd>Ctrl</kbd> + <kbd>↵</kbd>
+          </span>
         </div>
       </section>
 
       <section className="tarjeta">
         <div className="tarjeta-cab">
-          <div>
-            <h2>Script generado</h2>
-            <p className="sub">
-              {ordenes.length} {ordenes.length === 1 ? 'orden' : 'órdenes'} · usuario{' '}
-              {perfil.usuario} · fechas en {formatoFecha} ·{' '}
-              {script.split(String.fromCharCode(10)).length} líneas
-            </p>
-          </div>
-          <div className="empuje" />
-          <button className="btn btn-chico" onClick={onVerInstrucciones}>
-            Ver instrucciones
-          </button>
-          <button className="btn btn-primario btn-grande" onClick={copiar}>
-            {copiado ? 'Copiado' : 'Copiar script'}
-          </button>
-          <button className="btn btn-chico" onClick={descargar} title="Guardar como archivo .js">
-            Descargar
+          <h2>Script generado</h2>
+          <span className="empuje" />
+          <span className="contador">
+            {ordenes.length} {ordenes.length === 1 ? 'orden' : 'órdenes'} · {perfil.usuario} ·{' '}
+            {formatoFecha} · {lineas} líneas
+          </span>
+          <button className="btn btn-plano btn-chico" onClick={descargar} title="Guardar como .js">
+            ↓
           </button>
         </div>
         <pre className="codigo">{script}</pre>

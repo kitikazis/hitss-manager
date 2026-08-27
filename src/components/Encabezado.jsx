@@ -1,63 +1,60 @@
 /* El orden de las secciones es el orden del trabajo: cargar, armar, enviar. */
 const PESTANAS = [
-  { id: 'ordenes', etiqueta: 'Órdenes', paso: 1, conCuenta: true },
-  { id: 'plantillas', etiqueta: 'Plantillas', paso: 2 },
-  { id: 'script', etiqueta: 'Script', paso: 3 },
+  { id: 'ordenes', etiqueta: 'Órdenes', corto: 'Órdenes', paso: 1 },
+  { id: 'plantillas', etiqueta: 'Plantillas', corto: 'Plantilla', paso: 2 },
+  { id: 'script', etiqueta: 'Script', corto: 'Script', paso: 3 },
 ];
 
+/*
+ * Riel de 64 px: son tres pasos numerados, no necesitan una columna entera.
+ * El ancho que se ahorra se va a los datos, que es donde hace falta.
+ */
 export function Encabezado({ perfil, onAbrirPerfil, total, tema, onTema, tab, onTab }) {
+  const actual = PESTANAS.find((p) => p.id === tab)?.paso || 1;
+
   return (
-    <aside className="lateral">
-      <div className="marca">
-        <span className="marca-mosaico" aria-hidden="true">
-          H
-        </span>
-        <span className="marca-texto">
-          <h1>HITSS Manager</h1>
-          <span className="marca-nota">Mesa multiskill</span>
-        </span>
+    <aside className="riel">
+      <div className="marca" title="HITSS Manager · Mesa multiskill" aria-hidden="true">
+        H
       </div>
 
-      <nav className="tabs" aria-label="Secciones">
+      <nav className="tabs" aria-label="Secciones" style={{ display: 'contents' }}>
         {PESTANAS.map((p) => (
           <button
             key={p.id}
-            className={'tab' + (tab === p.id ? ' activa' : '')}
-            aria-current={tab === p.id ? 'page' : undefined}
+            type="button"
+            className={
+              'paso' + (tab === p.id ? ' activo' : p.paso < actual ? ' hecho' : '')
+            }
+            aria-current={tab === p.id ? 'step' : undefined}
+            title={`Paso ${p.paso}: ${p.etiqueta}` + (p.paso === 1 ? ` (${total})` : '')}
             onClick={() => onTab(p.id)}
           >
-            <span className="tab-paso" aria-hidden="true">
-              {p.paso}
-            </span>
-            {p.etiqueta}
-            {p.conCuenta ? (
-              <span className="cuenta" title={total + ' órdenes cargadas'}>
-                {total}
-              </span>
-            ) : null}
+            <span className="num">{p.paso}</span>
+            <span className="rot">{p.corto}</span>
           </button>
         ))}
       </nav>
 
-      <div className="lateral-pie">
-        <div className="header-acciones">
-          <div className="ancla">
-            <button
-              className="btn btn-chico"
-              onClick={onAbrirPerfil}
-              title="Cambiar usuario, operador y firma"
-            >
-              <span className="chip-usuario">{perfil.usuario}</span>
-            </button>
-          </div>
-
-          <button
-            className="btn btn-plano btn-chico"
-            onClick={() => onTema(tema === 'dark' ? 'light' : 'dark')}
-          >
-            {tema === 'dark' ? 'Tema claro' : 'Tema oscuro'}
-          </button>
-        </div>
+      <div className="riel-pie">
+        <button
+          className="icono-btn"
+          type="button"
+          onClick={() => onTema(tema === 'dark' ? 'light' : 'dark')}
+          title={tema === 'dark' ? 'Cambiar a tema claro' : 'Cambiar a tema oscuro'}
+          aria-label="Cambiar tema"
+        >
+          ◐
+        </button>
+        <button
+          className="cod"
+          type="button"
+          onClick={onAbrirPerfil}
+          title="Cambiar usuario, operador y firma"
+          style={{ border: 0, background: 'none', cursor: 'pointer', padding: 0, width: 'auto' }}
+        >
+          {perfil.usuario}
+        </button>
       </div>
     </aside>
   );

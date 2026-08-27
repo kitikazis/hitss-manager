@@ -4,18 +4,18 @@ import { CabeceraSeccion } from './components/CabeceraSeccion';
 import { ModalInstrucciones } from './components/Instrucciones';
 import { PerfilModal } from './components/Perfil';
 import { FormularioOrden } from './components/FormularioOrden';
+import { PanelPegar } from './components/PanelPegar';
 import { TablaOrdenes } from './components/TablaOrdenes';
 import { PanelPlantillas } from './components/PanelPlantillas';
 import { PanelScript } from './components/PanelScript';
 import { useAlmacenado } from './hooks/useAlmacenado';
 import { generarScript } from './lib/generarScript';
-import { separarPorTipo } from './lib/plantillas';
+import { separarPorTipo, tipoDeOrden } from './lib/plantillas';
 import {
   descargarArchivo,
   escribirAlmacen,
   formatearId,
   hoyArchivo,
-  hoyTexto,
   leerAlmacen,
 } from './lib/utils';
 import {
@@ -64,13 +64,14 @@ export default function App() {
   /* La primera vez que se abre la app no hay usuario guardado: se pregunta. */
   const [primeraVez] = useState(() => leerAlmacen(CLAVE_USUARIO, null) === null);
   const [perfilAbierto, setPerfilAbierto] = useState(primeraVez);
-  const [pegadoAbierto, setPegadoAbierto] = useState(true);
+  const [pegadoAbierto, setPegadoAbierto] = useState(false);
   const [formAbierto, setFormAbierto] = useState(false);
   const [instruccionesAbiertas, setInstruccionesAbiertas] = useState(false);
   const [recordarInstrucciones, setRecordarInstrucciones] = useAlmacenado(CLAVE_INSTRUCCIONES, true);
   const [bienvenida, setBienvenida] = useState(primeraVez);
 
   const [tab, setTab] = useState('ordenes');
+  const [seleccion, setSeleccion] = useState(null);
   const [filtroScript, setFiltroScript] = useState('todas');
   const [formatoFecha, setFormatoFecha] = useAlmacenado(CLAVE_FORMATO_FECHA, FORMATO_FECHA_DEFAULT);
   const [modo, setModo] = useAlmacenado(claveModo(usuario), '');
@@ -106,10 +107,11 @@ export default function App() {
     mostrarToast(`Perfil activo: ${nuevo}`);
   }
 
-  /* `accion` agrega un boton al aviso (deshacer): lo destructivo es reversible. */
   /* Al entrar a Script se recuerdan los pasos, salvo que pidan no verlos mas. */
   function cambiarTab(id) {
     setTab(id);
+    setPegadoAbierto(false);
+    setFormAbierto(false);
     if (id === 'script' && recordarInstrucciones) setInstruccionesAbiertas(true);
   }
 
@@ -119,6 +121,7 @@ export default function App() {
     setPerfilAbierto(true);
   }
 
+  /* `accion` agrega un boton al aviso (deshacer): lo destructivo es reversible. */
   function mostrarToast(texto, accion) {
     setToast({ texto, accion });
     clearTimeout(timerToast.current);
@@ -136,8 +139,15 @@ export default function App() {
 
   function agregarOrden(datos) {
     const [nueva] = agregarOrdenes([datos]);
+    setSeleccion(nueva.id);
     mostrarToast(`Orden ${datos.sot} agregada (${nueva.id})`);
     return nueva;
+  }
+
+  /* Se elige la ultima del lote: es la que queda arriba en la lista. */
+  function agregarDesdePegado(lista) {
+    const nuevas = agregarOrdenes(lista);
+    if (nuevas.length) setSeleccion(nuevas[nuevas.length - 1].id);
   }
 
   /*
@@ -261,12 +271,104 @@ export default function App() {
 
   const { confirmados, ciclos } = useMemo(() => separarPorTipo(ordenes), [ordenes]);
 
+  /* Conteo por tipo de plantilla: es lo que se ve en la lista y en el pie. */
+  const porTipo = useMemo(() => {
+    const c = { CONFI: 0, CICLO: 0, RECHAZO: 0 };
+    ordenes.forEach((o) => {
+      c[tipoDeOrden(o)] += 1;
+    });
+    return c;
+  }, [ordenes]);
+
+  const incompletas = useMemo(
+    () => ordenes.filter((o) => !o.cliente || !o.telefono || !o.fecha).length,
+    [ordenes]
+  );
+
   const ordenesScript =
     filtroScript === 'confirmados' ? confirmados : filtroScript === 'ciclos' ? ciclos : ordenes;
 
   const script = useMemo(
     () => generarScript(ordenesScript, perfil, { formatoFecha }),
     [ordenesScript, perfil, formatoFecha]
+  );
+
+  function abrirPegado() {
+    setFormAbierto(false);
+    setPegadoAbierto(true);
+  }
+
+  const cuenta = (
+    <>
+      <b>{ordenes.length}</b> {ordenes.length === 1 ? 'orden' : 'órdenes'}
+      {incompletas ? (
+        <>
+          {' · '}
+          <b>{incompletas}</b> sin completar
+        </>
+      ) : null}
+    </>
+  );
+
+  /* Cada paso trae su cabecera: el dato del turno a la izquierda, las acciones a la derecha. */
+  const cabecera =
+    tab === 'ordenes' ? (
+      <CabeceraSeccion paso={1} titulo="Carga tus órdenes" dato={cuenta}>
+        <button className="btn btn-primario" onClick={abrirPegado}>
+          Pegar de OFS
+        </button>
+        <button
+          className="btn"
+          onClick={() => {
+            setPegadoAbierto(false);
+            setFormAbierto(true);
+          }}
+        >
+          Cargar a mano
+        </button>
+        <button className="btn" onClick={() => cambiarTab('plantillas')} disabled={!ordenes.length}>
+          Armar plantillas →
+        </button>
+      </CabeceraSeccion>
+    ) : tab === 'plantillas' ? (
+      <CabeceraSeccion paso={2} titulo="Arma la plantilla" dato={cuenta}>
+        <button className="btn" onClick={abrirPegado}>
+          Pegar de OFS
+        </button>
+        <button className="btn" onClick={() => cambiarTab('script')} disabled={!ordenes.length}>
+          Generar el script →
+        </button>
+      </CabeceraSeccion>
+    ) : (
+      <CabeceraSeccion
+        paso={3}
+        titulo="Envía al formulario"
+        dato={
+          <>
+            <b>{ordenesScript.length}</b> de <b>{ordenes.length}</b> entran en el script
+          </>
+        }
+      >
+        <button className="btn" onClick={() => setInstruccionesAbiertas(true)}>
+          Ver instrucciones
+        </button>
+        <button className="btn" onClick={() => cambiarTab('ordenes')}>
+          Volver a órdenes
+        </button>
+      </CabeceraSeccion>
+    );
+
+  const pegar = (
+    <PanelPegar
+      onAgregar={agregarDesdePegado}
+      onToast={mostrarToast}
+      modo={modo}
+      onModo={setModo}
+      deptosD1={deptosD1}
+      onDeptosD1={setDeptosD1}
+      abierto={pegadoAbierto}
+      onAbierto={setPegadoAbierto}
+    />
   );
 
   return (
@@ -281,72 +383,46 @@ export default function App() {
         onTab={cambiarTab}
       />
 
-      <div className="contenido">
-        <main className={tab === 'plantillas' ? 'pleno' : undefined}>
-        <div className="wrap">
-          {tab === 'ordenes' ? (
-            <>
-              <CabeceraSeccion
-                paso={1}
-                titulo="Carga tus órdenes"
-                descripcion="Pega la actividad de Oracle Field Service o cárgala a mano."
-                siguiente={{ id: 'plantillas', etiqueta: 'Armar plantillas' }}
-                onIr={cambiarTab}
-              />
-              <FormularioOrden
-                proximoId={proximoId}
-                modo={modo}
-                deptosD1={deptosD1}
-                abierto={formAbierto}
-                onAbierto={setFormAbierto}
-                onPegar={() => {
-                  setPegadoAbierto(true);
-                  setTab('plantillas');
-                }}
-                onAgregar={agregarOrden}
-              />
-              <TablaOrdenes
-                ordenes={ordenes}
-                onEliminar={eliminarOrden}
-                onVaciar={vaciarTodo}
-                onExportar={exportar}
-                onImportar={importar}
-                onIrAPegar={() => setTab('plantillas')}
-              />
-            </>
-          ) : tab === 'plantillas' ? (
-            <>
-              <CabeceraSeccion
-                paso={2}
-                titulo="Arma la plantilla"
-                descripcion="Elige una orden, completa lo que falte y copia el texto."
-                siguiente={{ id: 'script', etiqueta: 'Generar el script' }}
-                onIr={cambiarTab}
-              />
-              <PanelPlantillas
+      <div className="banco">
+        {cabecera}
+
+        {tab === 'ordenes' ? (
+          <div className="cuerpo una">
+            <TablaOrdenes
+              ordenes={ordenes}
+              onEliminar={eliminarOrden}
+              onVaciar={vaciarTodo}
+              onExportar={exportar}
+              onImportar={importar}
+              onIrAPegar={abrirPegado}
+              onCargarAMano={() => setFormAbierto(true)}
+            />
+            {pegar}
+            <FormularioOrden
+              proximoId={proximoId}
+              modo={modo}
+              deptosD1={deptosD1}
+              abierto={formAbierto}
+              onAbierto={setFormAbierto}
+              onAgregar={agregarOrden}
+            />
+          </div>
+        ) : tab === 'plantillas' ? (
+          <div className="cuerpo tres">
+            <PanelPlantillas
               ordenes={ordenes}
               perfil={perfil}
-              modo={modo}
-              onModo={setModo}
-              deptosD1={deptosD1}
-              onDeptosD1={setDeptosD1}
-              pegadoAbierto={pegadoAbierto}
-              onPegadoAbierto={setPegadoAbierto}
-              onAgregarOrdenes={agregarOrdenes}
+              seleccion={seleccion}
+              onSeleccion={setSeleccion}
+              onAbrirPegado={abrirPegado}
               onActualizarOrden={actualizarOrden}
-                onToast={mostrarToast}
-              />
-            </>
-          ) : (
-            <>
-              <CabeceraSeccion
-                paso={3}
-                titulo="Envía al formulario"
-                descripcion="Copia el script y pégalo en la consola del formulario HITSS."
-                siguiente={{ id: 'ordenes', etiqueta: 'Volver a órdenes' }}
-                onIr={cambiarTab}
-              />
-              <PanelScript
+              onToast={mostrarToast}
+            />
+            {pegar}
+          </div>
+        ) : (
+          <div className="cuerpo dos">
+            <PanelScript
               ordenes={ordenesScript}
               perfil={perfil}
               script={script}
@@ -360,41 +436,33 @@ export default function App() {
                 ciclos: ciclos.length,
               }}
               onVerInstrucciones={() => setInstruccionesAbiertas(true)}
-                onToast={mostrarToast}
-              />
-            </>
-          )}
-        </div>
-        </main>
-
-        <footer>
-        <div className="wrap">
-          <div className="pie">
-            <span>
-              Usuario: <b className="mono">{perfil.usuario}</b>
-            </span>
-            <span>
-              Operador: <b>{perfil.operador || '—'}</b>
-            </span>
-            <span>
-              Fecha: <b>{hoyTexto()}</b>
-            </span>
-            <span>
-              Órdenes pendientes: <b>{ordenes.length}</b>
-            </span>
-            <span>
-              Confirmados: <b>{confirmados.length}</b> · Ciclos: <b>{ciclos.length}</b>
-            </span>
-            <span>
-              Modo de las nuevas: <b>{modo || 'automático por departamento'}</b>
-            </span>
-            <span title="Sirve para saber si el navegador tiene la última versión">
-              Versión <b className="mono">{__VERSION__}</b>
-            </span>
+              onToast={mostrarToast}
+            />
           </div>
-        </div>
-      </footer>
+        )}
 
+        <footer className="estado">
+          <span>
+            <b className="mono">{perfil.usuario}</b>
+            {perfil.operador ? ' · ' + perfil.operador : ''}
+          </span>
+          <span className="marcador">
+            <i className="p-confi" /> Confirmadas <b>{porTipo.CONFI}</b>
+          </span>
+          <span className="marcador">
+            <i className="p-ciclo" /> Ciclos <b>{porTipo.CICLO}</b>
+          </span>
+          <span className="marcador">
+            <i className="p-rechazo" /> Rechazos <b>{porTipo.RECHAZO}</b>
+          </span>
+          <span className="empuje" />
+          <span>
+            Modo de las nuevas: <b>{modo || 'automático por departamento'}</b>
+          </span>
+          <span className="mono" title="Sirve para saber si el navegador tiene la última versión">
+            v{__VERSION__}
+          </span>
+        </footer>
       </div>
 
       {instruccionesAbiertas ? (

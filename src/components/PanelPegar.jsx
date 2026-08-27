@@ -1,7 +1,7 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Segmentado } from './Campos';
 import { parsearPegado } from '../lib/parsearOFS.js';
-import { aISO, deISO, fechaRelativa } from '../lib/utils.js';
+import { deISO, fechaRelativa } from '../lib/utils.js';
 import { CLASE_TIPO, COLOR_TIPO, TIPOS, etiquetaTipo } from '../lib/plantillas.js';
 import {
   DEPARTAMENTOS,
@@ -78,6 +78,11 @@ function Ficha({ bloque, contrata, onContrata }) {
   );
 }
 
+/*
+ * Cajón: se abre sobre el banco de trabajo y se cierra solo al agregar. Antes
+ * era una banda fija arriba que se llevaba 193 px de pantalla aunque ya no se
+ * usara.
+ */
 export function PanelPegar({
   onAgregar,
   onToast,
@@ -118,6 +123,17 @@ export function PanelPegar({
 
   const contrataDe = (b) => (b.orden.sot in contratas ? contratas[b.orden.sot] : b.orden.contrata);
 
+  useEffect(() => {
+    if (!abierto) return;
+    function esc(e) {
+      if (e.key === 'Escape') onAbierto(false);
+    }
+    document.addEventListener('keydown', esc);
+    return () => document.removeEventListener('keydown', esc);
+  }, [abierto, onAbierto]);
+
+  if (!abierto) return null;
+
   function limpiar() {
     setTexto('');
     setContratas({});
@@ -131,37 +147,36 @@ export function PanelPegar({
         : `${validos.length} órdenes agregadas`
     );
     limpiar();
+    onAbierto(false);
   }
 
   return (
-    <section className="tarjeta">
-      <div className="tarjeta-cab">
-        <div>
+    <>
+      <div className="velo" onClick={() => onAbierto(false)} />
+
+      <section className="cajon" role="dialog" aria-label="Pegar actividad de Oracle Field Service">
+        <div className="cajon-cab">
           <h2>Pegar actividad de Oracle Field Service</h2>
-          <p className="sub">Pega el detalle de la actividad y agrega</p>
-        </div>
-        <div className="empuje" />
-        {abierto && texto ? (
-          <button className="btn btn-plano btn-chico" onClick={limpiar}>
-            Limpiar
-          </button>
-        ) : null}
-        {abierto ? (
-          <button
-            className="btn btn-primario btn-chico"
-            onClick={agregarTodo}
-            disabled={!validos.length}
-          >
+          <span className="empuje" />
+          {validos.length ? (
+            <span className="contador">
+              {validos.length} {validos.length === 1 ? 'orden reconocida' : 'órdenes reconocidas'}
+            </span>
+          ) : null}
+          {texto ? (
+            <button className="btn btn-plano btn-chico" onClick={limpiar}>
+              Limpiar
+            </button>
+          ) : null}
+          <button className="btn btn-primario" onClick={agregarTodo} disabled={!validos.length}>
             Agregar {validos.length || ''} {validos.length === 1 ? 'orden' : 'órdenes'}
           </button>
-        ) : null}
-        <button className="btn btn-chico" onClick={() => onAbierto(!abierto)}>
-          {abierto ? 'Ocultar' : 'Pegar actividad'}
-        </button>
-      </div>
+          <button className="btn btn-plano btn-chico" onClick={() => onAbierto(false)}>
+            Cerrar (Esc)
+          </button>
+        </div>
 
-      {abierto ? (
-        <div className="tarjeta-cuerpo">
+        <div className="cajon-cuerpo">
           <div className="resumen-opciones">
             <span>
               Entran como <b>{tipo ? etiquetaTipo(tipo) : 'lo que diga el pegado'}</b> ·{' '}
@@ -198,6 +213,7 @@ export function PanelPegar({
                   : 'Auto: la toma del intervalo u horario del pegado'}
               </span>
             </div>
+
             <div className="opcion">
               <p className="seccion">Fecha de las nuevas</p>
               <Segmentado valor={cuando} onCambio={setCuando} opciones={OPCIONES_FECHA} />
@@ -261,7 +277,7 @@ export function PanelPegar({
           {opcionesAbiertas && usaLista && editandoDeptos ? (
             <div className="deptos-d1">
               <p className="seccion">Tus departamentos de {SOT_MANUAL_PROGRAMACION}</p>
-              <p className="pista" style={{ marginBottom: 10 }}>
+              <p className="pista" style={{ marginBottom: 8 }}>
                 Rige para las órdenes que agregues de ahora en adelante: las marcadas entran como{' '}
                 {SOT_MANUAL_PROGRAMACION} y el resto como {SOT_MANUAL_DEFAULT}.
                 {modo ? '' : ' Sin marcar ninguno, todas van como ' + SOT_MANUAL_DEFAULT + '.'}
@@ -291,13 +307,13 @@ export function PanelPegar({
             className="pegado"
             value={texto}
             onChange={(e) => setTexto(e.target.value)}
-            rows={3}
             placeholder={EJEMPLO}
             spellCheck={false}
+            autoFocus
           />
 
           {texto.trim() && !bloques.length ? (
-            <div className="alerta error" style={{ marginTop: 12 }}>
+            <div className="alerta error" style={{ marginTop: 10 }}>
               No se reconoció ninguna actividad en el texto pegado.
             </div>
           ) : null}
@@ -315,7 +331,7 @@ export function PanelPegar({
             </div>
           ) : null}
         </div>
-      ) : null}
-    </section>
+      </section>
+    </>
   );
 }
