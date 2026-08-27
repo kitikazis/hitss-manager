@@ -177,7 +177,8 @@ cabecera que usaste.
 | Ciclo de llamadas | ID de llamada, ciclo nro (1), cantidad (4), motivo, sub-motivo ("No contesta") |
 | Rechazo | ID de llamada, mesa/campo, persona que contesta, motivo, sub-motivo |
 
-**Horario** y **Observaciones** son opcionales y viven en la orden: si los llenas
+**Observaciones** vive al pie de la vista previa, porque se escribe mirando el
+resultado y es la última línea de la plantilla. Junto con **Horario** son opcionales: si los llenas
 aparecen en la plantilla (`HORARIO:` bajo el día y franja, `OBSERVACIONES:` como
 última línea) y si los dejas vacíos, esas líneas no salen. El horario se completa
 solo cuando OFS trae el intervalo o el SLA con horas.

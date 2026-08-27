@@ -1751,3 +1751,25 @@ input[type='date'] {
     min-height: 52px;
   }
 }
+
+/* Observaciones al pie de la vista previa: se escriben mirando el resultado. */
+.plantillas .vista .obs {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: var(--e3) var(--e4);
+  border-top: 1px solid var(--border);
+  background: var(--panel);
+}
+
+.plantillas .vista .obs label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--texto-2);
+}
+
+.plantillas .vista .obs textarea {
+  min-height: 46px;
+  font-size: 12.5px;
+}

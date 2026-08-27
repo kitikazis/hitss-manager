@@ -405,16 +405,6 @@ export function PanelPlantillas({
                     opciones={DEPARTAMENTOS}
                   />
                 </Campo>
-
-                <div className="campo campo-largo">
-                  <label>Observaciones</label>
-                  <textarea
-                    rows={2}
-                    value={seleccionada.observaciones || ''}
-                    onChange={(e) => editar('observaciones')(e.target.value)}
-                    placeholder="Opcional. Si escribes algo, aparece en la plantilla."
-                  />
-                </div>
               </div>
             </div>
 
@@ -449,6 +439,18 @@ export function PanelPlantillas({
             </button>
           </div>
           <pre className="codigo plantilla">{plantilla}</pre>
+
+          {/* Se escribe mirando la plantilla: es su ultima linea. */}
+          <div className="obs">
+            <label htmlFor="obs-orden">Observaciones</label>
+            <textarea
+              id="obs-orden"
+              rows={2}
+              value={seleccionada.observaciones || ''}
+              onChange={(e) => editar('observaciones')(e.target.value)}
+              placeholder="Opcional. Si escribes algo, se agrega al final de la plantilla."
+            />
+          </div>
         </section>
       </div>
     </>
