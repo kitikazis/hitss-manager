@@ -295,6 +295,8 @@ páginas no las alcance:
   abren en el propio navegador sin descomprimirlos a mano; o **arrastras la carpeta**
   hasta el panel. La lista se guarda en el navegador (IndexedDB), así que sobrevive a
   una recarga: se eligen los archivos una vez por turno, no una vez por refresco.
+  Con la biblioteca cargada, el **buscador del panel** encuentra cualquier pista
+  escribiendo parte del nombre, y **Mezclar** arranca en una al azar.
 
 En la barra de estado queda un **mini reproductor** siempre a mano —pausa, siguiente y
 el nombre de la pista—, para cortar el audio de un clic cuando entra una llamada. Los
