@@ -70,6 +70,8 @@ export function PanelMusica({ musica, abierto, onCerrar }) {
   const entrada = useRef(null);
   const carpeta = useRef(null);
   const [encima, setEncima] = useState(false);
+  const [busqueda, setBusqueda] = useState('');
+  const refBusqueda = useRef(null);
 
   /* React no conoce estos atributos: se ponen a mano para elegir una carpeta. */
   useEffect(() => {
@@ -90,6 +92,18 @@ export function PanelMusica({ musica, abierto, onCerrar }) {
   if (!abierto) return null;
 
   const { pistas, indice, sonando, ambiente } = musica;
+
+  /* Se guarda el indice real: la lista se filtra pero se reproduce el original. */
+  const q = busqueda.trim().toLowerCase();
+  const visibles = pistas
+    .map((p, i) => ({ pista: p, i }))
+    .filter(({ pista }) => !q || pista.nombre.toLowerCase().includes(q));
+
+  function mezclarTodo() {
+    if (!pistas.length) return;
+    if (!musica.aleatorio) musica.alternarAleatorio();
+    musica.reproducir(Math.floor(Math.random() * pistas.length));
+  }
 
   return (
     <aside
@@ -244,8 +258,29 @@ export function PanelMusica({ musica, abierto, onCerrar }) {
                 </label>
               </div>
 
+              <div className="buscador-pistas">
+                <input
+                  ref={refBusqueda}
+                  type="search"
+                  value={busqueda}
+                  onChange={(e) => setBusqueda(e.target.value)}
+                  placeholder={`Buscar entre ${pistas.length} pistas`}
+                  aria-label="Buscar una pista"
+                />
+                <button className="btn btn-chico" onClick={mezclarTodo} title="Empezar en una al azar">
+                  Mezclar
+                </button>
+              </div>
+
+              {q ? (
+                <p className="pista" style={{ margin: '6px 0 0' }}>
+                  {visibles.length} de {pistas.length}
+                  {visibles.length ? '' : ' · ninguna coincide'}
+                </p>
+              ) : null}
+
               <ul className="lista-pistas">
-                {pistas.map((p, i) => (
+                {visibles.map(({ pista: p, i }) => (
                   <li key={p.id} className={i === indice ? 'activa' : undefined}>
                     <button
                       type="button"

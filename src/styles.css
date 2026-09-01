@@ -1881,6 +1881,21 @@ textarea.pegado:focus {
   color: var(--panel);
 }
 
+.buscador-pistas {
+  display: flex;
+  gap: 5px;
+  margin-top: 10px;
+}
+
+.buscador-pistas input {
+  flex: 1;
+  min-width: 0;
+  padding: 4px 8px;
+  font-size: 12px;
+  background: var(--panel-2);
+  border-color: var(--border);
+}
+
 .lista-pistas {
   margin: 10px 0 0;
   padding: 0;
@@ -1888,6 +1903,11 @@ textarea.pegado:focus {
   border: 1px solid var(--border);
   border-radius: var(--radio-chico);
   overflow: hidden;
+}
+
+.lista-pistas {
+  max-height: 210px;
+  overflow-y: auto;
 }
 
 .lista-pistas li {
