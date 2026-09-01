@@ -8,7 +8,9 @@ import { PanelPegar } from './components/PanelPegar';
 import { TablaOrdenes } from './components/TablaOrdenes';
 import { PanelPlantillas } from './components/PanelPlantillas';
 import { PanelScript } from './components/PanelScript';
+import { MiniReproductor, PanelMusica } from './components/Musica';
 import { useAlmacenado } from './hooks/useAlmacenado';
+import { useMusica } from './hooks/useMusica';
 import { generarScript } from './lib/generarScript';
 import { separarPorTipo, tipoDeOrden } from './lib/plantillas';
 import {
@@ -86,14 +88,28 @@ export default function App() {
   const [formatoFecha, setFormatoFecha] = useAlmacenado(CLAVE_FORMATO_FECHA, FORMATO_FECHA_DEFAULT);
   const [modo, setModo] = useAlmacenado(claveModo(usuario), '');
   const [deptosD1, setDeptosD1] = useAlmacenado(claveDeptosD1(usuario), DEPTOS_PROGRAMACION);
+  const [musicaAbierta, setMusicaAbierta] = useState(false);
   const [toast, setToast] = useState(null);
   const timerToast = useRef(null);
+  const musica = useMusica((texto) => mostrarToast(texto));
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', tema);
   }, [tema]);
 
   useEffect(() => () => clearTimeout(timerToast.current), []);
+
+  /* Alt+M abre y cierra el reproductor desde cualquier paso. */
+  useEffect(() => {
+    function atajo(e) {
+      if (e.altKey && (e.key === 'm' || e.key === 'M')) {
+        e.preventDefault();
+        setMusicaAbierta((v) => !v);
+      }
+    }
+    document.addEventListener('keydown', atajo);
+    return () => document.removeEventListener('keydown', atajo);
+  }, []);
 
   /*
    * Cada codigo de usuario guarda su propio operador y firma.
@@ -497,6 +513,7 @@ export default function App() {
             </span>
           ) : null}
           <span className="empuje" />
+          <MiniReproductor musica={musica} onAbrir={() => setMusicaAbierta(true)} />
           <span>
             Modo de las nuevas: <b>{modo || 'automático por departamento'}</b>
           </span>
@@ -505,6 +522,12 @@ export default function App() {
           </span>
         </footer>
       </div>
+
+      <PanelMusica
+        musica={musica}
+        abierto={musicaAbierta}
+        onCerrar={() => setMusicaAbierta(false)}
+      />
 
       {instruccionesAbiertas ? (
         <ModalInstrucciones

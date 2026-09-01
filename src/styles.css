@@ -1717,6 +1717,258 @@ textarea.pegado:focus {
 }
 
 /* ============================================================
+   Música: mini reproductor en la barra de estado y su panel
+   ============================================================ */
+.mini-musica {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  max-width: 300px;
+  min-width: 0;
+}
+
+.mini-btn {
+  border: 1px solid var(--border);
+  background: var(--panel-2);
+  color: var(--texto-2);
+  cursor: pointer;
+  width: 19px;
+  height: 19px;
+  border-radius: 3px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  flex: none;
+}
+
+.mini-btn:hover:not(:disabled) {
+  border-color: var(--border-fuerte);
+  color: var(--texto);
+}
+
+.mini-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.mini-titulo,
+.vacio-musica {
+  border: 0;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+  font-size: 10.5px;
+  color: var(--texto-2);
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: left;
+}
+
+.vacio-musica {
+  color: var(--texto-3);
+}
+
+.mini-titulo:hover,
+.vacio-musica:hover {
+  color: var(--acento-fuerte);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.panel-musica {
+  position: fixed;
+  z-index: 55;
+  left: 74px;
+  bottom: 34px;
+  width: 340px;
+  max-height: min(64vh, 520px);
+  background: var(--panel);
+  border: 1px solid var(--border-fuerte);
+  border-radius: var(--radio);
+  box-shadow: var(--sombra-alta);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.panel-musica.soltando {
+  border-color: var(--acento);
+  box-shadow: var(--sombra-alta), inset 0 0 0 2px var(--acento-suave);
+}
+
+.panel-musica-cab {
+  display: flex;
+  align-items: center;
+  gap: var(--e2);
+  padding: 8px 10px 8px 12px;
+  border-bottom: 1px solid var(--border);
+  flex: none;
+}
+
+.panel-musica-cab h2 {
+  margin: 0;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--texto-3);
+}
+
+.panel-musica-cuerpo {
+  padding: 10px 12px 12px;
+  overflow-y: auto;
+  min-height: 0;
+}
+
+.fila-volumen {
+  display: flex;
+  align-items: center;
+  gap: var(--e2);
+  margin-top: 8px;
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--texto-3);
+}
+
+.fila-volumen input[type='range'] {
+  flex: 1;
+  min-width: 0;
+  width: auto;
+  padding: 0;
+  border: 0;
+  background: none;
+  accent-color: var(--acento);
+  cursor: pointer;
+}
+
+.acciones-musica {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.transporte {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 10px;
+}
+
+.transporte .fila-volumen {
+  margin-top: 0;
+  margin-left: var(--e2);
+}
+
+.transporte .btn {
+  padding: 4px 9px;
+}
+
+/* El rojo de marca queda para copiar: el reproductor usa el neutro fuerte. */
+.btn-transporte {
+  background: var(--texto);
+  border-color: var(--texto);
+  color: var(--panel);
+}
+
+.btn-transporte:hover {
+  background: var(--texto-2);
+  border-color: var(--texto-2);
+  color: var(--panel);
+}
+
+.lista-pistas {
+  margin: 10px 0 0;
+  padding: 0;
+  list-style: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radio-chico);
+  overflow: hidden;
+}
+
+.lista-pistas li {
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+}
+
+.lista-pistas li:last-child {
+  border-bottom: 0;
+}
+
+.lista-pistas li:hover {
+  background: var(--panel-2);
+}
+
+.lista-pistas li.activa {
+  background: var(--acento-suave);
+}
+
+.pista-nombre {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  text-align: left;
+  padding: 6px 4px 6px 9px;
+  font-size: 12px;
+  color: var(--texto);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lista-pistas li.activa .pista-nombre {
+  color: var(--acento-fuerte);
+  font-weight: 600;
+}
+
+.pista-num {
+  flex: none;
+  width: 14px;
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--texto-3);
+  text-align: right;
+}
+
+.lista-pistas li.activa .pista-num {
+  color: var(--acento-fuerte);
+}
+
+.pista-quitar {
+  flex: none;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  color: var(--texto-3);
+  font-size: 11px;
+  padding: 6px 9px;
+  width: auto;
+}
+
+.pista-quitar:hover {
+  color: var(--peligro);
+}
+
+@media (max-width: 860px) {
+  .panel-musica {
+    left: 10px;
+    right: 10px;
+    width: auto;
+    bottom: 10px;
+  }
+}
+
+/* ============================================================
    Modales
    ============================================================ */
 .modal-fondo {

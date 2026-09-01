@@ -275,6 +275,34 @@ líneas de código para saber si el lote es el correcto.
   formulario. Las órdenes siempre se guardan como `d/m/aaaa`; la conversión se
   hace solo al generar el script, y la cabecera del `.js` dice con cuál salió.
 
+## Música
+
+Un reproductor local, para turnos largos en puestos donde el filtro de páginas
+bloquea YouTube, Spotify y similares. Se abre con **Alt+M** o desde el acceso de la
+barra de estado, y vive en un panel flotante: no le quita alto al trabajo.
+
+Dos fuentes, las dos **sin red**, que es la única forma de que un bloqueador de
+páginas no las alcance:
+
+- **Sonido de fondo generado por el navegador**: lluvia, ventilador, ruido rosa y
+  ruido marrón. No se descarga nada — el ruido se calcula con la Web Audio API y se
+  repite en bucle, así que no existe como dirección web que bloquear. Sirve para tapar
+  la sala sin la letra de una canción, que compite con la llamada.
+- **Tus propios archivos**: eliges tus MP3 del disco (o los arrastras al panel) y
+  suenan desde tu PC. No se suben a ningún lado ni pasan por internet. La lista se
+  guarda en el navegador (IndexedDB), así que sobrevive a una recarga: se eligen los
+  archivos una vez por turno, no una vez por refresco.
+
+En la barra de estado queda un **mini reproductor** siempre a mano —pausa, siguiente y
+el nombre de la pista—, para cortar el audio de un clic cuando entra una llamada. Los
+**controles multimedia del teclado** (play/pausa, anterior, siguiente) también lo
+manejan, vía `MediaSession`.
+
+Lo que **no** hace, a propósito: no incorpora emisoras ni radios por internet ni nada
+que intente rodear el filtro de la empresa. Si el bloqueador tapa un dominio, el
+reproductor tampoco lo va a alcanzar; lo que sí funciona es lo que nunca sale del
+equipo.
+
 ## Varios operadores
 
 La primera vez que se abre la app aparece el modal **Antes de empezar** para
