@@ -288,10 +288,13 @@ páginas no las alcance:
   ruido marrón. No se descarga nada — el ruido se calcula con la Web Audio API y se
   repite en bucle, así que no existe como dirección web que bloquear. Sirve para tapar
   la sala sin la letra de una canción, que compite con la llamada.
-- **Tus propios archivos**: eliges tus MP3 del disco (o los arrastras al panel) y
-  suenan desde tu PC. No se suben a ningún lado ni pasan por internet. La lista se
-  guarda en el navegador (IndexedDB), así que sobrevive a una recarga: se eligen los
-  archivos una vez por turno, no una vez por refresco.
+- **Tus propios archivos**: suenan desde tu PC, no se suben a ningún lado ni pasan por
+  internet. Hay tres formas de cargar varias de una — **Agregar carpeta** toma todos
+  los audios de una carpeta y sus subcarpetas; **Agregar archivos** acepta selección
+  múltiple (`Ctrl+A` en el cuadro de Windows) y también **archivos `.zip`**, que se
+  abren en el propio navegador sin descomprimirlos a mano; o **arrastras la carpeta**
+  hasta el panel. La lista se guarda en el navegador (IndexedDB), así que sobrevive a
+  una recarga: se eligen los archivos una vez por turno, no una vez por refresco.
 
 En la barra de estado queda un **mini reproductor** siempre a mano —pausa, siguiente y
 el nombre de la pista—, para cortar el audio de un clic cuando entra una llamada. Los

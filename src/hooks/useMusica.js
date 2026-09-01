@@ -3,6 +3,7 @@ import { useAlmacenado } from './useAlmacenado';
 import { CLAVE_MUSICA } from '../lib/constantes';
 import { MotorAmbiente } from '../lib/ambiente';
 import { borrarPista, guardarPista, leerPistas, vaciarPistas } from '../lib/almacenAudio';
+import { audiosDeZip, esZip } from '../lib/zip';
 
 const PREFERENCIAS = {
   volumen: 0.7,
@@ -162,9 +163,28 @@ export function useMusica(onToast) {
   }, [siguiente, anterior]);
 
   async function agregar(archivos) {
-    const lista = [...archivos].filter((f) => f.type.startsWith('audio/') || /\.(mp3|m4a|wav|ogg|flac|aac|opus)$/i.test(f.name));
+    const entrantes = [...archivos];
+
+    // Un ZIP se abre aqui mismo: un album se agrega de una, sin descomprimir.
+    const zips = entrantes.filter(esZip);
+    let desdeZip = [];
+    if (zips.length) {
+      onToast?.(zips.length === 1 ? 'Abriendo el ZIP…' : `Abriendo ${zips.length} ZIP…`);
+      for (const zip of zips) {
+        try {
+          desdeZip = desdeZip.concat(await audiosDeZip(zip));
+        } catch (e) {
+          onToast?.(`No se pudo abrir ${zip.name}: ${e.message}`);
+        }
+      }
+    }
+
+    const sueltos = entrantes.filter((f) => !esZip(f));
+    const lista = [...sueltos, ...desdeZip].filter(
+      (f) => f.type.startsWith('audio/') || /\.(mp3|m4a|wav|ogg|flac|aac|opus|wma)$/i.test(f.name)
+    );
     if (!lista.length) {
-      onToast?.('Esos archivos no son de audio');
+      onToast?.('No se encontró ningún archivo de audio');
       return;
     }
 

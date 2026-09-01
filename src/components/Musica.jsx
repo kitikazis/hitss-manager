@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { AMBIENTES } from '../lib/ambiente';
+import { archivosDeArrastre } from '../lib/zip';
 
 /* Iconos de transporte: son los del reproductor, no decoracion. */
 const Icono = ({ nombre }) => {
@@ -67,7 +68,15 @@ export function MiniReproductor({ musica, onAbrir }) {
 
 export function PanelMusica({ musica, abierto, onCerrar }) {
   const entrada = useRef(null);
+  const carpeta = useRef(null);
   const [encima, setEncima] = useState(false);
+
+  /* React no conoce estos atributos: se ponen a mano para elegir una carpeta. */
+  useEffect(() => {
+    if (!carpeta.current) return;
+    carpeta.current.setAttribute('webkitdirectory', '');
+    carpeta.current.setAttribute('directory', '');
+  }, [abierto]);
 
   useEffect(() => {
     if (!abierto) return;
@@ -92,10 +101,11 @@ export function PanelMusica({ musica, abierto, onCerrar }) {
         setEncima(true);
       }}
       onDragLeave={() => setEncima(false)}
-      onDrop={(e) => {
+      onDrop={async (e) => {
         e.preventDefault();
         setEncima(false);
-        musica.agregar(e.dataTransfer.files);
+        // Entra en las carpetas soltadas: un album se arrastra entero.
+        musica.agregar(await archivosDeArrastre(e.dataTransfer));
       }}
     >
       <div className="panel-musica-cab">
@@ -146,6 +156,13 @@ export function PanelMusica({ musica, abierto, onCerrar }) {
             <button className="btn btn-chico" onClick={() => entrada.current?.click()}>
               Agregar archivos
             </button>
+            <button
+              className="btn btn-chico"
+              onClick={() => carpeta.current?.click()}
+              title="Toma todos los audios de la carpeta, incluidas sus subcarpetas"
+            >
+              Agregar carpeta
+            </button>
             {pistas.length ? (
               <>
                 <button
@@ -173,7 +190,17 @@ export function PanelMusica({ musica, abierto, onCerrar }) {
             <input
               ref={entrada}
               type="file"
-              accept="audio/*,.mp3,.m4a,.wav,.ogg,.flac,.aac,.opus"
+              accept="audio/*,.mp3,.m4a,.wav,.ogg,.flac,.aac,.opus,.wma,.zip"
+              multiple
+              style={{ display: 'none' }}
+              onChange={(e) => {
+                musica.agregar(e.target.files);
+                e.target.value = '';
+              }}
+            />
+            <input
+              ref={carpeta}
+              type="file"
               multiple
               style={{ display: 'none' }}
               onChange={(e) => {
@@ -244,8 +271,11 @@ export function PanelMusica({ musica, abierto, onCerrar }) {
             </>
           ) : (
             <p className="pista">
-              Elige tus MP3 del disco o arrástralos aquí. Se reproducen desde tu PC: no se suben a
-              ningún lado ni pasan por internet.
+              Tres formas de cargar varias de una: <b>Agregar carpeta</b> toma todos los audios de
+              una carpeta y sus subcarpetas; <b>Agregar archivos</b> acepta selección múltiple
+              (Ctrl+A en el cuadro de Windows) y también <b>archivos .zip</b>, que se abren aquí
+              mismo; o arrastra la carpeta hasta este panel. Todo suena desde tu PC: no se sube a
+              ningún lado ni pasa por internet.
             </p>
           )}
 
